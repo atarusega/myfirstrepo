@@ -98,6 +98,14 @@ def my_band_kb() -> InlineKeyboardMarkup:
     return kb.as_markup()
 
 
+def price_reminder_kb(band_id: int) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.button(text="✅ Цены актуальны", callback_data=f"pc:{band_id}")
+    kb.button(text="✏️ Обновить анкету", callback_data="band:edit")
+    kb.adjust(1)
+    return kb.as_markup()
+
+
 def moderation_kb(band_id: int) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text="✅ Одобрить", callback_data=f"adm:ok:{band_id}")

@@ -9,6 +9,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.types import BotCommand
 
+from app import reminders
 from app.config import settings
 from app.db import init_db
 from app.handlers import admin, onboarding, search, start
@@ -33,7 +34,7 @@ async def main():
     await init_db()
     bot = Bot(settings.bot_token, default=DefaultBotProperties(parse_mode="HTML"))
     dp = Dispatcher(storage=build_storage(settings.redis_url))
-    dp.include_routers(start.router, admin.router, onboarding.router, search.router)
+    dp.include_routers(start.router, admin.router, reminders.router, onboarding.router, search.router)
     await bot.set_my_commands([
         BotCommand(command="search", description="Найти кавер-группу"),
         BotCommand(command="band", description="Моя группа / добавить группу"),
@@ -41,9 +42,11 @@ async def main():
         BotCommand(command="help", description="Помощь"),
     ])
     await bot.delete_webhook(drop_pending_updates=True)
+    reminder_task = asyncio.create_task(reminders.price_reminder_loop(bot))
     try:
         await dp.start_polling(bot)
     finally:
+        reminder_task.cancel()
         await dp.storage.close()
 
 
