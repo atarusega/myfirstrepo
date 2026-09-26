@@ -74,3 +74,10 @@ def test_fallback_genres_ignore_numbers_and_popular():
     assert "retro" in fallback_parse("ретро хиты 80-90х").genres
     assert "retro" in fallback_parse("хиты 90х на юбилей").genres
     assert {"rock", "pop"} <= set(fallback_parse("поп-рок кавер на свадьбу").genres)
+
+
+def test_fallback_event_abbreviations_are_whole_words():
+    assert fallback_parse("свадьба в Питере, свинг").event_type == "private"
+    assert fallback_parse("тимбилдинг и кейтеринг для компании").event_type == "corporate"
+    assert fallback_parse("НГ корпоратив").event_type == "newyear"
+    assert fallback_parse("др у друга").event_type == "private"

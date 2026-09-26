@@ -20,3 +20,9 @@ def test_region():
     assert region_of("Химки") == "moscow"
     assert region_of("москва") == "moscow"
     assert region_of("Питер") == "spb"
+
+
+def test_find_budget_colloquial():
+    assert find_budget("Москва 100 тыщ") == 100000
+    assert find_budget("свадьба, 150т, Питер") == 150000
+    assert find_budget("корпоратив на 100 человек") is None
