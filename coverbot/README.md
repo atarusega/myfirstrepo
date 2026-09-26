@@ -21,40 +21,72 @@ Telegram-бот: продюсер описывает задачу своими �
 - **Без ключа Anthropic** бот тоже работает: включается простой разбор запроса по ключевым словам.
 - **Демо-данные** для показа: `python -m app.seed` (6 групп с пометкой [Демо]), удалить — `python -m app.seed --clear`.
 
-## Запуск на сервере (≈10 минут)
+## Запуск на своём компьютере
 
-Нужно: VPS с Docker (1 ГБ RAM достаточно), токен бота, ваш Telegram ID, ключ Anthropic API.
+Нужно: Python 3.11 или новее ([python.org](https://www.python.org/downloads/)), токен бота и ваш Telegram ID.
+Ключ Anthropic — по желанию (без него работает простой разбор запросов).
 
 1. Создать бота у [@BotFather](https://t.me/BotFather): `/newbot` → получить токен и юзернейм.
 2. Узнать свой Telegram ID у [@userinfobot](https://t.me/userinfobot).
-3. Ключ API: https://console.anthropic.com → API Keys.
-4. На сервере:
+3. В терминале, в папке `coverbot`:
+
+   macOS / Linux:
+   ```bash
+   python3 -m venv .venv && source .venv/bin/activate
+   pip install -r requirements.txt
+   cp .env.example .env
+   ```
+   Windows (PowerShell):
+   ```powershell
+   py -m venv .venv; .venv\Scripts\Activate.ps1
+   pip install -r requirements.txt
+   copy .env.example .env
+   ```
+   Если PowerShell не даёт активировать окружение: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
+4. Открыть `.env` в любом редакторе и вписать `BOT_TOKEN`, `BOT_USERNAME`, `ADMIN_IDS`
+   (и `ANTHROPIC_API_KEY`, если есть). Остальное уже настроено: база — файл `coverbot.db` в папке проекта.
+5. Запустить:
+   ```bash
+   python -m app.seed    # один раз: 6 демо-групп для проверки поиска
+   python -m app.main    # бот работает, пока открыт терминал; остановить — Ctrl+C
+   ```
+6. Открыть бота в Telegram → /start.
+
+В следующий раз: открыть терминал в папке `coverbot`, активировать окружение (`source .venv/bin/activate`
+или `.venv\Scripts\Activate.ps1`) и `python -m app.main`.
+
+Пока бот запущен на компьютере, он отвечает, только когда компьютер включён и терминал открыт. Незаконченные
+анкеты сбрасываются при перезапуске бота (в облаке их хранит Redis). Anthropic API из России недоступен —
+с компьютера в РФ ключ заработает только через VPN, иначе оставьте `ANTHROPIC_API_KEY` пустым.
+
+Тесты: `pytest -q`.
+
+## Перенос в облако (≈10 минут)
+
+Нужно: VPS с Docker (1 ГБ RAM достаточно). Токен бота и Telegram ID — те же, что на компьютере;
+ключ API: https://console.anthropic.com → API Keys.
+
+Перед переездом:
+- остановить бота на компьютере — один токен нельзя запускать в двух местах одновременно (Telegram отдаёт
+  сообщения только одному, второй получит ошибку `Conflict`);
+- анкеты, лиды и поиски из `coverbot.db` в облачный Postgres сами не переедут — их нужно перенести отдельно.
+
+1. На сервере:
    ```bash
    # загрузить папку проекта (scp / git), затем:
    cd coverbot
    cp .env.example .env
    nano .env                       # BOT_TOKEN, BOT_USERNAME, ADMIN_IDS, ANTHROPIC_API_KEY
+                                   # (базу и Redis docker-compose подставит сам)
    docker compose up -d --build
    docker compose exec bot python -m app.seed    # демо-группы для показа
    docker compose logs -f bot                    # проверить, что стартовал
    ```
-5. Открыть бота в Telegram → /start.
+2. Открыть бота в Telegram → /start.
 
 Обновление после правок: `docker compose up -d --build`. Незаконченные анкеты и поиски хранятся в Redis
 и переживают перезапуск бота (брошенные удаляются через 30 дней).
 Импорт: положить CSV в `./data/` → `docker compose exec bot python -m app.importer data/tutvse.csv`.
-
-## Локальный запуск без Docker
-
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env   # и в .env: DATABASE_URL=sqlite+aiosqlite:///./coverbot.db,
-                       # REDIS_URL — пусто (состояния в памяти) или redis://localhost:6379/0
-python -m app.seed
-python -m app.main
-```
-Тесты: `pytest -q`.
 
 ## Изменение схемы БД
 

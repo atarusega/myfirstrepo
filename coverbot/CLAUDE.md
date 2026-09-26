@@ -10,7 +10,8 @@ MVP Telegram-бота подбора кавер-групп для ивент-п�
 ## Стек и команды
 Python 3.12, aiogram 3 (polling), SQLAlchemy 2 async, PostgreSQL (SQLite локально), Redis для FSM
 (`REDIS_URL`; пусто — `MemoryStorage`), Anthropic API (Claude Haiku 4.5).
-- Локально: `pip install -r requirements.txt`, в `.env` `DATABASE_URL=sqlite+aiosqlite:///./coverbot.db`, `python -m app.main`
+- Сейчас бот работает на компьютере владельца (SQLite, без Redis, polling); облако — позже.
+- Локально: `pip install -r requirements.txt`, `cp .env.example .env` (по умолчанию SQLite), `python -m app.main`
 - Демо-данные: `python -m app.seed` (`--clear` удалить)
 - Тесты: `pytest -q` — держать зелёными
 - Миграция после правки моделей: `alembic revision --autogenerate -m "..."` (применяется при старте бота)
@@ -41,4 +42,4 @@ Python 3.12, aiogram 3 (polling), SQLAlchemy 2 async, PostgreSQL (SQLite лок�
 ## Бэклог (по приоритету)
 1. Эмбеддинги + pgvector для смыслового поиска (сейчас пересечение слов в `matching.score`).
 2. Распознавание голосовых запросов.
-3. Webhook-режим для прода.
+3. При переезде в облако: перенос данных SQLite → Postgres, webhook-режим.
