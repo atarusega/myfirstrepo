@@ -61,6 +61,28 @@ Telegram-бот: продюсер описывает задачу своими �
 
 Тесты: `pytest -q`.
 
+## Постоянно на своём компьютере (Docker Desktop)
+
+Бот работает в фоне, пока включён компьютер, и сам поднимается после перезагрузки. Внутри те же Postgres и Redis,
+что будут в облаке, поэтому анкеты не теряются при перезапуске.
+
+1. Установить [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Mac или Windows), запустить.
+   В настройках Docker Desktop → General включить **Start Docker Desktop when you sign in**.
+2. Скачать проект: ZIP ветки с GitHub (Code → Download ZIP) или `git clone`, распаковать, открыть папку `coverbot`.
+3. Создать `.env` из `.env.example` (скопировать файл и переименовать) и вписать `BOT_TOKEN`, `BOT_USERNAME`,
+   `ADMIN_IDS`. Строки `DATABASE_URL` и `REDIS_URL` не трогать — Docker подставит свои.
+4. В терминале в папке `coverbot`:
+   ```bash
+   docker compose up -d --build                  # собрать и запустить в фоне
+   docker compose exec bot python -m app.seed    # один раз: демо-группы
+   docker compose logs -f bot                    # посмотреть, что запустился (выйти — Ctrl+C, бот продолжит)
+   ```
+
+Остановить: `docker compose stop`. Обновить после правок кода: `docker compose up -d --build`.
+Компьютер не должен уходить в сон: macOS — Настройки → Аккумулятор/Экран → запрет автосна при подключении
+к сети; Windows — Параметры → Система → Питание → «Переводить в спящий режим» → Никогда.
+Один токен работает только в одном месте: перед запуском остановите бота, запущенного где-то ещё.
+
 ## Перенос в облако (≈10 минут)
 
 Нужно: VPS с Docker (1 ГБ RAM достаточно). Токен бота и Telegram ID — те же, что на компьютере;
