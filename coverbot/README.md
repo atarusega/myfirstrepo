@@ -38,7 +38,8 @@ Telegram-бот: продюсер описывает задачу своими �
    ```
 5. Открыть бота в Telegram → /start.
 
-Обновление после правок: `docker compose up -d --build`.
+Обновление после правок: `docker compose up -d --build`. Незаконченные анкеты и поиски хранятся в Redis
+и переживают перезапуск бота (брошенные удаляются через 30 дней).
 Импорт: положить CSV в `./data/` → `docker compose exec bot python -m app.importer data/tutvse.csv`.
 
 ## Локальный запуск без Docker
@@ -46,7 +47,8 @@ Telegram-бот: продюсер описывает задачу своими �
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # и в .env: DATABASE_URL=sqlite+aiosqlite:///./coverbot.db
+cp .env.example .env   # и в .env: DATABASE_URL=sqlite+aiosqlite:///./coverbot.db,
+                       # REDIS_URL — пусто (состояния в памяти) или redis://localhost:6379/0
 python -m app.seed
 python -m app.main
 ```
@@ -75,13 +77,11 @@ app/
   handlers/        start (меню, ссылки импорта), onboarding (анкета), search (поиск), admin
   importer.py      импорт CSV «Тут все»
   seed.py          демо-группы
-tests/             pytest: разбор сумм, подбор, запасной парсер
+tests/             pytest: разбор сумм, подбор, запасной парсер, данные FSM
 ```
 
 ## Ограничения MVP и что дальше (задачи для Claude Code)
 
-- Состояние диалогов хранится в памяти: при перезапуске бота незаконченная анкета сбрасывается.
-  Дальше — Redis (`RedisStorage`).
 - Смысловой поиск упрощён (пересечение слов). Дальше — эмбеддинги + pgvector (поле уже заложено в ТЗ).
 - Голосовые сообщения пока не распознаются.
 - Таблицы создаются при старте (`create_all`). При изменении моделей — перейти на Alembic.

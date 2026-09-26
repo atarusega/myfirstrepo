@@ -8,7 +8,8 @@ MVP Telegram-бота подбора кавер-групп для ивент-п�
 (только с согласия владельца) + метки доверия «Резидент Тут все» / «Рекомендуют резиденты».
 
 ## Стек и команды
-Python 3.12, aiogram 3 (polling), SQLAlchemy 2 async, PostgreSQL (SQLite локально), Anthropic API (Claude Haiku 4.5).
+Python 3.12, aiogram 3 (polling), SQLAlchemy 2 async, PostgreSQL (SQLite локально), Redis для FSM
+(`REDIS_URL`; пусто — `MemoryStorage`), Anthropic API (Claude Haiku 4.5).
 - Локально: `pip install -r requirements.txt`, в `.env` `DATABASE_URL=sqlite+aiosqlite:///./coverbot.db`, `python -m app.main`
 - Демо-данные: `python -m app.seed` (`--clear` удалить)
 - Тесты: `pytest -q` — держать зелёными
@@ -22,6 +23,8 @@ Python 3.12, aiogram 3 (polling), SQLAlchemy 2 async, PostgreSQL (SQLite лок�
 - `app/handlers/onboarding.py` — анкета: один FSM-state + таблица `STEPS` (добавить поле = строка в STEPS + колонка в `Band`).
 - `app/handlers/search.py` — поиск; после выдачи любое сообщение продюсера уточняет запрос.
 - `app/handlers/admin.py` — модерация и команды админа (фильтр по `ADMIN_IDS`).
+- Данные FSM (`state.update_data`) хранятся в Redis как JSON: только str/int/bool/None/list/dict,
+  без datetime и объектов моделей (`tests/test_storage.py`).
 
 ## Правила
 - Интерфейс бота и тексты — на русском, HTML parse mode, пользовательский ввод экранировать (`html.escape`).
@@ -30,9 +33,8 @@ Python 3.12, aiogram 3 (polling), SQLAlchemy 2 async, PostgreSQL (SQLite лок�
 - Персональные данные (контакты, tg id) не отправлять в LLM.
 
 ## Бэклог (по приоритету)
-1. RedisStorage для FSM (сейчас память — анкета сбрасывается при рестарте).
-2. Alembic вместо `create_all`.
-3. Эмбеддинги + pgvector для смыслового поиска (сейчас пересечение слов в `matching.score`).
-4. Напоминание группам раз в 90 дней подтвердить цены (`prices_confirmed_at`).
-5. Распознавание голосовых запросов.
-6. Webhook-режим для прода.
+1. Alembic вместо `create_all`.
+2. Эмбеддинги + pgvector для смыслового поиска (сейчас пересечение слов в `matching.score`).
+3. Напоминание группам раз в 90 дней подтвердить цены (`prices_confirmed_at`).
+4. Распознавание голосовых запросов.
+5. Webhook-режим для прода.

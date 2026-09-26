@@ -15,6 +15,8 @@ class Settings:
     anthropic_base_url: str | None = os.getenv("ANTHROPIC_BASE_URL") or None
     llm_model: str = os.getenv("LLM_MODEL", "claude-haiku-4-5-20251001")
     database_url: str = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./coverbot.db")
+    # Хранилище состояний диалогов (анкета, поиск). Пусто — в памяти, сбрасывается при рестарте
+    redis_url: str | None = os.getenv("REDIS_URL") or None
     page_size: int = 5
 
 
