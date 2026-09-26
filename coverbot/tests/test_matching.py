@@ -65,3 +65,12 @@ def test_fallback_parser():
     assert c.missing() == []
     c2 = fallback_parse("а можно подешевле, до 80к", c)
     assert c2.budget == 80000 and c2.city == "Москва"
+
+
+def test_fallback_genres_ignore_numbers_and_popular():
+    assert "retro" not in fallback_parse("день рождения 35 лет, 40 гостей, бюджет 80 тысяч").genres
+    assert "retro" not in fallback_parse("выпускной, 90 выпускников, до 90к").genres
+    assert "pop" not in fallback_parse("нужна популярная кавер-группа").genres
+    assert "retro" in fallback_parse("ретро хиты 80-90х").genres
+    assert "retro" in fallback_parse("хиты 90х на юбилей").genres
+    assert {"rock", "pop"} <= set(fallback_parse("поп-рок кавер на свадьбу").genres)
