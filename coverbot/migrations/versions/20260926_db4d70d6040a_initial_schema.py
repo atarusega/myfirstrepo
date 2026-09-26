@@ -41,8 +41,8 @@ def upgrade() -> None:
     sa.Column('reject_reason', sa.Text(), nullable=True),
     sa.Column('consent_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('prices_confirmed_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     sa.PrimaryKeyConstraint('id', name=op.f('bands_pkey')),
     sa.UniqueConstraint('claim_token', name=op.f('bands_claim_token_key'))
     )
@@ -53,7 +53,7 @@ def upgrade() -> None:
     sa.Column('tg_user_id', sa.BigInteger(), nullable=False),
     sa.Column('username', sa.String(length=100), nullable=True),
     sa.Column('full_name', sa.String(length=200), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     sa.PrimaryKeyConstraint('tg_user_id', name=op.f('producers_pkey'))
     )
     op.create_table('search_requests',
@@ -62,7 +62,7 @@ def upgrade() -> None:
     sa.Column('raw_text', sa.Text(), nullable=False),
     sa.Column('parsed', sa.JSON(), nullable=False),
     sa.Column('result_ids', sa.JSON(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     sa.PrimaryKeyConstraint('id', name=op.f('search_requests_pkey'))
     )
     with op.batch_alter_table('search_requests', schema=None) as batch_op:
@@ -73,7 +73,7 @@ def upgrade() -> None:
     sa.Column('request_id', sa.Integer(), nullable=True),
     sa.Column('band_id', sa.Integer(), nullable=False),
     sa.Column('producer_id', sa.BigInteger(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     sa.ForeignKeyConstraint(['band_id'], ['bands.id'], name=op.f('leads_band_id_fkey'), ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id', name=op.f('leads_pkey'))
     )
@@ -87,7 +87,7 @@ def upgrade() -> None:
     sa.Column('recommender_tg_id', sa.BigInteger(), nullable=False),
     sa.Column('source', sa.String(length=20), nullable=False),
     sa.Column('comment', sa.Text(), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     sa.ForeignKeyConstraint(['band_id'], ['bands.id'], name=op.f('recommendations_band_id_fkey'), ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id', name=op.f('recommendations_pkey')),
     sa.UniqueConstraint('band_id', 'recommender_tg_id', 'source', name=op.f('recommendations_band_id_recommender_tg_id_source_key'))
