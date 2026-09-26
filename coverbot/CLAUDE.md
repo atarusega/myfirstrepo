@@ -13,14 +13,17 @@ Python 3.12, aiogram 3 (polling), SQLAlchemy 2 async, PostgreSQL (SQLite лок�
 - Локально: `pip install -r requirements.txt`, в `.env` `DATABASE_URL=sqlite+aiosqlite:///./coverbot.db`, `python -m app.main`
 - Демо-данные: `python -m app.seed` (`--clear` удалить)
 - Тесты: `pytest -q` — держать зелёными
+- Миграция после правки моделей: `alembic revision --autogenerate -m "..."` (применяется при старте бота)
 - Прод: `docker compose up -d --build`
 
 ## Устройство
 - `app/dictionaries.py` — все справочники (жанры, услуги, инструменты…). Коды латиницей хранятся в БД.
+- `app/db.py` + `migrations/` — модели и миграции Alembic; `init_db` доводит схему до head, базу от `create_all` помечает baseline.
 - `app/criteria.py` — модель критериев поиска + `fallback_parse` (работает без API-ключа).
 - `app/llm.py` — промпты и вызовы Claude. Любая ошибка LLM → fallback, бот не падает.
 - `app/matching.py` — чистые функции: жёсткий фильтр → скоринг (веса в `WEIGHTS`). Тестировать без БД.
-- `app/handlers/onboarding.py` — анкета: один FSM-state + таблица `STEPS` (добавить поле = строка в STEPS + колонка в `Band`).
+- `app/handlers/onboarding.py` — анкета: один FSM-state + таблица `STEPS` (добавить поле = строка в STEPS + колонка в `Band`
+  + миграция).
 - `app/handlers/search.py` — поиск; после выдачи любое сообщение продюсера уточняет запрос.
 - `app/handlers/admin.py` — модерация и команды админа (фильтр по `ADMIN_IDS`).
 - Данные FSM (`state.update_data`) хранятся в Redis как JSON: только str/int/bool/None/list/dict,
@@ -33,8 +36,7 @@ Python 3.12, aiogram 3 (polling), SQLAlchemy 2 async, PostgreSQL (SQLite лок�
 - Персональные данные (контакты, tg id) не отправлять в LLM.
 
 ## Бэклог (по приоритету)
-1. Alembic вместо `create_all`.
-2. Эмбеддинги + pgvector для смыслового поиска (сейчас пересечение слов в `matching.score`).
-3. Напоминание группам раз в 90 дней подтвердить цены (`prices_confirmed_at`).
-4. Распознавание голосовых запросов.
-5. Webhook-режим для прода.
+1. Эмбеддинги + pgvector для смыслового поиска (сейчас пересечение слов в `matching.score`).
+2. Напоминание группам раз в 90 дней подтвердить цены (`prices_confirmed_at`).
+3. Распознавание голосовых запросов.
+4. Webhook-режим для прода.

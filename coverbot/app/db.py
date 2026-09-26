@@ -1,6 +1,10 @@
 from datetime import datetime
+from pathlib import Path
 
-from sqlalchemy import JSON, BigInteger, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func, select
+from alembic import command
+from alembic.config import Config
+from sqlalchemy import (JSON, BigInteger, DateTime, ForeignKey, Integer, MetaData, String, Text, UniqueConstraint,
+                        func, inspect, select)
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -11,7 +15,13 @@ Session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession
 
 
 class Base(DeclarativeBase):
-    pass
+    # имена ограничений как у PostgreSQL по умолчанию: миграции могут ссылаться на них по имени
+    metadata = MetaData(naming_convention={
+        "ix": "ix_%(column_0_label)s",
+        "uq": "%(table_name)s_%(column_0_N_name)s_key",
+        "fk": "%(table_name)s_%(column_0_name)s_fkey",
+        "pk": "%(table_name)s_pkey",
+    })
 
 
 class Band(Base):
@@ -91,9 +101,24 @@ class Recommendation(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+ALEMBIC_INI = Path(__file__).resolve().parent.parent / "alembic.ini"
+# первая миграция = схема, которую раньше создавал create_all
+BASELINE_REVISION = "db4d70d6040a"
+
+
+def migrate(connection) -> None:
+    """Довести схему до последней миграции. Базу, созданную ещё через create_all, помечает как baseline."""
+    cfg = Config(str(ALEMBIC_INI))
+    cfg.attributes["connection"] = connection
+    tables = inspect(connection).get_table_names()
+    if "bands" in tables and "alembic_version" not in tables:
+        command.stamp(cfg, BASELINE_REVISION)
+    command.upgrade(cfg, "head")
+
+
 async def init_db() -> None:
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(migrate)
 
 
 async def rec_counts(session: AsyncSession) -> dict[int, dict[str, int]]:

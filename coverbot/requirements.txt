@@ -2,6 +2,7 @@ aiogram>=3.13,<4
 SQLAlchemy[asyncio]>=2.0.30
 asyncpg>=0.29
 aiosqlite>=0.20
+alembic>=1.16
 redis>=5
 anthropic>=0.40
 pydantic>=2.7
