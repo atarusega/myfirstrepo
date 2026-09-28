@@ -115,50 +115,195 @@ a { color: inherit; text-decoration: none; }
   .tile-title { transform: none; }
 }
 
-/* Lightbox */
+/* Lightbox: тёмная сцена, большое фото, лента миниатюр */
 
 .lightbox {
+  --c: var(--accent);
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: var(--bg);
-  overflow-y: auto;
-  padding: 70px 0 30px;
+  display: flex;
+  flex-direction: column;
+  background: #0d0d0d;
+  color: #fff;
+  animation: lb-in 0.25s ease;
 }
 
 .lightbox[hidden] { display: none; }
 
-.lb-title {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 60px;
-  padding: 0 20px;
+@keyframes lb-in { from { opacity: 0; transform: scale(1.02); } }
+
+.lb-bar {
   display: flex;
   align-items: center;
-  background: var(--bg);
-  border-bottom: 3px solid var(--line);
-  font-size: 20px;
+  gap: 24px;
+  height: 64px;
+  padding-left: 24px;
+  flex-shrink: 0;
+}
+
+.lb-title {
+  flex: 1;
+  min-width: 0;
+  font-size: clamp(18px, 2.6vw, 34px);
   font-weight: 900;
   text-transform: uppercase;
+  color: var(--c);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Числовой индикатор: текущий слайд крупный, остальные приглушены,
+   подчёркивание едет к активному номеру (codrops/NavigationIndicators) */
+
+.lb-index {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-index button {
+  position: relative;
+  border: 0;
+  background: none;
+  color: #555;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 7px 8px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.lb-index button::after {
+  content: "";
+  position: absolute;
+  left: 7px; right: 7px; bottom: 3px;
+  height: 2px;
+  background: var(--c);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.lb-index button:hover { color: #fff; }
+
+.lb-index button.on {
+  color: var(--c);
+  font-size: 15px;
+}
+
+.lb-index button.on::after { transform: scaleX(1); }
+
+.lb-post {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 2px solid var(--c);
+  padding-bottom: 2px;
 }
 
 .lb-close {
-  position: fixed;
-  top: 0; right: 0;
-  z-index: 2;
-  width: 60px; height: 60px;
+  width: 64px;
+  height: 64px;
   border: 0;
-  background: var(--accent);
-  font-size: 34px;
+  background: var(--c);
+  color: var(--t, #111);
+  font-size: 36px;
   cursor: pointer;
 }
 
-.lb-strip {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: grid;
-  gap: 12px;
+.lb-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 72px;
 }
 
-.lb-strip img { width: 100%; display: block; }
+/* Кадр со сменой слайдов: два наложенных слоя со сдвигом по направлению
+   (codrops/MultiLayoutSlideshow) вместо простого мигания */
+
+.lb-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lb-img {
+  position: absolute;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+  opacity: 0;
+  transform: translateX(0) scale(1.03);
+  transition: opacity 0.38s ease, transform 0.45s cubic-bezier(.2, .7, .2, 1);
+  pointer-events: none;
+}
+
+.lb-img.on {
+  position: relative;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.lb-img.out-left { transform: translateX(-4%) scale(1.03); }
+.lb-img.out-right { transform: translateX(4%) scale(1.03); }
+
+.lb-nav {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 72px;
+  border: 0;
+  background: none;
+  color: #fff;
+  font-size: 34px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.lb-prev { left: 0; }
+.lb-next { right: 0; }
+.lb-nav:hover { opacity: 1; color: var(--c); }
+
+.lb-thumbs {
+  display: flex;
+  gap: 6px;
+  padding: 14px 24px 18px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  justify-content: center;
+}
+
+.lb-thumbs img {
+  height: 64px;
+  width: 96px;
+  flex-shrink: 0;
+  object-fit: cover;
+  cursor: pointer;
+  opacity: 0.45;
+  outline: 3px solid transparent;
+  outline-offset: -3px;
+  transition: opacity 0.2s;
+}
+
+.lb-thumbs img:hover { opacity: 0.85; }
+.lb-thumbs img.on { opacity: 1; outline-color: var(--c); }
+
+@media (max-width: 700px) {
+  .lb-post, .lb-nav { display: none; }
+  .lb-stage { padding: 0; }
+  .lb-thumbs { justify-content: flex-start; }
+}
