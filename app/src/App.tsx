@@ -1,27 +1,36 @@
 import { useState } from "react"
 import { AnimatePresence } from "motion/react"
 import { ArtGallery } from "@/components/block/art-gallery"
+import { BrandLogo } from "@/components/brand"
 import { ProjectViewer } from "@/components/project-viewer"
 import { captions, covers, projects } from "@/data/projects"
 
+// Ячейка галереи задаётся в долях высоты экрана: на вертикальном телефоне делаем её мельче,
+// чтобы в ширину помещалось хотя бы две плитки
+const cellSize = () => (window.innerWidth / window.innerHeight < 0.8 ? 0.42 : 0.75)
+
 export default function App() {
   const [open, setOpen] = useState<number | null>(null)
+  const [cell] = useState(cellSize)
 
   return (
-    <main className="relative h-full w-full">
-      <ArtGallery images={covers} items={captions} onSelect={setOpen} className="h-full" />
-
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-16 items-center justify-between px-6">
-        <span className="text-xl font-black tracking-[0.04em]">STRUKTORUM</span>
+    <main className="flex h-full w-full flex-col bg-graphite">
+      {/* Шапка по брендбуку: синяя полоса, логотип слева, канал справа */}
+      <header className="z-10 flex h-16 shrink-0 items-center justify-between bg-brand px-5 text-white md:h-[72px] md:px-10">
+        <a href="./" aria-label="STRUKTORUM — на главную">
+          <BrandLogo size={36} />
+        </a>
         <a
           href="https://t.me/struktorum"
           target="_blank"
           rel="noopener"
-          className="pointer-events-auto text-[13px] font-bold uppercase tracking-[0.06em] text-white/70 transition-colors hover:text-white"
+          className="text-[11px] font-medium uppercase tracking-[0.06em] transition-opacity hover:opacity-70 md:text-[13px]"
         >
-          t.me/struktorum →
+          <span className="hidden sm:inline">t.me/struktorum </span>→
         </a>
       </header>
+
+      <ArtGallery images={covers} items={captions} cellSize={cell} onSelect={setOpen} className="h-auto min-h-0 flex-1" />
 
       <AnimatePresence>
         {open !== null && <ProjectViewer key={open} project={projects[open]} onClose={() => setOpen(null)} />}

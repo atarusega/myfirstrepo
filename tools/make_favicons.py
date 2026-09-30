@@ -37,7 +37,7 @@ def main():
         '{\n  "name": "STRUKTORUM",\n  "short_name": "STRUKTORUM",\n'
         '  "icons": [\n    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },\n'
         '    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }\n  ],\n'
-        '  "theme_color": "#000000",\n  "background_color": "#000000",\n  "display": "standalone"\n}\n',
+        '  "theme_color": "#3A3ED8",\n  "background_color": "#1C1C1C",\n  "display": "standalone"\n}\n',
         encoding="utf-8")
     print("ok:", ", ".join(sorted(p.name for p in OUT.iterdir() if p.is_file())))
 

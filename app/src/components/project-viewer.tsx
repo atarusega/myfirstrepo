@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
+import { DraggableMarquee } from "@/components/block/draggable-marquee"
 import type { Project } from "@/data/projects"
 
 type Props = {
@@ -9,88 +10,47 @@ type Props = {
 
 const pad = (n: number) => String(n).padStart(2, "0")
 
-// Полноэкранный просмотр проекта: большое фото, номера кадров, лента миниатюр.
+// Просмотр проекта: фото крутятся лентой (ObsidianUI Draggable Marquee), клик по фото — крупно.
 export function ProjectViewer({ project, onClose }: Props) {
   const images = project.images
-  const [[index, dir], setSlide] = useState<[number, number]>([0, 1])
-  const indexRef = useRef<HTMLDivElement>(null)
-  const thumbsRef = useRef<HTMLDivElement>(null)
+  const [zoom, setZoom] = useState<number | null>(null)
+  const items = useMemo(() => images.map((src, i) => ({ id: i, src, alt: `${project.title} — ${i + 1}` })), [images, project.title])
 
-  const go = useCallback(
-    (next: number, direction?: number) => {
-      setSlide(([cur]) => {
-        const n = (next + images.length) % images.length
-        return [n, direction ?? (n >= cur ? 1 : -1)]
-      })
-    },
-    [images.length],
-  )
+  // Клик отличаем от перетаскивания ленты: засчитываем, только если указатель почти не сдвинулся
+  const down = useRef({ x: 0, y: 0 })
+  const isClick = (e: React.MouseEvent) => Math.hypot(e.clientX - down.current.x, e.clientY - down.current.y) < 6
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose()
-      if (e.key === "ArrowLeft") go(index - 1, -1)
-      if (e.key === "ArrowRight") go(index + 1, 1)
+      if (e.key !== "Escape") return
+      if (zoom !== null) setZoom(null)
+      else onClose()
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [go, index, onClose])
+  }, [zoom, onClose])
 
-  // Держим активный номер и миниатюру в поле зрения
-  useEffect(() => {
-    const opts: ScrollIntoViewOptions = { inline: "center", block: "nearest", behavior: "smooth" }
-    indexRef.current?.children[index]?.scrollIntoView(opts)
-    thumbsRef.current?.children[index]?.scrollIntoView(opts)
-    new Image().src = images[(index + 1) % images.length]
-  }, [index, images])
-
-  const touchX = useRef<number | null>(null)
-  const style = { "--c": project.color, "--t": project.textColor } as CSSProperties
+  const year = project.date.slice(0, 4)
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex flex-col bg-[#0d0d0d] text-white"
-      style={style}
-      initial={{ opacity: 0, scale: 1.02 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 1.02 }}
+      className="fixed inset-0 z-50 flex flex-col bg-graphite text-white"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
-      onTouchEnd={(e) => {
-        if (touchX.current === null) return
-        const dx = e.changedTouches[0].clientX - touchX.current
-        touchX.current = null
-        if (Math.abs(dx) > 50) go(index + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1)
-      }}
     >
-      <header className="flex h-16 shrink-0 items-center gap-6 pl-6">
-        <h2 className="min-w-0 flex-1 truncate text-[clamp(18px,2.6vw,34px)] font-black uppercase text-[var(--c)]">
+      <header className="flex h-16 shrink-0 items-center gap-4 bg-brand pl-5 md:h-[72px] md:gap-8 md:pl-10">
+        {/* Цвет проекта — акцентной точкой, как цвета «подушки» в брендбуке */}
+        <span className="size-3 shrink-0 rounded-full" style={{ background: project.color }} />
+        <h2 className="line-clamp-2 min-w-0 flex-1 text-[clamp(14px,2.2vw,28px)] font-bold uppercase leading-[1.15] tracking-[0.04em] md:truncate">
           {project.title}
         </h2>
-
-        {/* Номера кадров с подчёркиванием активного (идея codrops/NavigationIndicators) */}
-        <nav ref={indexRef} className="hidden max-w-[40vw] items-baseline overflow-hidden tabular-nums sm:flex">
-          {images.map((_, k) => (
-            <button
-              key={k}
-              type="button"
-              onClick={() => go(k)}
-              className={
-                "relative px-[7px] pt-1 pb-2 text-[13px] font-bold transition-colors hover:text-white " +
-                "after:absolute after:inset-x-[7px] after:bottom-[3px] after:h-0.5 after:origin-left after:bg-[var(--c)] after:transition-transform " +
-                (k === index ? "text-[15px] text-[var(--c)] after:scale-x-100" : "text-neutral-600 after:scale-x-0")
-              }
-            >
-              {pad(k + 1)}
-            </button>
-          ))}
-        </nav>
-
         <a
           href={project.url}
           target="_blank"
           rel="noopener"
-          className="hidden border-b-2 border-[var(--c)] pb-0.5 text-[13px] font-bold uppercase tracking-[0.06em] md:inline"
+          className="hidden text-[13px] font-medium uppercase tracking-[0.06em] transition-opacity hover:opacity-70 md:inline"
         >
           Пост в Telegram ↗
         </a>
@@ -98,76 +58,139 @@ export function ProjectViewer({ project, onClose }: Props) {
           type="button"
           onClick={onClose}
           aria-label="Закрыть"
-          className="h-16 w-16 shrink-0 bg-[var(--c)] text-4xl text-[var(--t)]"
+          className="h-full w-16 shrink-0 text-3xl transition-colors hover:bg-white/10 md:w-[72px]"
         >
           ×
         </button>
       </header>
 
-      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden sm:px-[72px]">
-        <button
-          type="button"
-          aria-label="Назад"
-          onClick={() => go(index - 1, -1)}
-          className="absolute inset-y-0 left-0 z-10 hidden w-[72px] text-4xl opacity-40 transition hover:text-[var(--c)] hover:opacity-100 sm:block"
+      <div
+        className="flex min-h-0 flex-1 flex-col justify-center gap-8 py-8"
+        onPointerDownCapture={(e) => (down.current = { x: e.clientX, y: e.clientY })}
+      >
+        <motion.div
+          initial={{ opacity: 0, x: 80 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, ease: [0.2, 0.7, 0.2, 1], delay: 0.05 }}
         >
-          ←
-        </button>
-
-        {/* Направленный слайд между кадрами (идея codrops/MultiLayoutSlideshow) */}
-        <div
-          className="relative h-full w-full"
-          onClick={(e) => {
-            const r = e.currentTarget.getBoundingClientRect()
-            const left = e.clientX - r.left < r.width / 2
-            go(index + (left ? -1 : 1), left ? -1 : 1)
-          }}
-        >
-          <AnimatePresence initial={false} custom={dir}>
-            <motion.img
-              key={index}
-              src={images[index]}
-              alt={project.title}
-              custom={dir}
-              variants={{
-                enter: (d: number) => ({ opacity: 0, x: `${d * 4}%`, scale: 1.03 }),
-                center: { opacity: 1, x: 0, scale: 1 },
-                exit: (d: number) => ({ opacity: 0, x: `${-d * 4}%`, scale: 1.03 }),
-              }}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.45, ease: [0.2, 0.7, 0.2, 1] }}
-              className="absolute inset-0 m-auto max-h-full max-w-full cursor-pointer object-contain"
-              draggable={false}
-            />
-          </AnimatePresence>
-        </div>
-
-        <button
-          type="button"
-          aria-label="Вперёд"
-          onClick={() => go(index + 1, 1)}
-          className="absolute inset-y-0 right-0 z-10 hidden w-[72px] text-4xl opacity-40 transition hover:text-[var(--c)] hover:opacity-100 sm:block"
-        >
-          →
-        </button>
-      </div>
-
-      <div ref={thumbsRef} className="flex shrink-0 gap-1.5 overflow-x-auto px-6 pt-3.5 pb-[18px] sm:justify-center">
-        {images.map((src, k) => (
-          <img
-            key={src}
-            src={src}
-            alt=""
-            onClick={() => go(k)}
-            className={
-              "h-16 w-24 shrink-0 cursor-pointer object-cover outline-3 -outline-offset-3 transition-opacity " +
-              (k === index ? "opacity-100 outline-[var(--c)]" : "opacity-45 outline-transparent hover:opacity-85")
-            }
+          <DraggableMarquee
+            items={items}
+            speed={0.6}
+            gapClassName="gap-4 md:gap-6"
+            itemClassName="rounded-[14px] overflow-hidden"
+            label={`${project.title}: фото. Тяни ленту или используй стрелки.`}
+            renderItem={(item: { src: string; alt?: string }, i: number) => (
+              <img
+                src={item.src}
+                alt={item.alt}
+                draggable={false}
+                onClick={(e) => isClick(e) && setZoom(i)}
+                className="block h-[min(58vh,620px)] w-auto cursor-zoom-in select-none object-cover max-sm:h-[46vh]"
+              />
+            )}
           />
-        ))}
+        </motion.div>
+
+        <div className="flex items-baseline justify-between px-5 text-[11px] font-medium uppercase tracking-[0.1em] text-white/40 md:px-10 md:text-[13px]">
+          <span>
+            {pad(images.length)} фото · {year}
+          </span>
+          <span className="hidden sm:inline">тяни ленту · нажми на фото</span>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {zoom !== null && <PhotoZoom images={images} start={zoom} title={project.title} onClose={() => setZoom(null)} />}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
+// Одно фото на весь экран, листается стрелками, свайпом и клавишами
+function PhotoZoom({ images, start, title, onClose }: { images: string[]; start: number; title: string; onClose: () => void }) {
+  const [[index, dir], setSlide] = useState<[number, number]>([start, 1])
+  const go = useCallback(
+    (step: number) => setSlide(([cur]) => [(cur + step + images.length) % images.length, step]),
+    [images.length],
+  )
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") go(-1)
+      if (e.key === "ArrowRight") go(1)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [go])
+
+  const touchX = useRef<number | null>(null)
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-60 flex items-center justify-center bg-graphite/95 backdrop-blur-sm"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={onClose}
+      onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
+      onTouchEnd={(e) => {
+        if (touchX.current === null) return
+        const dx = e.changedTouches[0].clientX - touchX.current
+        touchX.current = null
+        if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1)
+      }}
+    >
+      <AnimatePresence initial={false} custom={dir}>
+        <motion.img
+          key={index}
+          src={images[index]}
+          alt={`${title} — ${index + 1}`}
+          custom={dir}
+          variants={{
+            enter: (d: number) => ({ opacity: 0, x: `${d * 4}%`, scale: 1.03 }),
+            center: { opacity: 1, x: 0, scale: 1 },
+            exit: (d: number) => ({ opacity: 0, x: `${-d * 4}%`, scale: 1.03 }),
+          }}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ duration: 0.45, ease: [0.2, 0.7, 0.2, 1] }}
+          className="absolute inset-0 m-auto max-h-[calc(100%-96px)] max-w-[calc(100%-32px)] rounded-[14px] object-contain sm:max-w-[calc(100%-176px)]"
+          draggable={false}
+          onClick={(e) => e.stopPropagation()}
+        />
+      </AnimatePresence>
+
+      {(["prev", "next"] as const).map((side) => (
+        <button
+          key={side}
+          type="button"
+          aria-label={side === "prev" ? "Назад" : "Вперёд"}
+          onClick={(e) => {
+            e.stopPropagation()
+            go(side === "prev" ? -1 : 1)
+          }}
+          className={
+            "absolute inset-y-0 z-10 hidden w-[88px] text-3xl text-white/50 transition-colors hover:text-white sm:block " +
+            (side === "prev" ? "left-0" : "right-0")
+          }
+        >
+          {side === "prev" ? "←" : "→"}
+        </button>
+      ))}
+
+      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[13px] font-medium tracking-[0.1em] text-white/60 tabular-nums">
+        {pad(index + 1)} / {pad(images.length)}
+      </div>
+      <button
+        type="button"
+        aria-label="Закрыть фото"
+        onClick={onClose}
+        className="absolute top-0 right-0 z-10 size-16 bg-brand text-3xl text-white md:size-[72px]"
+      >
+        ×
+      </button>
     </motion.div>
   )
 }

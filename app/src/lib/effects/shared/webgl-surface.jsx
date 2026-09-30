@@ -39,7 +39,7 @@ export function WebGLSurface({ children, className, style, imageSrc, label = "Ob
   const supported = useSyncExternalStore(subscribeAvailability, supportsWebGL, () => false);
   const fallback = <div role="img" aria-label={label} className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: imageSrc ? `url(${JSON.stringify(imageSrc)})` : undefined }} />;
   return (
-    <div className={cn("relative isolate h-[28rem] w-full overflow-hidden bg-black", className)} style={{ containerType: "size", ...style }}>
+    <div className={cn("relative isolate h-[28rem] w-full overflow-hidden bg-graphite", className)} style={{ containerType: "size", ...style }}>
       {fallback}
       {supported && <SurfaceBoundary fallback={fallback}>{children}</SurfaceBoundary>}
     </div>

@@ -10,10 +10,11 @@ const defaultConfig = {
   cellSize: 0.75,
   zoomLevel: 1.25,
   lerpFactor: 0.075,
-  borderColor: "rgba(255, 255, 255, 0.15)",
-  backgroundColor: "rgba(0, 0, 0, 1)",
-  textColor: "rgba(128, 128, 128, 1)",
-  hoverColor: "rgba(255, 255, 255, 0)",
+  // Фирменный стиль STRUKTORUM: графит, линии сетки, синяя подсветка ячеек у курсора
+  borderColor: "rgba(255, 255, 255, 0.09)",
+  backgroundColor: "rgba(28, 28, 28, 1)",
+  textColor: "rgba(160, 160, 154, 1)",
+  hoverColor: "rgba(58, 62, 216, 0.55)",
 };
 
 const defaultItems = [
@@ -186,7 +187,8 @@ function createTextTexture(title, year, textColor) {
   const ctx = canvas.getContext("2d");
   if (ctx) {
     ctx.clearRect(0, 0, 2048, 256);
-    ctx.font = "64px monospace";
+    ctx.font = '500 56px "Unbounded", sans-serif';
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "3px";
     ctx.fillStyle = textColor;
     ctx.textBaseline = "middle";
     ctx.imageSmoothingEnabled = false;
@@ -441,6 +443,8 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       const replacement = loadedImages.find(Boolean) ?? blankTexture();
       const imageTiles = loadedImages.map((texture) => texture ?? replacement);
       loadedTextures.push(...new Set(imageTiles));
+      try { await document.fonts.load('500 56px "Unbounded"', "АБВ"); } catch {}
+      if (cancelled) return;
       const textTextures = items.map((item) => createTextTexture(item.title, item.year, defaultConfig.textColor));
       loadedTextures.push(...textTextures);
       imageAtlas = createTextureAtlas(imageTiles, false);
@@ -506,13 +510,13 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
     <div className="absolute inset-0 cursor-grab active:cursor-grabbing" style={{ touchAction: "none" }}>
       <div ref={containerRef} className="absolute inset-0" style={{ opacity: ready ? 1 : 0 }} />
       {!ready ? (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black text-white" role="status" aria-live="polite">
-          <LoaderGooeyBlobs />
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-graphite text-brand" role="status" aria-live="polite">
+          <LoaderGooeyBlobs color="#3A3ED8" />
         </div>
       ) : null}
       {ready && showHint ? (
-        <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/20">
-          drag to explore
+        <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.1em] text-white/35">
+          тяни сетку · нажми на проект
         </div>
       ) : null}
     </div>
@@ -538,7 +542,7 @@ export function ArtGallery({
   );
 
   return (
-    <WebGLSurface className={cn("bg-black", className)} style={style} label="ObsidianUI Art Gallery">
+    <WebGLSurface className={cn("bg-graphite", className)} style={style} label="ObsidianUI Art Gallery">
       <ArtGalleryScene
         images={tiles}
         items={captions}
