@@ -13,7 +13,7 @@ const defaultConfig = {
   // Фирменный стиль STRUKTORUM: графит, линии сетки, синяя подсветка ячеек у курсора
   borderColor: "rgba(255, 255, 255, 0.09)",
   backgroundColor: "rgba(28, 28, 28, 1)",
-  textColor: "rgba(160, 160, 154, 1)",
+  textColor: "rgba(236, 236, 230, 1)",
   hoverColor: "rgba(58, 62, 216, 0.55)",
 };
 
@@ -92,6 +92,8 @@ const fragmentShader = `
   uniform float uCellSize;
   uniform float uImageSize;
   uniform float uRadius;
+  uniform float uTextTop;
+  uniform float uTextH;
   uniform float uTextureCount;
   uniform sampler2D uImageAtlas;
   uniform sampler2D uTextAtlas;
@@ -132,19 +134,19 @@ const fragmentShader = `
     float gridX = smoothstep(0.0, lineWidth, cellUV.x) * smoothstep(0.0, lineWidth, 1.0 - cellUV.x);
     float gridY = smoothstep(0.0, lineWidth, cellUV.y) * smoothstep(0.0, lineWidth, 1.0 - cellUV.y);
     float gridMask = gridX * gridY;
+    // Сверху название (до двух строк), под ним картинка; оба выровнены по одному левому краю
     float imageSize = uImageSize;
-    float imageBorder = (1.0 - imageSize) * 0.5;
-    // Картинка чуть ниже центра, чтобы не наезжать на подпись сверху
-    vec2 imageUV = (cellUV - vec2(imageBorder, imageBorder - 0.02)) / imageSize;
+    float imageLeft = (1.0 - imageSize) * 0.5;
+    float textBottom = uTextTop - uTextH;
+    float imageBottom = textBottom - 0.025 - imageSize;
+    vec2 imageUV = vec2((cellUV.x - imageLeft) / imageSize, (cellUV.y - imageBottom) / imageSize);
     // Скруглённый прямоугольник (SDF), радиус в долях стороны картинки
     vec2 q = abs(imageUV - 0.5) - (0.5 - uRadius);
     float roundDist = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - uRadius;
     float edgeSmooth = 0.006;
     float imageAlpha = 1.0 - smoothstep(-edgeSmooth, edgeSmooth, roundDist);
     bool inImageArea = imageUV.x >= 0.0 && imageUV.x <= 1.0 && imageUV.y >= 0.0 && imageUV.y <= 1.0;
-    float textHeight = 0.08;
-    float textY = 0.88;
-    bool inTextArea = cellUV.x >= 0.05 && cellUV.x <= 0.95 && cellUV.y >= textY && cellUV.y <= (textY + textHeight);
+    bool inTextArea = cellUV.x >= imageLeft && cellUV.x <= imageLeft + imageSize && cellUV.y >= textBottom && cellUV.y <= uTextTop;
     float texIndex = mod(cellId.x + cellId.y * 3.0, uTextureCount);
     vec3 color = backgroundColor;
     if (inImageArea && imageAlpha > 0.0) {
@@ -156,8 +158,7 @@ const fragmentShader = `
       color = mix(color, imageColor, imageAlpha);
     }
     if (inTextArea) {
-      vec2 textCoord = vec2((cellUV.x - 0.05) / 0.9, (cellUV.y - textY) / textHeight);
-      textCoord.y = 1.0 - textCoord.y;
+      vec2 textCoord = vec2((cellUV.x - imageLeft) / imageSize, 1.0 - (cellUV.y - textBottom) / uTextH);
       float atlasSize = ceil(sqrt(uTextureCount));
       vec2 atlasPos = vec2(mod(texIndex, atlasSize), floor(texIndex / atlasSize));
       vec2 atlasUV = (atlasPos + textCoord) / atlasSize;
@@ -184,27 +185,49 @@ function rgbaToArray(rgba) {
   ];
 }
 
-function createTextTexture(title, year, textColor) {
+// Ширина текстуры названия в пикселях; высота — по пропорциям полосы названия в ячейке
+const TEXT_TEX_W = 768;
+
+function createTextTexture(title, textColor, band) {
   const canvas = document.createElement("canvas");
-  canvas.width = 2048;
-  canvas.height = 256;
+  canvas.width = TEXT_TEX_W;
+  canvas.height = Math.round((TEXT_TEX_W * band.h) / band.w);
   const ctx = canvas.getContext("2d");
   if (ctx) {
-    ctx.clearRect(0, 0, 2048, 256);
-    ctx.font = '500 56px "Unbounded", sans-serif';
-    if ("letterSpacing" in ctx) ctx.letterSpacing = "3px";
+    const W = canvas.width, H = canvas.height;
+    let size = (TEXT_TEX_W * band.text) / band.w;
+    const minSize = size * 0.6;
+    const words = String(title).toUpperCase().split(/\s+/);
+    // Раскладываем слова максимум на две строки; не влезает — уменьшаем кегль, в крайнем случае многоточие
+    const layout = () => {
+      ctx.font = `700 ${size}px "Unbounded", sans-serif`;
+      if ("letterSpacing" in ctx) ctx.letterSpacing = `${size * 0.04}px`;
+      const lines = [""];
+      for (const word of words) {
+        const next = lines[lines.length - 1] ? `${lines[lines.length - 1]} ${word}` : word;
+        if (ctx.measureText(next).width <= W) lines[lines.length - 1] = next;
+        else lines.push(word);
+      }
+      return lines;
+    };
+    let lines = layout();
+    while ((lines.length > 2 || lines.some((l) => ctx.measureText(l).width > W)) && size > minSize) {
+      size *= 0.92;
+      lines = layout();
+    }
+    if (lines.length > 2) lines = [lines[0], lines.slice(1).join(" ")];
+    lines = lines.map((l) => {
+      let t = l;
+      while (t.length > 1 && ctx.measureText(t).width > W) t = t.slice(0, -2) + "…";
+      return t;
+    });
+    ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = textColor;
-    ctx.textBaseline = "middle";
-    ctx.imageSmoothingEnabled = false;
-    const yearText = String(year);
-    const yearWidth = ctx.measureText(yearText).width;
-    let label = String(title).toUpperCase();
-    const maxWidth = 2048 - 60 - yearWidth - 60;
-    while (label.length > 1 && ctx.measureText(label).width > maxWidth) label = label.slice(0, -2) + "…";
     ctx.textAlign = "left";
-    ctx.fillText(label, 30, 128);
-    ctx.textAlign = "right";
-    ctx.fillText(yearText, 2048 - 30, 128);
+    ctx.textBaseline = "bottom";
+    // Строки прижаты к низу полосы, то есть к картинке
+    const lineH = size * 1.2;
+    lines.forEach((line, i) => ctx.fillText(line, 0, H - (lines.length - 1 - i) * lineH));
   }
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.ClampToEdgeWrapping;
@@ -259,8 +282,12 @@ function loadImageTexture(src) {
 function createTextureAtlas(textures, isText = false) {
   const atlasSize = Math.ceil(Math.sqrt(textures.length));
   const textureSize = 512;
+  const first = textures[0]?.image;
+  const cellW = isText && first ? first.width : textureSize;
+  const cellH = isText && first ? first.height : textureSize;
   const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = atlasSize * textureSize;
+  canvas.width = atlasSize * cellW;
+  canvas.height = atlasSize * cellH;
   const ctx = canvas.getContext("2d");
   if (ctx) {
     if (isText) ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -271,14 +298,15 @@ function createTextureAtlas(textures, isText = false) {
     const fallback = textures.find((texture) => texture.source?.data ?? texture.image);
     const fallbackSource = fallback?.source?.data ?? fallback?.image;
     textures.forEach((texture, index) => {
-      const x = (index % atlasSize) * textureSize;
-      const y = Math.floor(index / atlasSize) * textureSize;
+      const x = (index % atlasSize) * cellW;
+      const y = Math.floor(index / atlasSize) * cellH;
       const src = texture.source?.data ?? texture.image;
       if (!src) return;
       const sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height;
       const side = isText ? 0 : Math.min(sw, sh);
       try {
-        if (isText || !side) ctx.drawImage(src, x, y, textureSize, textureSize);
+        if (isText) ctx.drawImage(src, x, y, cellW, cellH);
+        else if (!side) ctx.drawImage(src, x, y, textureSize, textureSize);
         else ctx.drawImage(src, (sw - side) / 2, (sh - side) / 2, side, side, x, y, textureSize, textureSize);
       }
       catch {
@@ -289,17 +317,25 @@ function createTextureAtlas(textures, isText = false) {
   const atlasTexture = new THREE.CanvasTexture(canvas);
   atlasTexture.wrapS = THREE.ClampToEdgeWrapping;
   atlasTexture.wrapT = THREE.ClampToEdgeWrapping;
-  atlasTexture.minFilter = THREE.LinearFilter;
+  atlasTexture.minFilter = isText ? THREE.LinearMipmapLinearFilter : THREE.LinearFilter;
+  atlasTexture.generateMipmaps = isText;
   atlasTexture.magFilter = THREE.LinearFilter;
   atlasTexture.flipY = false;
   return atlasTexture;
 }
 
-function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reducedMotion, onSelect, imageSize, imageRadius, drift }) {
+function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reducedMotion, onSelect, imageSize, imageRadius, textSize, drift }) {
   const containerRef = useRef(null);
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
   const [ready, setReady] = useState(false);
+  // Подсказка видна только в начале: гаснет после первого касания или через 6 секунд
+  const [hint, setHint] = useState(true);
+  useEffect(() => {
+    if (!ready) return;
+    const t = setTimeout(() => setHint(false), 6000);
+    return () => clearTimeout(t);
+  }, [ready]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -346,6 +382,12 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
     renderer.domElement.style.height = "100%";
     renderer.domElement.style.touchAction = "none";
     container.appendChild(renderer.domElement);
+
+    // Полоса названия: две строки кеглем textSize (в долях ячейки), ширина = ширине картинки.
+    // Блок «название + зазор + картинка» центрируем по вертикали
+    const textH = textSize * 1.2 * 2;
+    const blockH = textH + 0.025 + imageSize;
+    const textBand = { w: imageSize, h: textH, text: textSize, top: 1 - (1 - blockH) / 2 };
 
     const lerpFactor = reducedMotion ? 1 : defaultConfig.lerpFactor;
     const dragZoom = reducedMotion ? 1 : zoomLevel;
@@ -490,9 +532,9 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       const replacement = loadedImages.find(Boolean) ?? blankTexture();
       const imageTiles = loadedImages.map((texture) => texture ?? replacement);
       loadedTextures.push(...new Set(imageTiles));
-      try { await document.fonts.load('500 56px "Unbounded"', "АБВ"); } catch {}
+      try { await document.fonts.load('700 56px "Unbounded"', "АБВ"); } catch {}
       if (cancelled) return;
-      const textTextures = items.map((item) => createTextTexture(item.title, item.year, defaultConfig.textColor));
+      const textTextures = items.map((item) => createTextTexture(item.title, defaultConfig.textColor, textBand));
       loadedTextures.push(...textTextures);
       imageAtlas = createTextureAtlas(imageTiles, false);
       textAtlas = createTextureAtlas(textTextures, true);
@@ -508,6 +550,8 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
         uZoom: { value: 1 },
         uCellSize: { value: cellSize },
         uImageSize: { value: imageSize },
+        uTextTop: { value: textBand.top },
+        uTextH: { value: textBand.h },
         uRadius: { value: imageRadius },
         uTextureCount: { value: images.length },
         uImageAtlas: { value: imageAtlas },
@@ -555,10 +599,10 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       renderer?.dispose();
       if (renderer?.domElement?.parentNode === container) container.removeChild(renderer.domElement);
     };
-  }, [images, items, cellSize, zoomLevel, reducedMotion, imageSize, imageRadius, drift]);
+  }, [images, items, cellSize, zoomLevel, reducedMotion, imageSize, imageRadius, textSize, drift]);
 
   return (
-    <div className="absolute inset-0 cursor-grab active:cursor-grabbing" style={{ touchAction: "none" }}>
+    <div className="absolute inset-0 cursor-grab active:cursor-grabbing" style={{ touchAction: "none" }} onPointerDown={() => setHint(false)}>
       <div ref={containerRef} className="absolute inset-0" style={{ opacity: ready ? 1 : 0 }} />
       {!ready ? (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-graphite text-brand" role="status" aria-live="polite">
@@ -566,7 +610,10 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
         </div>
       ) : null}
       {ready && showHint ? (
-        <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.1em] text-white/35">
+        <div
+          className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-graphite/80 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.1em] text-white/60 transition-opacity duration-700"
+          style={{ opacity: hint ? 1 : 0 }}
+        >
           тяни сетку · нажми на проект
         </div>
       ) : null}
@@ -574,7 +621,7 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
   );
 }
 
-/** @param {{ images?: string[], items?: { title: string, year: string | number }[], cellSize?: number, zoomLevel?: number, showHint?: boolean, onSelect?: (index: number) => void, imageSize?: number, imageRadius?: number, drift?: [number, number], className?: string, style?: import("react").CSSProperties }} props */
+/** @param {{ images?: string[], items?: { title: string, year: string | number }[], cellSize?: number, zoomLevel?: number, showHint?: boolean, onSelect?: (index: number) => void, imageSize?: number, imageRadius?: number, textSize?: number, drift?: [number, number], className?: string, style?: import("react").CSSProperties }} props */
 export function ArtGallery({
   images = defaultImages,
   items = defaultItems,
@@ -583,6 +630,7 @@ export function ArtGallery({
   showHint = true,
   imageSize = 0.6,
   imageRadius = 0.035,
+  textSize = 0.05,
   drift,
   onSelect,
   className,
@@ -607,6 +655,7 @@ export function ArtGallery({
         onSelect={onSelect}
         imageSize={imageSize}
         imageRadius={imageRadius}
+        textSize={textSize}
         drift={drift}
       />
     </WebGLSurface>

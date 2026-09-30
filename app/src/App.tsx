@@ -8,8 +8,8 @@ import { captions, covers, projects } from "@/data/projects"
 // Ячейка галереи задаётся в долях высоты экрана: на вертикальном телефоне делаем её мельче,
 // чтобы в ширину помещалось хотя бы две плитки. Там же картинки крупнее и сетка сама медленно плывёт.
 const isPortrait = () => window.innerWidth / window.innerHeight < 0.8
-const MOBILE = { cellSize: 0.42, imageSize: 0.74, drift: [0.0009, 0.0004] as [number, number] }
-const DESKTOP = { cellSize: 0.75, imageSize: 0.64, drift: undefined }
+const MOBILE = { cellSize: 0.42, imageSize: 0.7, textSize: 0.075, drift: [0.0009, 0.0004] as [number, number] }
+const DESKTOP = { cellSize: 0.75, imageSize: 0.64, textSize: 0.05, drift: undefined }
 
 export default function App() {
   const [open, setOpen] = useState<number | null>(null)
@@ -37,6 +37,7 @@ export default function App() {
         items={captions}
         cellSize={layout.cellSize}
         imageSize={layout.imageSize}
+        textSize={layout.textSize}
         drift={layout.drift}
         onSelect={setOpen}
         className="h-auto min-h-0 flex-1"
