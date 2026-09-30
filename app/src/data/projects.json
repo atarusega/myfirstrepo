@@ -9,17 +9,19 @@
     "date": "2026-08-25",
     "url": "https://t.me/struktorum/444",
     "images": [
-      "assets/images/444/01.jpg",
-      "assets/images/444/02.jpg",
-      "assets/images/444/03.jpg",
-      "assets/images/444/04.jpg",
-      "assets/images/444/05.jpg",
-      "assets/images/444/06.jpg",
-      "assets/images/444/07.jpg",
-      "assets/images/444/08.jpg",
-      "assets/images/444/09.jpg",
-      "assets/images/444/10.jpg"
-    ]
+      "images/444/01.jpg",
+      "images/444/02.jpg",
+      "images/444/03.jpg",
+      "images/444/04.jpg",
+      "images/444/05.jpg",
+      "images/444/06.jpg",
+      "images/444/07.jpg",
+      "images/444/08.jpg",
+      "images/444/09.jpg",
+      "images/444/10.jpg"
+    ],
+    "color": "#d99260",
+    "textColor": "#111111"
   },
   {
     "id": 437,
@@ -30,14 +32,16 @@
     "date": "2026-08-12",
     "url": "https://t.me/struktorum/437",
     "images": [
-      "assets/images/437/01.jpg",
-      "assets/images/437/02.jpg",
-      "assets/images/437/03.jpg",
-      "assets/images/437/04.jpg",
-      "assets/images/437/05.jpg",
-      "assets/images/437/06.jpg",
-      "assets/images/437/07.jpg"
-    ]
+      "images/437/01.jpg",
+      "images/437/02.jpg",
+      "images/437/03.jpg",
+      "images/437/04.jpg",
+      "images/437/05.jpg",
+      "images/437/06.jpg",
+      "images/437/07.jpg"
+    ],
+    "color": "#d9a734",
+    "textColor": "#111111"
   },
   {
     "id": 428,
@@ -49,15 +53,17 @@
     "date": "2026-06-25",
     "url": "https://t.me/struktorum/428",
     "images": [
-      "assets/images/428/01.jpg",
-      "assets/images/428/02.jpg",
-      "assets/images/428/03.jpg",
-      "assets/images/428/04.jpg",
-      "assets/images/428/05.jpg",
-      "assets/images/428/06.jpg",
-      "assets/images/428/07.jpg",
-      "assets/images/428/08.jpg"
-    ]
+      "images/428/01.jpg",
+      "images/428/02.jpg",
+      "images/428/03.jpg",
+      "images/428/04.jpg",
+      "images/428/05.jpg",
+      "images/428/06.jpg",
+      "images/428/07.jpg",
+      "images/428/08.jpg"
+    ],
+    "color": "#94d959",
+    "textColor": "#111111"
   },
   {
     "id": 420,
@@ -69,15 +75,17 @@
     "date": "2026-06-19",
     "url": "https://t.me/struktorum/420",
     "images": [
-      "assets/images/420/01.jpg",
-      "assets/images/420/02.jpg",
-      "assets/images/420/03.jpg",
-      "assets/images/420/04.jpg",
-      "assets/images/420/05.jpg",
-      "assets/images/420/06.jpg",
-      "assets/images/420/07.jpg",
-      "assets/images/420/08.jpg"
-    ]
+      "images/420/01.jpg",
+      "images/420/02.jpg",
+      "images/420/03.jpg",
+      "images/420/04.jpg",
+      "images/420/05.jpg",
+      "images/420/06.jpg",
+      "images/420/07.jpg",
+      "images/420/08.jpg"
+    ],
+    "color": "#3c4fd9",
+    "textColor": "#ffffff"
   },
   {
     "id": 411,
@@ -89,16 +97,18 @@
     "date": "2026-06-09",
     "url": "https://t.me/struktorum/411",
     "images": [
-      "assets/images/411/01.jpg",
-      "assets/images/411/02.jpg",
-      "assets/images/411/03.jpg",
-      "assets/images/411/04.jpg",
-      "assets/images/411/05.jpg",
-      "assets/images/411/06.jpg",
-      "assets/images/411/07.jpg",
-      "assets/images/411/08.jpg",
-      "assets/images/411/09.jpg"
-    ]
+      "images/411/01.jpg",
+      "images/411/02.jpg",
+      "images/411/03.jpg",
+      "images/411/04.jpg",
+      "images/411/05.jpg",
+      "images/411/06.jpg",
+      "images/411/07.jpg",
+      "images/411/08.jpg",
+      "images/411/09.jpg"
+    ],
+    "color": "#d99d37",
+    "textColor": "#111111"
   },
   {
     "id": 401,
@@ -110,17 +120,19 @@
     "date": "2026-05-29",
     "url": "https://t.me/struktorum/401",
     "images": [
-      "assets/images/401/01.jpg",
-      "assets/images/401/02.jpg",
-      "assets/images/401/03.jpg",
-      "assets/images/401/04.jpg",
-      "assets/images/401/05.jpg",
-      "assets/images/401/06.jpg",
-      "assets/images/401/07.jpg",
-      "assets/images/401/08.jpg",
-      "assets/images/401/09.jpg",
-      "assets/images/401/10.jpg"
-    ]
+      "images/401/01.jpg",
+      "images/401/02.jpg",
+      "images/401/03.jpg",
+      "images/401/04.jpg",
+      "images/401/05.jpg",
+      "images/401/06.jpg",
+      "images/401/07.jpg",
+      "images/401/08.jpg",
+      "images/401/09.jpg",
+      "images/401/10.jpg"
+    ],
+    "color": "#d9b239",
+    "textColor": "#111111"
   },
   {
     "id": 380,
@@ -133,16 +145,18 @@
     "date": "2026-03-06",
     "url": "https://t.me/struktorum/380",
     "images": [
-      "assets/images/380/01.jpg",
-      "assets/images/380/02.jpg",
-      "assets/images/380/03.jpg",
-      "assets/images/380/04.jpg",
-      "assets/images/380/05.jpg",
-      "assets/images/380/06.jpg",
-      "assets/images/380/07.jpg",
-      "assets/images/380/08.jpg",
-      "assets/images/380/09.jpg"
-    ]
+      "images/380/01.jpg",
+      "images/380/02.jpg",
+      "images/380/03.jpg",
+      "images/380/04.jpg",
+      "images/380/05.jpg",
+      "images/380/06.jpg",
+      "images/380/07.jpg",
+      "images/380/08.jpg",
+      "images/380/09.jpg"
+    ],
+    "color": "#62a1d9",
+    "textColor": "#111111"
   },
   {
     "id": 357,
@@ -154,17 +168,19 @@
     "date": "2026-01-28",
     "url": "https://t.me/struktorum/357",
     "images": [
-      "assets/images/357/01.jpg",
-      "assets/images/357/02.jpg",
-      "assets/images/357/03.jpg",
-      "assets/images/357/04.jpg",
-      "assets/images/357/05.jpg",
-      "assets/images/357/06.jpg",
-      "assets/images/357/07.jpg",
-      "assets/images/357/08.jpg",
-      "assets/images/357/09.jpg",
-      "assets/images/357/10.jpg"
-    ]
+      "images/357/01.jpg",
+      "images/357/02.jpg",
+      "images/357/03.jpg",
+      "images/357/04.jpg",
+      "images/357/05.jpg",
+      "images/357/06.jpg",
+      "images/357/07.jpg",
+      "images/357/08.jpg",
+      "images/357/09.jpg",
+      "images/357/10.jpg"
+    ],
+    "color": "#d9626e",
+    "textColor": "#ffffff"
   },
   {
     "id": 342,
@@ -177,17 +193,19 @@
     "date": "2026-01-16",
     "url": "https://t.me/struktorum/342",
     "images": [
-      "assets/images/342/01.jpg",
-      "assets/images/342/02.jpg",
-      "assets/images/342/03.jpg",
-      "assets/images/342/04.jpg",
-      "assets/images/342/05.jpg",
-      "assets/images/342/06.jpg",
-      "assets/images/342/07.jpg",
-      "assets/images/342/08.jpg",
-      "assets/images/342/09.jpg",
-      "assets/images/342/10.jpg"
-    ]
+      "images/342/01.jpg",
+      "images/342/02.jpg",
+      "images/342/03.jpg",
+      "images/342/04.jpg",
+      "images/342/05.jpg",
+      "images/342/06.jpg",
+      "images/342/07.jpg",
+      "images/342/08.jpg",
+      "images/342/09.jpg",
+      "images/342/10.jpg"
+    ],
+    "color": "#a162d9",
+    "textColor": "#ffffff"
   },
   {
     "id": 337,
@@ -199,12 +217,14 @@
     "date": "2026-01-13",
     "url": "https://t.me/struktorum/337",
     "images": [
-      "assets/images/337/01.jpg",
-      "assets/images/337/02.jpg",
-      "assets/images/337/03.jpg",
-      "assets/images/337/04.jpg",
-      "assets/images/337/05.jpg"
-    ]
+      "images/337/01.jpg",
+      "images/337/02.jpg",
+      "images/337/03.jpg",
+      "images/337/04.jpg",
+      "images/337/05.jpg"
+    ],
+    "color": "#5f50d9",
+    "textColor": "#ffffff"
   },
   {
     "id": 329,
@@ -216,15 +236,17 @@
     "date": "2026-01-11",
     "url": "https://t.me/struktorum/329",
     "images": [
-      "assets/images/329/01.jpg",
-      "assets/images/329/02.jpg",
-      "assets/images/329/03.jpg",
-      "assets/images/329/04.jpg",
-      "assets/images/329/05.jpg",
-      "assets/images/329/06.jpg",
-      "assets/images/329/07.jpg",
-      "assets/images/329/08.jpg"
-    ]
+      "images/329/01.jpg",
+      "images/329/02.jpg",
+      "images/329/03.jpg",
+      "images/329/04.jpg",
+      "images/329/05.jpg",
+      "images/329/06.jpg",
+      "images/329/07.jpg",
+      "images/329/08.jpg"
+    ],
+    "color": "#b7d95e",
+    "textColor": "#111111"
   },
   {
     "id": 320,
@@ -237,16 +259,18 @@
     "date": "2026-01-08",
     "url": "https://t.me/struktorum/320",
     "images": [
-      "assets/images/320/01.jpg",
-      "assets/images/320/02.jpg",
-      "assets/images/320/03.jpg",
-      "assets/images/320/04.jpg",
-      "assets/images/320/05.jpg",
-      "assets/images/320/06.jpg",
-      "assets/images/320/07.jpg",
-      "assets/images/320/08.jpg",
-      "assets/images/320/09.jpg"
-    ]
+      "images/320/01.jpg",
+      "images/320/02.jpg",
+      "images/320/03.jpg",
+      "images/320/04.jpg",
+      "images/320/05.jpg",
+      "images/320/06.jpg",
+      "images/320/07.jpg",
+      "images/320/08.jpg",
+      "images/320/09.jpg"
+    ],
+    "color": "#d9bf5b",
+    "textColor": "#111111"
   },
   {
     "id": 242,
@@ -261,17 +285,19 @@
     "date": "2025-10-10",
     "url": "https://t.me/struktorum/242",
     "images": [
-      "assets/images/242/01.jpg",
-      "assets/images/242/02.jpg",
-      "assets/images/242/03.jpg",
-      "assets/images/242/04.jpg",
-      "assets/images/242/05.jpg",
-      "assets/images/242/06.jpg",
-      "assets/images/242/07.jpg",
-      "assets/images/242/08.jpg",
-      "assets/images/242/09.jpg",
-      "assets/images/242/10.jpg"
-    ]
+      "images/242/01.jpg",
+      "images/242/02.jpg",
+      "images/242/03.jpg",
+      "images/242/04.jpg",
+      "images/242/05.jpg",
+      "images/242/06.jpg",
+      "images/242/07.jpg",
+      "images/242/08.jpg",
+      "images/242/09.jpg",
+      "images/242/10.jpg"
+    ],
+    "color": "#d9a34f",
+    "textColor": "#111111"
   },
   {
     "id": 216,
@@ -285,14 +311,16 @@
     "date": "2025-09-03",
     "url": "https://t.me/struktorum/216",
     "images": [
-      "assets/images/216/01.jpg",
-      "assets/images/216/02.jpg",
-      "assets/images/216/03.jpg",
-      "assets/images/216/04.jpg",
-      "assets/images/216/05.jpg",
-      "assets/images/216/06.jpg",
-      "assets/images/216/07.jpg"
-    ]
+      "images/216/01.jpg",
+      "images/216/02.jpg",
+      "images/216/03.jpg",
+      "images/216/04.jpg",
+      "images/216/05.jpg",
+      "images/216/06.jpg",
+      "images/216/07.jpg"
+    ],
+    "color": "#d962d8",
+    "textColor": "#111111"
   },
   {
     "id": 193,
@@ -305,15 +333,17 @@
     "date": "2025-07-20",
     "url": "https://t.me/struktorum/193",
     "images": [
-      "assets/images/193/01.jpg",
-      "assets/images/193/02.jpg",
-      "assets/images/193/03.jpg",
-      "assets/images/193/04.jpg",
-      "assets/images/193/05.jpg",
-      "assets/images/193/06.jpg",
-      "assets/images/193/07.jpg",
-      "assets/images/193/08.jpg"
-    ]
+      "images/193/01.jpg",
+      "images/193/02.jpg",
+      "images/193/03.jpg",
+      "images/193/04.jpg",
+      "images/193/05.jpg",
+      "images/193/06.jpg",
+      "images/193/07.jpg",
+      "images/193/08.jpg"
+    ],
+    "color": "#b5d962",
+    "textColor": "#111111"
   },
   {
     "id": 185,
@@ -326,15 +356,17 @@
     "date": "2025-07-17",
     "url": "https://t.me/struktorum/185",
     "images": [
-      "assets/images/185/01.jpg",
-      "assets/images/185/02.jpg",
-      "assets/images/185/03.jpg",
-      "assets/images/185/04.jpg",
-      "assets/images/185/05.jpg",
-      "assets/images/185/06.jpg",
-      "assets/images/185/07.jpg",
-      "assets/images/185/08.jpg"
-    ]
+      "images/185/01.jpg",
+      "images/185/02.jpg",
+      "images/185/03.jpg",
+      "images/185/04.jpg",
+      "images/185/05.jpg",
+      "images/185/06.jpg",
+      "images/185/07.jpg",
+      "images/185/08.jpg"
+    ],
+    "color": "#d9c543",
+    "textColor": "#111111"
   },
   {
     "id": 180,
@@ -348,12 +380,14 @@
     "date": "2025-07-07",
     "url": "https://t.me/struktorum/180",
     "images": [
-      "assets/images/180/01.jpg",
-      "assets/images/180/02.jpg",
-      "assets/images/180/03.jpg",
-      "assets/images/180/04.jpg",
-      "assets/images/180/05.jpg"
-    ]
+      "images/180/01.jpg",
+      "images/180/02.jpg",
+      "images/180/03.jpg",
+      "images/180/04.jpg",
+      "images/180/05.jpg"
+    ],
+    "color": "#62b5d9",
+    "textColor": "#111111"
   },
   {
     "id": 171,
@@ -366,15 +400,17 @@
     "date": "2025-06-23",
     "url": "https://t.me/struktorum/171",
     "images": [
-      "assets/images/171/01.jpg",
-      "assets/images/171/02.jpg",
-      "assets/images/171/03.jpg",
-      "assets/images/171/04.jpg",
-      "assets/images/171/05.jpg",
-      "assets/images/171/06.jpg",
-      "assets/images/171/07.jpg",
-      "assets/images/171/08.jpg"
-    ]
+      "images/171/01.jpg",
+      "images/171/02.jpg",
+      "images/171/03.jpg",
+      "images/171/04.jpg",
+      "images/171/05.jpg",
+      "images/171/06.jpg",
+      "images/171/07.jpg",
+      "images/171/08.jpg"
+    ],
+    "color": "#d962bf",
+    "textColor": "#111111"
   },
   {
     "id": 164,
@@ -389,13 +425,15 @@
     "date": "2025-06-20",
     "url": "https://t.me/struktorum/164",
     "images": [
-      "assets/images/164/01.jpg",
-      "assets/images/164/02.jpg",
-      "assets/images/164/03.jpg",
-      "assets/images/164/04.jpg",
-      "assets/images/164/05.jpg",
-      "assets/images/164/06.jpg"
-    ]
+      "images/164/01.jpg",
+      "images/164/02.jpg",
+      "images/164/03.jpg",
+      "images/164/04.jpg",
+      "images/164/05.jpg",
+      "images/164/06.jpg"
+    ],
+    "color": "#d97162",
+    "textColor": "#111111"
   },
   {
     "id": 110,
@@ -409,13 +447,15 @@
     "date": "2025-03-25",
     "url": "https://t.me/struktorum/110",
     "images": [
-      "assets/images/110/01.jpg",
-      "assets/images/110/02.jpg",
-      "assets/images/110/03.jpg",
-      "assets/images/110/04.jpg",
-      "assets/images/110/05.jpg",
-      "assets/images/110/06.jpg"
-    ]
+      "images/110/01.jpg",
+      "images/110/02.jpg",
+      "images/110/03.jpg",
+      "images/110/04.jpg",
+      "images/110/05.jpg",
+      "images/110/06.jpg"
+    ],
+    "color": "#6274d9",
+    "textColor": "#ffffff"
   },
   {
     "id": 65,
@@ -430,11 +470,13 @@
     "date": "2025-02-11",
     "url": "https://t.me/struktorum/65",
     "images": [
-      "assets/images/65/01.jpg",
-      "assets/images/65/02.jpg",
-      "assets/images/65/03.jpg",
-      "assets/images/65/04.jpg",
-      "assets/images/65/05.jpg"
-    ]
+      "images/65/01.jpg",
+      "images/65/02.jpg",
+      "images/65/03.jpg",
+      "images/65/04.jpg",
+      "images/65/05.jpg"
+    ],
+    "color": "#d92975",
+    "textColor": "#ffffff"
   }
 ]

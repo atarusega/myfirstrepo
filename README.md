@@ -1,18 +1,26 @@
-# STRUKTORUM — портфолио (MVP)
+# STRUKTORUM — портфолио
 
-Минималистичный брутальный сайт-портфолио. Статика без сборки: `index.html` + `assets/style.css`.
+Сайт-портфолио Никиты Климова: 3D-визуализация событийных пространств.
+Опубликован на https://struktorum.space (GitHub Pages).
 
-## Структура
+## Как устроено
 
-- `index.html` — вся разметка (hero, работы, о нас, контакты)
-- `assets/style.css` — стили
-- `assets/images/` — фото проектов
+- `app/` — React + Vite + Tailwind. Главная — бесконечная WebGL-галерея
+  (`app/src/components/block/art-gallery.jsx`, основа — ObsidianUI Art Gallery),
+  клик по плитке открывает просмотр проекта (`app/src/components/project-viewer.tsx`).
+- `app/src/data/projects.json` — проекты: название, фото, цвет подписи.
+- `app/public/images/<id>/` — фото проектов.
+- `tools/sync_telegram.py` — тянет посты из t.me/struktorum, качает фото
+  и пересобирает `projects.json`. Новый проект — добавить id поста в `POSTS`.
 
-## Проекты
+## Команды
 
-1. **Сбер × Фесты '26** — реальный кейс, добавлен
-2. **№ 02, № 03** — заглушки, ждут контент
+```bash
+python tools/sync_telegram.py   # обновить проекты из Telegram
+cd app && npm install           # один раз
+npm run dev                     # локально, http://localhost:5173
+npm run build                   # сборка в app/dist
+```
 
-## Как открыть
-
-Просто открыть `index.html` в браузере, либо поднять статику любым сервером (`python3 -m http.server`).
+Публикация автоматическая: пуш в `claude/portfolio-site-mvp-suuwg4` запускает
+`.github/workflows/deploy.yml`, который собирает `app/` и выкладывает на Pages.

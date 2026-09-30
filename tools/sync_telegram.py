@@ -1,10 +1,13 @@
-"""Тянет посты канала t.me/struktorum, качает фото в assets/images/<id>/,
-пишет projects.json и пересобирает блок работ в index.html.
+"""Тянет посты канала t.me/struktorum, качает фото в app/public/images/<id>/
+и пишет app/src/data/projects.json для React-сайта.
 Запуск: python tools/sync_telegram.py"""
 import html, json, re, urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+APP = ROOT / "app"
+IMAGES = APP / "public" / "images"
+DATA = APP / "src" / "data" / "projects.json"
 CHANNEL = "struktorum"
 # Порядок = порядок на сайте. 443 — дубль 437, 378 — дубль 380 (T-Sync), их не берём.
 POSTS = [444, 437, 428, 420, 411, 401, 380, 357, 342, 337, 329, 320, 242, 216,
@@ -25,7 +28,7 @@ def accent(path):
     from PIL import Image
     im = Image.open(path).convert("RGB").resize((48, 48))
     acc = [0, 0, 0]; w = 0
-    for r, g, b in im.getdata():
+    for r, g, b in im.get_flattened_data():
         h, sat, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
         wt = sat * sat * v if 0.25 < v < 0.98 else 0
         acc[0] += r * wt; acc[1] += g * wt; acc[2] += b * wt; w += wt
@@ -35,7 +38,8 @@ def accent(path):
     h, sat, v = colorsys.rgb_to_hsv(r, g, b)
     r, g, b = colorsys.hsv_to_rgb(h, min(1, max(sat, 0.55)), min(1, max(v, 0.85)))
     lum = 0.299 * r + 0.587 * g + 0.114 * b
-    return "#%02x%02x%02x" % (round(r * 255), round(g * 255), round(b * 255)),         "#111111" if lum > 0.55 else "#ffffff"
+    return ("#%02x%02x%02x" % (round(r * 255), round(g * 255), round(b * 255)),
+            "#111111" if lum > 0.55 else "#ffffff")
 
 def get(url):
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -59,37 +63,20 @@ def main():
     projects = []
     for pid in POSTS:
         p = parse(pid)
-        folder = ROOT / "assets" / "images" / str(pid)
+        folder = IMAGES / str(pid)
         folder.mkdir(parents=True, exist_ok=True)
         files = []
         for i, u in enumerate(p.pop("photos"), 1):
             f = folder / f"{i:02d}.jpg"
             if not f.exists():
                 f.write_bytes(get(u))
-            files.append(f"assets/images/{pid}/{f.name}")
+            files.append(f"images/{pid}/{f.name}")
         p["images"] = files
+        p["color"], p["textColor"] = accent(folder / "01.jpg")
         projects.append(p)
         print(pid, p["title"], len(files))
-    (ROOT / "projects.json").write_text(
-        json.dumps(projects, ensure_ascii=False, indent=2), encoding="utf-8")
-
-    esc = html.escape
-    blocks = []
-    for p in projects:
-        im = p["images"]
-        t = esc(p["title"])
-        bg, fg = accent(ROOT / im[0])
-        blocks.append(chr(10).join([
-            '    <a class="tile" href="%s" data-title="%s" data-images="%s" style="--c:%s;--t:%s">' % (p["url"], t, esc("|".join(im)), bg, fg),
-            '      <img src="%s" alt="%s" loading="lazy">' % (im[0], t),
-            '      <span class="tile-title">%s</span>' % t,
-            '    </a>']))
-    idx = ROOT / "index.html"
-    src = idx.read_text(encoding="utf-8")
-    new = re.sub(r'(<section id="work" class="grid">).*?(</section>)',
-                 lambda m: m.group(1) + "\n\n" + "\n\n".join(blocks) + "\n\n  " + m.group(2),
-                 src, count=1, flags=re.S)
-    idx.write_text(new, encoding="utf-8")
+    DATA.parent.mkdir(parents=True, exist_ok=True)
+    DATA.write_text(json.dumps(projects, ensure_ascii=False, indent=2), encoding="utf-8")
 
 if __name__ == "__main__":
     main()
