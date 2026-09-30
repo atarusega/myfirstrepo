@@ -90,6 +90,8 @@ const fragmentShader = `
   uniform vec2 uMousePos;
   uniform float uZoom;
   uniform float uCellSize;
+  uniform float uImageSize;
+  uniform float uRadius;
   uniform float uTextureCount;
   uniform sampler2D uImageAtlas;
   uniform sampler2D uTextAtlas;
@@ -130,13 +132,15 @@ const fragmentShader = `
     float gridX = smoothstep(0.0, lineWidth, cellUV.x) * smoothstep(0.0, lineWidth, 1.0 - cellUV.x);
     float gridY = smoothstep(0.0, lineWidth, cellUV.y) * smoothstep(0.0, lineWidth, 1.0 - cellUV.y);
     float gridMask = gridX * gridY;
-    float imageSize = 0.6;
+    float imageSize = uImageSize;
     float imageBorder = (1.0 - imageSize) * 0.5;
-    vec2 imageUV = (cellUV - imageBorder) / imageSize;
-    float edgeSmooth = 0.01;
-    vec2 imageMask = smoothstep(-edgeSmooth, edgeSmooth, imageUV) *
-                    smoothstep(-edgeSmooth, edgeSmooth, 1.0 - imageUV);
-    float imageAlpha = imageMask.x * imageMask.y;
+    // Картинка чуть ниже центра, чтобы не наезжать на подпись сверху
+    vec2 imageUV = (cellUV - vec2(imageBorder, imageBorder - 0.02)) / imageSize;
+    // Скруглённый прямоугольник (SDF), радиус в долях стороны картинки
+    vec2 q = abs(imageUV - 0.5) - (0.5 - uRadius);
+    float roundDist = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - uRadius;
+    float edgeSmooth = 0.006;
+    float imageAlpha = 1.0 - smoothstep(-edgeSmooth, edgeSmooth, roundDist);
     bool inImageArea = imageUV.x >= 0.0 && imageUV.x <= 1.0 && imageUV.y >= 0.0 && imageUV.y <= 1.0;
     float textHeight = 0.08;
     float textY = 0.88;
@@ -291,7 +295,7 @@ function createTextureAtlas(textures, isText = false) {
   return atlasTexture;
 }
 
-function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reducedMotion, onSelect }) {
+function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reducedMotion, onSelect, imageSize, imageRadius, drift }) {
   const containerRef = useRef(null);
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
@@ -323,6 +327,9 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       mousePosition: { x: -1, y: -1 },
       zoom: 1,
       targetZoom: 1,
+      // Инерция после броска: скорость в мировых единицах за кадр (60 fps)
+      velocity: { x: 0, y: 0 },
+      lastMoveTime: 0,
     };
 
     const scene = new THREE.Scene();
@@ -343,8 +350,25 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
     const lerpFactor = reducedMotion ? 1 : defaultConfig.lerpFactor;
     const dragZoom = reducedMotion ? 1 : zoomLevel;
 
+    let lastFrame = performance.now();
     const animate = () => {
       animFrameId = requestAnimationFrame(animate);
+      const now = performance.now();
+      const k = Math.min((now - lastFrame) / 16.667, 4); // доля кадра 60 fps
+      lastFrame = now;
+      if (!state.isDragging && !reducedMotion) {
+        // Сетка катится по инерции и плавно гаснет
+        state.targetOffset.x += state.velocity.x * k;
+        state.targetOffset.y += state.velocity.y * k;
+        const friction = Math.pow(0.95, k);
+        state.velocity.x *= friction;
+        state.velocity.y *= friction;
+        // Медленный собственный дрейф (включается на телефоне)
+        if (drift) {
+          state.targetOffset.x += drift[0] * k;
+          state.targetOffset.y += drift[1] * k;
+        }
+      }
       state.offset.x += (state.targetOffset.x - state.offset.x) * lerpFactor;
       state.offset.y += (state.targetOffset.y - state.offset.y) * lerpFactor;
       state.zoom += (state.targetZoom - state.zoom) * lerpFactor;
@@ -381,6 +405,8 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       state.downPointer.x = x;
       state.downPointer.y = y;
       state.travel = 0;
+      state.velocity.x = state.velocity.y = 0; // касание останавливает инерцию
+      state.lastMoveTime = performance.now();
       state.previousPointer.x = x;
       state.previousPointer.y = y;
     };
@@ -395,13 +421,34 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       }
       state.targetOffset.x -= deltaX * 0.003;
       state.targetOffset.y += deltaY * 0.003;
+      const now = performance.now();
+      const dt = Math.max(now - state.lastMoveTime, 1);
+      state.lastMoveTime = now;
+      // Сглаженная скорость, пересчитанная на кадр 60 fps
+      const blend = 0.35;
+      state.velocity.x = state.velocity.x * (1 - blend) + ((-deltaX * 0.003) / dt) * 16.667 * blend;
+      state.velocity.y = state.velocity.y * (1 - blend) + ((deltaY * 0.003) / dt) * 16.667 * blend;
       state.previousPointer.x = x;
       state.previousPointer.y = y;
     };
 
     const endDrag = () => {
+      // Палец задержали на месте перед отпусканием — броска нет
+      if (performance.now() - state.lastMoveTime > 80) state.velocity.x = state.velocity.y = 0;
+      const max = 0.08;
+      state.velocity.x = Math.max(-max, Math.min(max, state.velocity.x));
+      state.velocity.y = Math.max(-max, Math.min(max, state.velocity.y));
       state.isDragging = false;
       state.targetZoom = 1;
+    };
+
+    // Колёсико мыши и тачпад двигают сетку (у тачпада своя инерция)
+    const onWheel = (event) => {
+      event.preventDefault();
+      const scale = event.deltaMode === 1 ? 0.05 : 0.0015;
+      state.velocity.x = state.velocity.y = 0;
+      state.targetOffset.x += event.deltaX * scale;
+      state.targetOffset.y -= event.deltaY * scale;
     };
 
     const onPointerDown = (event) => {
@@ -460,6 +507,8 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
         uMousePos: { value: new THREE.Vector2(-1, -1) },
         uZoom: { value: 1 },
         uCellSize: { value: cellSize },
+        uImageSize: { value: imageSize },
+        uRadius: { value: imageRadius },
         uTextureCount: { value: images.length },
         uImageAtlas: { value: imageAtlas },
         uTextAtlas: { value: textAtlas },
@@ -475,6 +524,7 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       container.addEventListener("pointerup", onPointerUp);
       container.addEventListener("pointercancel", onPointerUp);
       container.addEventListener("pointerleave", onPointerLeave);
+      container.addEventListener("wheel", onWheel, { passive: false });
       window.addEventListener("resize", onResize);
       // Контейнер может получить размер позже монтирования — следим за ним напрямую
       resizeObserver = new ResizeObserver(onResize);
@@ -494,6 +544,7 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       container.removeEventListener("pointerup", onPointerUp);
       container.removeEventListener("pointercancel", onPointerUp);
       container.removeEventListener("pointerleave", onPointerLeave);
+      container.removeEventListener("wheel", onWheel);
       window.removeEventListener("resize", onResize);
       resizeObserver?.disconnect();
       loadedTextures.forEach((texture) => texture.dispose());
@@ -504,7 +555,7 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       renderer?.dispose();
       if (renderer?.domElement?.parentNode === container) container.removeChild(renderer.domElement);
     };
-  }, [images, items, cellSize, zoomLevel, reducedMotion]);
+  }, [images, items, cellSize, zoomLevel, reducedMotion, imageSize, imageRadius, drift]);
 
   return (
     <div className="absolute inset-0 cursor-grab active:cursor-grabbing" style={{ touchAction: "none" }}>
@@ -523,13 +574,16 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
   );
 }
 
-/** @param {{ images?: string[], items?: { title: string, year: string | number }[], cellSize?: number, zoomLevel?: number, showHint?: boolean, onSelect?: (index: number) => void, className?: string, style?: import("react").CSSProperties }} props */
+/** @param {{ images?: string[], items?: { title: string, year: string | number }[], cellSize?: number, zoomLevel?: number, showHint?: boolean, onSelect?: (index: number) => void, imageSize?: number, imageRadius?: number, drift?: [number, number], className?: string, style?: import("react").CSSProperties }} props */
 export function ArtGallery({
   images = defaultImages,
   items = defaultItems,
   cellSize = defaultConfig.cellSize,
   zoomLevel = defaultConfig.zoomLevel,
   showHint = true,
+  imageSize = 0.6,
+  imageRadius = 0.035,
+  drift,
   onSelect,
   className,
   style,
@@ -551,6 +605,9 @@ export function ArtGallery({
         showHint={showHint}
         reducedMotion={reducedMotion}
         onSelect={onSelect}
+        imageSize={imageSize}
+        imageRadius={imageRadius}
+        drift={drift}
       />
     </WebGLSurface>
   );
