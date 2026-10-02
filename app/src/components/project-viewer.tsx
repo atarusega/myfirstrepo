@@ -14,7 +14,18 @@ const pad = (n: number) => String(n).padStart(2, "0")
 export function ProjectViewer({ project, onClose }: Props) {
   const images = project.images
   const [zoom, setZoom] = useState<number | null>(null)
-  const items = useMemo(() => images.map((src, i) => ({ id: i, src, alt: `${project.title} — ${i + 1}` })), [images, project.title])
+  // Ширина и высота известны заранее — лента сразу верной длины и не пересчитывается по мере загрузки фото
+  const items = useMemo(
+    () =>
+      images.map((src, i) => ({
+        id: i,
+        src,
+        alt: `${project.title} — ${i + 1}`,
+        width: project.sizes?.[i]?.[0] ?? 800,
+        height: project.sizes?.[i]?.[1] ?? 533,
+      })),
+    [images, project.title, project.sizes],
+  )
 
   // Клик отличаем от перетаскивания ленты: засчитываем, только если указатель почти не сдвинулся
   const down = useRef({ x: 0, y: 0 })
@@ -68,28 +79,31 @@ export function ProjectViewer({ project, onClose }: Props) {
         className="flex min-h-0 flex-1 flex-col justify-center gap-8 py-8"
         onPointerDownCapture={(e) => (down.current = { x: e.clientX, y: e.clientY })}
       >
-        <motion.div
-          initial={{ opacity: 0, x: 80 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, ease: [0.2, 0.7, 0.2, 1], delay: 0.05 }}
-        >
+        <div>
           <DraggableMarquee
             items={items}
             speed={0.6}
             gapClassName="gap-4 md:gap-6"
             itemClassName="rounded-[14px] overflow-hidden"
             label={`${project.title}: фото. Тяни ленту или используй стрелки.`}
-            renderItem={(item: { src: string; alt?: string }, i: number) => (
+            renderItem={(it: { src: string; [key: string]: unknown }, i: number) => {
+              const item = it as (typeof items)[number]
+              return (
               <img
                 src={item.src}
                 alt={item.alt}
+                width={item.width}
+                height={item.height}
+                decoding="async"
                 draggable={false}
                 onClick={(e) => isClick(e) && setZoom(i)}
-                className="block h-[min(58vh,620px)] w-auto cursor-zoom-in select-none object-cover max-sm:h-[46vh]"
+                style={{ aspectRatio: `${item.width} / ${item.height}` }}
+                className="block h-[min(58vh,620px)] w-auto cursor-zoom-in select-none bg-white/5 object-cover max-sm:h-[46vh]"
               />
-            )}
+              )
+            }}
           />
-        </motion.div>
+        </div>
 
         <div className="flex items-baseline justify-between px-5 text-[11px] font-medium uppercase tracking-[0.1em] text-white/40 md:px-10 md:text-[13px]">
           <span>

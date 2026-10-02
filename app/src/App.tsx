@@ -39,6 +39,7 @@ export default function App() {
         imageSize={layout.imageSize}
         textSize={layout.textSize}
         drift={layout.drift}
+        paused={open !== null}
         onSelect={setOpen}
         className="h-auto min-h-0 flex-1"
       />

@@ -324,8 +324,11 @@ function createTextureAtlas(textures, isText = false) {
   return atlasTexture;
 }
 
-function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reducedMotion, onSelect, imageSize, imageRadius, textSize, drift }) {
+function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reducedMotion, onSelect, imageSize, imageRadius, textSize, drift, paused }) {
   const containerRef = useRef(null);
+  // Пока поверх открыт проект, сетку не видно — не рисуем её, чтобы не отнимать видеокарту у ленты
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
   const [ready, setReady] = useState(false);
@@ -398,6 +401,7 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       const now = performance.now();
       const k = Math.min((now - lastFrame) / 16.667, 4); // доля кадра 60 fps
       lastFrame = now;
+      if (pausedRef.current) return;
       if (!state.isDragging && !reducedMotion) {
         // Сетка катится по инерции и плавно гаснет
         state.targetOffset.x += state.velocity.x * k;
@@ -621,7 +625,7 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
   );
 }
 
-/** @param {{ images?: string[], items?: { title: string, year: string | number }[], cellSize?: number, zoomLevel?: number, showHint?: boolean, onSelect?: (index: number) => void, imageSize?: number, imageRadius?: number, textSize?: number, drift?: [number, number], className?: string, style?: import("react").CSSProperties }} props */
+/** @param {{ images?: string[], items?: { title: string, year: string | number }[], cellSize?: number, zoomLevel?: number, showHint?: boolean, onSelect?: (index: number) => void, imageSize?: number, imageRadius?: number, textSize?: number, paused?: boolean, drift?: [number, number], className?: string, style?: import("react").CSSProperties }} props */
 export function ArtGallery({
   images = defaultImages,
   items = defaultItems,
@@ -632,6 +636,7 @@ export function ArtGallery({
   imageRadius = 0.035,
   textSize = 0.05,
   drift,
+  paused = false,
   onSelect,
   className,
   style,
@@ -657,6 +662,7 @@ export function ArtGallery({
         imageRadius={imageRadius}
         textSize={textSize}
         drift={drift}
+        paused={paused}
       />
     </WebGLSurface>
   );

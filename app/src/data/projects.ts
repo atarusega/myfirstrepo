@@ -9,9 +9,10 @@ export type Project = {
   images: string[]
   color: string
   textColor: string
+  sizes: [number, number][]
 }
 
-export const projects: Project[] = raw
+export const projects = raw as Project[]
 
 // Для галереи: по одной обложке и подписи на проект (стабильные массивы — сцена не пересобирается)
 export const covers = projects.map((p) => p.images[0])

@@ -72,6 +72,9 @@ def main():
                 f.write_bytes(get(u))
             files.append(f"images/{pid}/{f.name}")
         p["images"] = files
+        # Размеры фото: лента в просмотре проекта сразу знает ширину кадров и не дёргается при загрузке
+        from PIL import Image
+        p["sizes"] = [list(Image.open(folder / f.split("/")[-1]).size) for f in files]
         p["color"], p["textColor"] = accent(folder / "01.jpg")
         projects.append(p)
         print(pid, p["title"], len(files))
