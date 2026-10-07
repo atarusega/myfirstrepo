@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { AnimatePresence, motion } from "motion/react"
+import { AnimatePresence, animate, motion, useMotionValue } from "motion/react"
 import { DraggableMarquee } from "@/components/block/draggable-marquee"
 import type { Project } from "@/data/projects"
 
@@ -41,15 +41,51 @@ export function ProjectViewer({ project, onClose }: Props) {
     return () => window.removeEventListener("keydown", onKey)
   }, [zoom, onClose])
 
+  // Смахивание вниз закрывает проект (на телефоне до крестика тянуться далеко).
+  // Направление фиксируем после первых 10 px: по горизонтали — это лента, её не трогаем.
+  const y = useMotionValue(0)
+  const swipe = useRef<{ x: number; y: number; t: number; lock: "x" | "y" | null } | null>(null)
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (zoom !== null || e.touches.length > 1) return
+    const t = e.touches[0]
+    swipe.current = { x: t.clientX, y: t.clientY, t: performance.now(), lock: null }
+  }
+  const onTouchMove = (e: React.TouchEvent) => {
+    const s = swipe.current
+    if (!s) return
+    const dx = e.touches[0].clientX - s.x
+    const dy = e.touches[0].clientY - s.y
+    if (!s.lock && Math.hypot(dx, dy) > 10) s.lock = dy > 0 && Math.abs(dy) > Math.abs(dx) * 1.2 ? "y" : "x"
+    if (s.lock === "y") y.set(Math.max(0, dy))
+  }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const s = swipe.current
+    swipe.current = null
+    if (!s || s.lock !== "y") return
+    const dy = e.changedTouches[0].clientY - s.y
+    const speed = dy / (performance.now() - s.t) // px/мс
+    if (dy > 120 || (dy > 40 && speed > 0.6)) {
+      animate(y, window.innerHeight, { duration: 0.22, ease: "easeIn" })
+      onClose()
+    } else {
+      animate(y, 0, { type: "spring", stiffness: 500, damping: 40 })
+    }
+  }
+
   const year = project.date.slice(0, 4)
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex flex-col bg-graphite text-white"
+      className="fixed inset-0 z-50 flex touch-none flex-col bg-graphite text-white"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
+      style={{ y }}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onTouchCancel={onTouchEnd}
     >
       <header className="flex h-16 shrink-0 items-center gap-4 bg-brand pl-5 md:h-[72px] md:gap-8 md:pl-10">
         {/* Цвет проекта — акцентной точкой, как цвета «подушки» в брендбуке */}
