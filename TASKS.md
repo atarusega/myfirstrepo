@@ -1,0 +1,68 @@
+# STRUKTORUM — сайт-портфолио: состояние и задачи
+
+Обновлено: 2026-10-07. Файл для передачи контекста между сессиями.
+
+## Где что
+
+- Сайт: **https://struktorum.space** (живой, HTTPS обязателен).
+- Репо: `atarusega/myfirstrepo` (public), клон `C:\Users\PC\myfirstrepo`.
+- Рабочая ветка: `claude/portfolio-site-mvp-suuwg4` — она же ветка по умолчанию, `main` нет.
+- Деплой: любой пуш в ветку → `.github/workflows/deploy.yml` собирает `app/` → GitHub Pages (build_type = workflow). Проверка: `gh run watch $(gh run list --workflow deploy.yml -L1 --json databaseId --jq '.[0].databaseId')`.
+- Локально: `cd app && npm run dev` → http://localhost:5173 (в Claude Browser — конфиг `struktorum-site` в `~/.claude/launch.json`).
+
+## Стек и структура
+
+- `app/` — React 19 + Vite + Tailwind 4 + shadcn. Шрифт Unbounded (`@fontsource/unbounded`, локально).
+- `app/src/App.tsx` — шапка (логотип, «Канал ↗» t.me/struktorum, кнопка «Написать» t.me/nkt_klmv) + галерея + просмотр проекта. Раскладка галереи для телефона/компьютера — константы `MOBILE`/`DESKTOP`.
+- `app/src/components/block/art-gallery.jsx` — главная: ObsidianUI Art Gallery (three.js, WebGL). **Наш форк, сильно переделан** — при обновлении из ObsidianUI не затирать:
+  - исправлен перевёрнутый порядок строк атласа (картинки не совпадали с подписями);
+  - кроп фото в квадрат, картинки крупнее и со скруглением (SDF в шейдере);
+  - клик по плитке → `onSelect(index)` (математика ячейки повторяет шейдер);
+  - ResizeObserver (иначе холст 0×0), колёсико/тачпад, инерция после броска, дрейф на телефоне;
+  - названия: Unbounded 700, до 2 строк над картинкой, без года; текстура подписи в пропорциях полосы, мипмапы;
+  - пауза рендера, пока открыт проект (`paused`);
+  - подсказка «тяни сетку» гаснет через 6 с / после касания.
+- `app/src/components/block/draggable-marquee.jsx` — ObsidianUI Draggable Marquee (GSAP). Переведён с `next/image` на `<img>`, исправлен скачок на стыке петли.
+- `app/src/components/project-viewer.tsx` — просмотр проекта: лента фото (marquee), клик по фото → полноэкранный просмотр (стрелки, свайп, Esc).
+- `app/src/components/brand.tsx` — знак (5 кругов) и логотип.
+- `app/src/data/projects.json` — 21 проект: title, images, sizes (размеры фото — чтобы лента не дёргалась), color/textColor (акцент по обложке), date, url поста.
+- `app/public/` — `images/<id>/NN.jpg`, фавиконки, `site.webmanifest`, `og.jpg` (превью ссылки), `CNAME`.
+
+## Скрипты (`tools/`)
+
+- `sync_telegram.py` — тянет посты t.me/struktorum по списку `POSTS`, качает фото, пишет `projects.json` (с sizes и цветами). Названия — словарь `TITLES`. **Новый проект = добавить id поста в `POSTS` (+ название в `TITLES`), запустить, закоммитить.** Запуск: `PYTHONIOENCODING=utf-8 python tools/sync_telegram.py` (иначе падает вывод в cp1251).
+- `make_favicons.py` — фавиконки и манифест из знака.
+- `make_og.py` — картинка превью 1200×630 (нужны `pip install fonttools brotli`, шрифт берётся из node_modules). После смены обложек — перегенерировать.
+
+## Бренд (из брендбука `struktorum-logo.html`)
+
+Синий `#3A3ED8`, графит `#1C1C1C`, белый; цвета «подушки» `#F2642A #9FE3D4 #D9BDF2 #F2B31A` — только акцентом. Unbounded: логотип 700 +8%, заголовки 700 +4%, подписи 500 +6%. Знак мин. 24 px.
+
+## Домен и DNS — важно
+
+- `struktorum.space` куплен на reg.ru (аккаунт Никиты). DNS-серверы — **Cloudflare** (`bella.ns.cloudflare.com`, `tony.ns.cloudflare.com`, аккаунт Никиты).
+- Записи: 4× A `@` → `185.199.108–111.153`, CNAME `www` → `atarusega.github.io`. **Прокси выключен (серое облако, DNS only).**
+- HTTPS выдаёт GitHub Pages (Let's Encrypt, до 2026-12-31, продлевается сам), `https_enforced = true`.
+- **Не включать оранжевое облако Cloudflare**: российские провайдеры режут соединения с Cloudflare — сайт без VPN из РФ не открывался.
+- Почему не DNS reg.ru: проверка GitHub не достукивалась до серверов reg.ru (ServFail / ResolvTimeout) и не выпускала сертификат.
+- Рабочий ПК выходит в интернет через VPN (Финляндия) — проверки «доступно ли из России» с него непоказательны; локальный DNS-кэш тоже может врать — проверять через `--resolve` / DoH.
+- Превью в Telegram кэшируется — после смены `og:*` сбросить через @WebpageBot.
+
+## Сделано (хронология)
+
+1. Статический MVP → парсинг постов Telegram, 20+ проектов.
+2. Сетка «всё на одном экране» → переезд на React + WebGL-галерею ObsidianUI.
+3. Просмотр проекта: лента фото (Draggable Marquee) + полноэкранное фото.
+4. Фирменный стиль: шапка, Unbounded, графит/синий, фавиконки, манифест.
+5. Мобильная версия: мельче ячейки, крупнее картинки, дрейф, инерция.
+6. Крупные названия, чистка ячеек, исчезающая подсказка.
+7. Лента без рывков (размеры фото заранее, пауза WebGL), превью ссылки (og), ссылки на канал и личку.
+8. Домен: reg.ru → Cloudflare DNS → прокси выключен → HTTPS от GitHub.
+
+## Открытые вопросы / идеи
+
+- [ ] Никите проверить с телефона без VPN, что сайт открывается из России.
+- [ ] Никите проверить на телефоне скорость дрейфа и силу инерции сетки (параметры: `drift` в `App.tsx`, трение `0.95` и `max 0.08` в `art-gallery.jsx`).
+- [ ] Бандл ~1 МБ (в основном three.js) — можно разбить/лениво грузить, если будет медленно.
+- [ ] Автообновление проектов из канала (сейчас вручную через `sync_telegram.py`) — бот или Action по расписанию.
+- [ ] Возможная чистка: убрать линии сетки, сократить названия проектов.
