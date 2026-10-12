@@ -33,3 +33,17 @@ def test_callback_data_fits_telegram_limit():
 def test_support_tag_roundtrip():
     assert user_id_from_tag("💬 Поддержка · Иван (@ivan) · #u123456789\nАнкета №3") == 123456789
     assert user_id_from_tag("обычное сообщение") is None
+
+
+def test_support_reply_filter_ignores_plain_messages():
+    # админ пишет обычное сообщение (например, проходит анкету) — фильтр не должен падать
+    from datetime import datetime
+
+    from aiogram.types import Chat, Message, User
+
+    from app.handlers.admin import is_support_reply
+    chat, bot = Chat(id=1, type="private"), User(id=2, is_bot=True, first_name="bot")
+    plain = Message(message_id=1, date=datetime.now(), chat=chat, text="Триумверат")
+    assert not is_support_reply(plain)
+    question = Message(message_id=2, date=datetime.now(), chat=chat, from_user=bot, text="💬 Поддержка · #u7")
+    assert is_support_reply(Message(message_id=3, date=datetime.now(), chat=chat, text="ок", reply_to_message=question))

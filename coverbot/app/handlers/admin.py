@@ -33,8 +33,13 @@ router.message.filter(IsAdmin())
 router.callback_query.filter(IsAdmin())
 
 
-@router.message(F.reply_to_message.func(lambda m: m.from_user and m.from_user.is_bot
-                                         and user_id_from_tag(m.text or m.caption) is not None))
+def is_support_reply(message: Message) -> bool:
+    target = message.reply_to_message
+    return bool(target and target.from_user and target.from_user.is_bot
+                and user_id_from_tag(target.text or target.caption) is not None)
+
+
+@router.message(is_support_reply)
 async def support_reply(message: Message):
     """Ответ реплаем на сообщение поддержки → пользователю (app/handlers/support.py)."""
     target = message.reply_to_message
