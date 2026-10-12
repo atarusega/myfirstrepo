@@ -12,7 +12,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove, User
 from sqlalchemy import delete, select
 
-from app.cards import STATUS_LABELS, band_card
+from app.cards import STATUS_LABELS, band_card, moderation_card
 from app.config import settings
 from app.consent import CONSENT_FULL, CONSENT_SHORT, CONSENT_VERSION
 from app.db import Band, Lead, Producer, Recommendation, SearchRequest, Session
@@ -543,7 +543,7 @@ async def save_fix(message: Message, state: FSMContext):
 
 
 async def notify_admins(bot, band: Band):
-    text = f"🆕 Анкета №{band.id} на модерацию (источник: {band.source})\n\n" + band_card(band, full=True)
+    text = f"🆕 Анкета №{band.id} на модерацию (источник: {band.source})\n\n" + moderation_card(band)
     for admin_id in settings.admin_ids:
         try:
             await bot.send_message(admin_id, text, reply_markup=moderation_kb(band.id),

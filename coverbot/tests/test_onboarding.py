@@ -47,3 +47,13 @@ def test_support_reply_filter_ignores_plain_messages():
     assert not is_support_reply(plain)
     question = Message(message_id=2, date=datetime.now(), chat=chat, from_user=bot, text="💬 Поддержка · #u7")
     assert is_support_reply(Message(message_id=3, date=datetime.now(), chat=chat, text="ок", reply_to_message=question))
+
+
+def test_moderation_card_shows_contacts():
+    from app.cards import moderation_card
+    band = Band(id=5, name="Кавер", lineup="duo", instruments=[], genres=[], services=[], video_links=[],
+                tg_username="cover_band", phone="+7 999 123-45-67", website=None, source="self")
+    card = moderation_card(band)
+    assert "📇 @cover_band · +7 999 123-45-67" in card
+    band.tg_username, band.phone, band.tg_user_id = None, None, 42
+    assert 'tg://user?id=42' in moderation_card(band)

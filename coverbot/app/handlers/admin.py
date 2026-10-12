@@ -9,7 +9,7 @@ from aiogram.filters import BaseFilter, Command, CommandObject
 from aiogram.types import BufferedInputFile, CallbackQuery, Message
 from sqlalchemy import func, select
 
-from app.cards import band_card
+from app.cards import moderation_card
 from app.config import settings
 from app.db import Band, Lead, Producer, Recommendation, SearchRequest, Session
 from app.handlers.support import user_id_from_tag
@@ -93,7 +93,7 @@ async def cmd_pending(message: Message):
         await message.answer("Очередь модерации пуста.")
         return
     for band in bands[:10]:
-        await message.answer(f"#{band.id}\n" + band_card(band, full=True), reply_markup=moderation_kb(band.id),
+        await message.answer(f"#{band.id}\n" + moderation_card(band), reply_markup=moderation_kb(band.id),
                              disable_web_page_preview=True)
 
 

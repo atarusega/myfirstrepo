@@ -65,6 +65,20 @@ def band_card(band, recs=None, reason: str | None = None, price: int | None = No
     return "\n".join(lines)
 
 
+def moderation_card(band) -> str:
+    """Карточка для модератора: как в каталоге + контакты, чтобы можно было сразу связаться с группой."""
+    contacts = []
+    if band.tg_username:
+        contacts.append(f"@{escape(band.tg_username)}")
+    elif band.tg_user_id:
+        contacts.append(f'<a href="tg://user?id={band.tg_user_id}">Telegram</a>')
+    if band.phone:
+        contacts.append(escape(band.phone))
+    if band.website:
+        contacts.append(escape(band.website))
+    return band_card(band, full=True) + "\n\n📇 " + (" · ".join(contacts) or "контактов нет")
+
+
 def contact_card(band) -> str:
     lines = [f"<b>Контакты: {escape(band.name)}</b>"]
     if band.tg_username:
