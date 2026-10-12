@@ -43,3 +43,20 @@ def test_falls_back_to_created_at_and_handles_naive_dates():
 
 def test_text_escapes_name():
     assert "Кавер &lt;Бэнд&gt;" in price_reminder_text(band())
+
+
+def test_year_without_price_confirmation_archives():
+    from app.reminders import should_archive
+    assert not should_archive(band(confirmed_days_ago=364), NOW)
+    assert should_archive(band(confirmed_days_ago=365), NOW)
+    assert not should_archive(band(confirmed_days_ago=400, status="draft"), NOW)
+
+
+def test_draft_without_video_reminded_once_after_a_day():
+    from app.reminders import needs_video_reminder
+    draft = dict(status="draft", video_links=[])
+    assert not needs_video_reminder(band(consent_at=NOW - timedelta(hours=20), **draft), NOW)
+    assert needs_video_reminder(band(consent_at=NOW - timedelta(days=1), **draft), NOW)
+    assert not needs_video_reminder(band(consent_at=NOW - timedelta(days=2), video_reminder_at=NOW, **draft), NOW)
+    assert not needs_video_reminder(band(consent_at=NOW - timedelta(days=2), status="draft",
+                                         video_links=["https://youtu.be/x"]), NOW)

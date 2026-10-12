@@ -86,6 +86,11 @@ def region_of(city: str | None) -> str:
     return c
 
 
+def fmt_short(value: int) -> str:
+    """60000 → «60к» для кнопок."""
+    return f"{value // 1000}к" if value % 1000 == 0 else fmt_money(value)
+
+
 def fmt_money(value: int | None) -> str:
     if not value:
         return "—"

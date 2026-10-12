@@ -52,6 +52,8 @@ class Band(Base):
     status: Mapped[str] = mapped_column(String(20), default="draft")  # draft/pending/published/rejected/archived
     reject_reason: Mapped[str | None] = mapped_column(Text)
     consent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    consent_version: Mapped[str | None] = mapped_column(String(20))  # app/consent.py: CONSENT_VERSION
+    video_reminder_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # «пришлю видео позже»
     prices_confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     price_reminder_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # app/reminders.py
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -100,6 +102,16 @@ class Recommendation(Base):
     source: Mapped[str] = mapped_column(String(20))  # producer / tutvse
     comment: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class FsmState(Base):
+    """Состояние диалога (анкета, поиск), если Redis не настроен — app/storage.py."""
+    __tablename__ = "fsm_states"
+
+    key: Mapped[str] = mapped_column(String(200), primary_key=True)
+    state: Mapped[str | None] = mapped_column(String(100))
+    data: Mapped[str] = mapped_column(Text, default="{}")
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 ALEMBIC_INI = Path(__file__).resolve().parent.parent / "alembic.ini"

@@ -9,7 +9,7 @@ MVP Telegram-бота подбора кавер-групп для ивент-п�
 
 ## Стек и команды
 Python 3.12, aiogram 3 (polling), SQLAlchemy 2 async, PostgreSQL (SQLite локально), Redis для FSM
-(`REDIS_URL`; пусто — `MemoryStorage`), Anthropic API (Claude Haiku 4.5).
+(`REDIS_URL`; пусто — `DbStorage`, таблица `fsm_states` в нашей базе), Anthropic API (Claude Haiku 4.5).
 - Сейчас бот работает на компьютере владельца (SQLite, без Redis, polling); облако — позже.
 - Локально: `pip install -r requirements.txt`, `cp .env.example .env` (по умолчанию SQLite), `python -m app.main`
 - Демо-данные: `python -m app.seed` (`--clear` удалить)
@@ -23,12 +23,14 @@ Python 3.12, aiogram 3 (polling), SQLAlchemy 2 async, PostgreSQL (SQLite лок�
 - `app/criteria.py` — модель критериев поиска + `fallback_parse` (работает без API-ключа).
 - `app/llm.py` — промпты и вызовы Claude. Любая ошибка LLM → fallback, бот не падает.
 - `app/matching.py` — чистые функции: жёсткий фильтр → скоринг (веса в `WEIGHTS`). Тестировать без БД.
-- `app/handlers/onboarding.py` — анкета: один FSM-state + таблица `STEPS` (добавить поле = строка в STEPS + колонка в `Band`
+- `app/handlers/onboarding.py` — анкета: таблица `BLOCKS` (5 блоков, 16 шагов; добавить поле = `Step` в BLOCKS + пункт в `FIX_MENU` + колонка в `Band`
   + миграция).
 - `app/handlers/search.py` — поиск; после выдачи любое сообщение продюсера уточняет запрос.
 - `app/handlers/admin.py` — модерация и команды админа (фильтр по `ADMIN_IDS`).
 - `app/reminders.py` — фоновая задача: раз в 90 дней просит группы подтвердить цены (`needs_price_reminder` — чистая функция).
-- Данные FSM (`state.update_data`) хранятся в Redis как JSON: только str/int/bool/None/list/dict,
+- `app/handlers/support.py` — /support: вопрос уходит админам с меткой #u<id>, ответ реплаем → пользователю (`admin.support_reply`).
+- `app/consent.py` — текст согласия (152-ФЗ) и `CONSENT_VERSION`; поменяли текст — поднимите версию.
+- Данные FSM (`state.update_data`) хранятся как JSON (Redis или `fsm_states`): только str/int/bool/None/list/dict,
   без datetime и объектов моделей (`tests/test_storage.py`).
 
 ## Правила

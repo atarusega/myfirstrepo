@@ -34,8 +34,17 @@ PROMPT = (
 )
 
 
+SEARCH_SOON = (
+    "Подбор групп для продюсеров скоро запустим — сейчас собираем базу кавер-групп.\n\n"
+    "Вы музыкант? Добавьте группу: /band. Вопросы — /support."
+)
+
+
 async def start_search(message: Message, state: FSMContext):
     await state.clear()
+    if not settings.search_enabled:
+        await message.answer(SEARCH_SOON)
+        return
     await state.set_state(Search.query)
     await message.answer(PROMPT)
 

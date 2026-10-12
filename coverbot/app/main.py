@@ -6,7 +6,6 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.exceptions import TelegramNetworkError, TelegramUnauthorizedError
 from aiogram.fsm.storage.base import BaseStorage
-from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.types import BotCommand
 from aiogram.utils.token import TokenValidationError
@@ -14,16 +13,16 @@ from aiogram.utils.token import TokenValidationError
 from app import reminders
 from app.config import settings
 from app.db import init_db
-from app.handlers import admin, onboarding, search, start
+from app.handlers import admin, onboarding, search, start, support
+from app.storage import DbStorage
 
 # брошенные анкеты и поиски не копятся в Redis вечно
 STATE_TTL = timedelta(days=30)
 
 
 def build_storage(redis_url: str | None) -> BaseStorage:
-    if not redis_url:
-        logging.warning("REDIS_URL не задан — состояния диалогов в памяти, при рестарте анкеты сбросятся")
-        return MemoryStorage()
+    if not redis_url:  # без Redis — в нашей базе: незаконченная анкета переживает перезапуск
+        return DbStorage()
     return RedisStorage.from_url(redis_url, state_ttl=STATE_TTL, data_ttl=STATE_TTL)
 
 
@@ -55,10 +54,13 @@ async def main():
         await check_telegram(bot)
         await init_db()
         dp = Dispatcher(storage=build_storage(settings.redis_url))
-        dp.include_routers(start.router, admin.router, reminders.router, onboarding.router, search.router)
+        dp.include_routers(start.router, admin.router, support.router, reminders.router, onboarding.router,
+                           search.router)
         await bot.set_my_commands([
-            BotCommand(command="search", description="Найти кавер-группу"),
+            *([BotCommand(command="search", description="Найти кавер-группу")] if settings.search_enabled else []),
             BotCommand(command="band", description="Моя группа / добавить группу"),
+            BotCommand(command="support", description="Написать в поддержку"),
+            BotCommand(command="delete", description="Удалить мои данные"),
             BotCommand(command="cancel", description="Отменить текущее действие"),
             BotCommand(command="help", description="Помощь"),
         ])

@@ -17,6 +17,8 @@ class Settings:
     database_url: str = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./coverbot.db")
     # Хранилище состояний диалогов (анкета, поиск). Пусто — в памяти, сбрасывается при рестарте
     redis_url: str | None = os.getenv("REDIS_URL") or None
+    # Этап 1 — копим базу групп: поиск для продюсеров выключен, вместо него заглушка
+    search_enabled: bool = os.getenv("SEARCH_ENABLED", "false").strip().lower() in ("1", "true", "yes")
     page_size: int = 5
 
 

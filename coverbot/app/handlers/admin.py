@@ -1,8 +1,10 @@
 import csv
 import io
 from datetime import datetime, timedelta, timezone
+from html import escape
 
 from aiogram import F, Router
+from aiogram.exceptions import TelegramAPIError
 from aiogram.filters import BaseFilter, Command, CommandObject
 from aiogram.types import BufferedInputFile, CallbackQuery, Message
 from sqlalchemy import func, select
@@ -10,6 +12,7 @@ from sqlalchemy import func, select
 from app.cards import band_card
 from app.config import settings
 from app.db import Band, Lead, Producer, Recommendation, SearchRequest, Session
+from app.handlers.support import user_id_from_tag
 from app.keyboards import moderation_kb
 
 router = Router()
@@ -28,6 +31,25 @@ class IsAdmin(BaseFilter):
 
 router.message.filter(IsAdmin())
 router.callback_query.filter(IsAdmin())
+
+
+@router.message(F.reply_to_message.func(lambda m: m.from_user and m.from_user.is_bot
+                                         and user_id_from_tag(m.text or m.caption) is not None))
+async def support_reply(message: Message):
+    """Ответ реплаем на сообщение поддержки → пользователю (app/handlers/support.py)."""
+    target = message.reply_to_message
+    user_id = user_id_from_tag(target.text or target.caption)
+    try:
+        if message.text:
+            await message.bot.send_message(user_id, f"💬 <b>Ответ поддержки</b>\n\n{escape(message.text)}\n\n"
+                                                    "Написать ещё: /support", disable_web_page_preview=True)
+        else:
+            await message.bot.send_message(user_id, "💬 <b>Ответ поддержки</b> 👇")
+            await message.copy_to(user_id)
+    except TelegramAPIError as e:
+        await message.reply(f"Не доставлено: {escape(str(e))}")
+        return
+    await message.reply("Отправлено ✅")
 
 
 @router.callback_query(F.data.startswith("adm:"))
@@ -144,5 +166,6 @@ async def cmd_tvrec(message: Message, command: CommandObject):
 async def cmd_admin(message: Message):
     await message.answer(
         "Команды админа:\n/pending — очередь модерации\n/stats — статистика\n/export — выгрузка базы в CSV\n"
-        "/tvrec &lt;id&gt; [tg_id] — рекомендация резидента «Тут все»"
+        "/tvrec &lt;id&gt; [tg_id] — рекомендация резидента «Тут все»\n\n"
+        "Вопросы в поддержку приходят сюда с меткой #u…: ответьте реплаем — ответ уйдёт пользователю."
     )
