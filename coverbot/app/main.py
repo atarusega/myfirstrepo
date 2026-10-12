@@ -4,10 +4,10 @@ from datetime import timedelta
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
-from aiogram.exceptions import TelegramNetworkError, TelegramUnauthorizedError
+from aiogram.exceptions import TelegramAPIError, TelegramNetworkError, TelegramUnauthorizedError
 from aiogram.fsm.storage.base import BaseStorage
 from aiogram.fsm.storage.redis import RedisStorage
-from aiogram.types import BotCommand
+from aiogram.types import BotCommand, BotCommandScopeChat
 from aiogram.utils.token import TokenValidationError
 
 from app import reminders
@@ -40,6 +40,36 @@ async def check_telegram(bot: Bot) -> None:
     logging.info("Бот @%s запущен", me.username)
 
 
+def user_commands() -> list[BotCommand]:
+    return [
+        *([BotCommand(command="search", description="Найти кавер-группу")] if settings.search_enabled else []),
+        BotCommand(command="band", description="Моя группа / добавить группу"),
+        BotCommand(command="support", description="Написать в поддержку"),
+        BotCommand(command="delete", description="Удалить мои данные"),
+        BotCommand(command="cancel", description="Отменить текущее действие"),
+        BotCommand(command="help", description="Помощь"),
+    ]
+
+
+# видны в меню только админам (ADMIN_IDS)
+ADMIN_COMMANDS = [
+    BotCommand(command="pending", description="Очередь модерации"),
+    BotCommand(command="stats", description="Статистика"),
+    BotCommand(command="export", description="Выгрузка базы в CSV"),
+    BotCommand(command="tvrec", description="Рекомендация резидента «Тут все»"),
+    BotCommand(command="admin", description="Команды админа"),
+]
+
+
+async def set_commands(bot: Bot) -> None:
+    await bot.set_my_commands(user_commands())
+    for admin_id in settings.admin_ids:
+        try:
+            await bot.set_my_commands(ADMIN_COMMANDS + user_commands(), scope=BotCommandScopeChat(chat_id=admin_id))
+        except TelegramAPIError as e:  # админ ещё не писал боту
+            logging.warning("Не удалось задать меню админа %s: %s", admin_id, e)
+
+
 async def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     if not settings.bot_token:
@@ -56,14 +86,7 @@ async def main():
         dp = Dispatcher(storage=build_storage(settings.redis_url))
         dp.include_routers(start.router, admin.router, support.router, reminders.router, onboarding.router,
                            search.router)
-        await bot.set_my_commands([
-            *([BotCommand(command="search", description="Найти кавер-группу")] if settings.search_enabled else []),
-            BotCommand(command="band", description="Моя группа / добавить группу"),
-            BotCommand(command="support", description="Написать в поддержку"),
-            BotCommand(command="delete", description="Удалить мои данные"),
-            BotCommand(command="cancel", description="Отменить текущее действие"),
-            BotCommand(command="help", description="Помощь"),
-        ])
+        await set_commands(bot)
         await bot.delete_webhook(drop_pending_updates=True)
         reminder_task = asyncio.create_task(reminders.price_reminder_loop(bot))
         try:
