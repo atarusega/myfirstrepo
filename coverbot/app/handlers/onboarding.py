@@ -66,8 +66,8 @@ BLOCKS: list[tuple[str, list[Step]]] = [
     ("Программа", [
         Step("program_format", "single", "Что входит в стандартную программу?", PROGRAM_FORMATS),
         Step("sound", "single", "Как со звуком?", SOUND),
-        Step("services", "multi", "Какие доп. услуги можете предложить? Если никаких — просто «Готово».",
-             SERVICES, required=False),
+        Step("services", "multi", "Какие доп. услуги можете предложить? Если никаких — просто «Готово».\n"
+             "<i>Звук вы указали на прошлом шаге.</i>", SERVICES, required=False),
     ]),
     ("Видео и контакты", [
         Step("video_links", "videos",
