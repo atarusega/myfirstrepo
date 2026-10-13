@@ -54,6 +54,7 @@ def user_commands() -> list[BotCommand]:
 # видны в меню только админам (ADMIN_IDS)
 ADMIN_COMMANDS = [
     BotCommand(command="pending", description="Очередь модерации"),
+    BotCommand(command="card", description="Анкета по номеру: /card 18"),
     BotCommand(command="stats", description="Статистика"),
     BotCommand(command="export", description="Выгрузка базы в CSV"),
     BotCommand(command="tvrec", description="Рекомендация резидента «Тут все»"),

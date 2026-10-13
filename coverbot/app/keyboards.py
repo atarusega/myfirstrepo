@@ -201,6 +201,12 @@ def moderation_kb(band_id: int) -> InlineKeyboardMarkup:
     return kb.as_markup()
 
 
+def undo_kb(band_id: int, prev_status: str, user_msg_id: int, verdict: str) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.button(text=f"{verdict} · ↩️ Отменить", callback_data=f"adm:undo:{band_id}:{prev_status}:{user_msg_id}")
+    return kb.as_markup()
+
+
 def claim_kb(token: str) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text="Да, это я — дозаполнить", callback_data=f"claim:yes:{token}")

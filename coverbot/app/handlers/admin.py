@@ -9,11 +9,11 @@ from aiogram.filters import BaseFilter, Command, CommandObject
 from aiogram.types import BufferedInputFile, CallbackQuery, Message
 from sqlalchemy import func, select
 
-from app.cards import moderation_card
+from app.cards import STATUS_LABELS, moderation_card
 from app.config import settings
 from app.db import Band, Lead, Producer, Recommendation, SearchRequest, Session
 from app.handlers.support import user_id_from_tag
-from app.keyboards import moderation_kb
+from app.keyboards import moderation_kb, undo_kb
 
 router = Router()
 
@@ -61,11 +61,15 @@ async def support_reply(message: Message):
 async def moderate(cb: CallbackQuery):
     parts = cb.data.split(":")
     action, band_id = parts[1], int(parts[2])
+    if action == "undo":
+        await undo_decision(cb, band_id, prev_status=parts[3], user_msg_id=int(parts[4]))
+        return
     async with Session() as s:
         band = await s.get(Band, band_id)
         if band is None:
             await cb.answer("Карточка не найдена", show_alert=True)
             return
+        prev_status = band.status
         if action == "ok":
             band.status, band.reject_reason = "published", None
             user_text = "🎉 Ваша карточка опубликована! Теперь продюсеры находят вас в поиске. Обновить: /band"
@@ -75,14 +79,51 @@ async def moderate(cb: CallbackQuery):
             user_text = f"Анкета пока не опубликована. {band.reject_reason}\nИсправить: /band"
         await s.commit()
     verdict = "✅ Одобрено" if action == "ok" else "❌ Отклонено"
-    await cb.message.edit_reply_markup(reply_markup=None)
-    await cb.message.answer(f"{verdict}: #{band.id} {band.name} ({cb.from_user.full_name})")
-    await cb.answer()
+    user_msg_id = 0
     if band.tg_user_id:
         try:
-            await cb.bot.send_message(band.tg_user_id, user_text)
-        except Exception:  # noqa: BLE001
+            user_msg_id = (await cb.bot.send_message(band.tg_user_id, user_text)).message_id
+        except TelegramAPIError:
             pass
+    await cb.message.edit_reply_markup(reply_markup=undo_kb(band.id, prev_status, user_msg_id, verdict))
+    await cb.answer(f"{verdict}. Ошиблись — нажмите «Отменить».")
+
+
+async def undo_decision(cb: CallbackQuery, band_id: int, prev_status: str, user_msg_id: int):
+    """Вернуть статус, который был до решения, и убрать у группы сообщение о решении."""
+    async with Session() as s:
+        band = await s.get(Band, band_id)
+        if band is None:
+            await cb.answer("Карточка не найдена", show_alert=True)
+            return
+        band.status, band.reject_reason = prev_status, None
+        await s.commit()
+    if band.tg_user_id and user_msg_id:
+        try:  # бот может удалить своё сообщение в течение 48 часов
+            await cb.bot.delete_message(band.tg_user_id, user_msg_id)
+        except TelegramAPIError:
+            try:
+                await cb.bot.send_message(band.tg_user_id, "Предыдущее сообщение о модерации неактуально — "
+                                                            "проверяем анкету ещё раз.")
+            except TelegramAPIError:
+                pass
+    await cb.message.edit_reply_markup(reply_markup=moderation_kb(band.id))
+    await cb.answer(f"Решение отменено, статус: {STATUS_LABELS.get(prev_status, prev_status)}")
+
+
+@router.message(Command("card"))
+async def cmd_card(message: Message, command: CommandObject):
+    arg = (command.args or "").strip().lstrip("#№")
+    if not arg.isdigit():
+        await message.answer("Напишите номер анкеты: <code>/card 18</code>")
+        return
+    async with Session() as s:
+        band = await s.get(Band, int(arg))
+    if band is None:
+        await message.answer(f"Анкеты №{arg} нет.")
+        return
+    await message.answer(f"#{band.id} · <b>{STATUS_LABELS.get(band.status, band.status)}</b>\n" + moderation_card(band),
+                         reply_markup=moderation_kb(band.id), disable_web_page_preview=True)
 
 
 @router.message(Command("pending"))
@@ -170,7 +211,8 @@ async def cmd_tvrec(message: Message, command: CommandObject):
 @router.message(Command("admin"))
 async def cmd_admin(message: Message):
     await message.answer(
-        "Команды админа:\n/pending — очередь модерации\n/stats — статистика\n/export — выгрузка базы в CSV\n"
+        "Команды админа:\n/pending — очередь модерации\n/card N — анкета №N: посмотреть, одобрить или отклонить\n"
+        "/stats — статистика\n/export — выгрузка базы в CSV\n"
         "/tvrec &lt;id&gt; [tg_id] — рекомендация резидента «Тут все»\n\n"
         "Вопросы в поддержку приходят сюда с меткой #u…: ответьте реплаем — ответ уйдёт пользователю."
     )

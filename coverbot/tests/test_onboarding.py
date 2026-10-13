@@ -57,3 +57,9 @@ def test_moderation_card_shows_contacts():
     assert "📇 @cover_band · +7 999 123-45-67" in card
     band.tg_username, band.phone, band.tg_user_id = None, None, 42
     assert 'tg://user?id=42' in moderation_card(band)
+
+
+def test_undo_button_fits_telegram_limit():
+    from app.keyboards import undo_kb
+    button = undo_kb(999999, "published", 2_147_483_647, "❌ Отклонено").inline_keyboard[0][0]
+    assert len(button.callback_data.encode()) <= 64
