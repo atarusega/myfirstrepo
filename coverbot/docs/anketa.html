@@ -1,0 +1,334 @@
+<title>Анкета кавер-группы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: одна колонка ~760px; шапка со сводкой → общие изменения → шаги карточками (было / стало) → согласие → вопросы партнёру */
+:root {
+  --bg: #f4f3f7; --surface: #ffffff; --ink: #1d1b26; --muted: #686478; --line: #dcd9e4;
+  --accent: #6b2fd6; --accent-soft: #ece4fb;
+  --new: #0f7a55; --new-soft: #e2f4ec; --old: #a3402f; --old-soft: #f8e7e3;
+  --btn: #eef0f6; --btn-ink: #2c4a8a;
+  --f-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15141b; --surface: #1e1c26; --ink: #ecebf2; --muted: #a29eb3; --line: #34313f;
+  --accent: #b08cff; --accent-soft: #2c2440;
+  --new: #5fd3a5; --new-soft: #17302a; --old: #f0927f; --old-soft: #3a211d;
+  --btn: #2a2a38; --btn-ink: #a9c1f5; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #15141b; --surface: #1e1c26; --ink: #ecebf2; --muted: #a29eb3; --line: #34313f;
+  --accent: #b08cff; --accent-soft: #2c2440;
+  --new: #5fd3a5; --new-soft: #17302a; --old: #f0927f; --old-soft: #3a211d;
+  --btn: #2a2a38; --btn-ink: #a9c1f5; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--f-body); }
+.wrap { max-width: 780px; margin: 0 auto; padding-inline: 16px; padding-block: 40px 72px; display: grid; gap: 48px }
+h1, h2 { font-family: var(--f-display); font-weight: 700; line-height: 1.15; text-wrap: balance; margin: 0 }
+h1 { font-size: clamp(28px, 6vw, 40px) }
+h2 { font-size: 22px }
+h3 { font-size: 17px; font-weight: 600; margin: 0; text-wrap: balance }
+p { margin: 0 }
+.eyebrow { font: 500 12px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent) }
+.lead { color: var(--muted); max-width: 62ch }
+section { display: grid; gap: 18px }
+.head { display: grid; gap: 14px }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 8px }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 4px }
+.stat b { font: 700 26px/1.1 var(--f-display); font-variant-numeric: tabular-nums }
+.stat span { font-size: 13px; color: var(--muted) }
+.stat .arrow { color: var(--muted); font-weight: 500; font-size: 18px }
+.stat b .to { color: var(--new) }
+
+.blocks { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.blocks .blk { background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 500 }
+.blocks .sep { color: var(--muted) }
+
+ul.list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px }
+ul.list li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start }
+ul.list li::before { content: "+"; font: 600 16px/1.5 var(--f-mono); color: var(--new) }
+ul.list li.q::before { content: "?"; color: var(--accent) }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface) }
+.seg button { font: 500 14px var(--f-body); color: var(--muted); background: none; border: 0; padding: 8px 14px; cursor: pointer }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--muted) }
+
+.steps { display: grid; gap: 12px; counter-reset: s }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 12px; min-width: 0 }
+.step-top { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start }
+.num { font: 700 15px/1 var(--f-display); color: var(--muted); padding-top: 3px; font-variant-numeric: tabular-nums }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px }
+.pill { font: 500 12px/1 var(--f-mono); padding: 5px 8px; border-radius: 6px; background: var(--bg); color: var(--muted); white-space: nowrap }
+.pill.req { color: var(--old); background: var(--old-soft) }
+.pill.opt { color: var(--new); background: var(--new-soft) }
+.pill.t { color: var(--accent); background: var(--accent-soft) }
+.body { display: grid; gap: 10px; padding-left: 52px; min-width: 0 }
+.why { font-size: 14px; color: var(--muted) }
+.why b { color: var(--ink); font-weight: 600 }
+.chips { display: flex; flex-wrap: wrap; gap: 6px }
+.chip { background: var(--btn); color: var(--btn-ink); border-radius: 7px; padding: 6px 10px; font-size: 13.5px; font-weight: 500 }
+.chip.input { background: transparent; border: 1px dashed var(--line); color: var(--muted); font-weight: 400 }
+.chip.dim { opacity: .65 }
+.diff { border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px }
+.diff.now { background: var(--new-soft) }
+.diff .lbl { font: 600 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--new) }
+.diff p { font-size: 14.5px }
+.time { font: 400 12px/1 var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums }
+.time s { color: var(--old) }
+.time ins { color: var(--new); text-decoration: none }
+.step.unchanged .why { }
+.step.removed-like { }
+
+.card-mock { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; font-size: 14.5px; white-space: pre-line; max-width: 460px }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: grid; gap: 8px; min-width: 0 }
+.box h3 { font-size: 15px }
+.box ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14.5px }
+.box.public { border-color: var(--accent) }
+.note { font-size: 13.5px; color: var(--muted); border-left: 3px solid var(--line); padding-left: 12px }
+
+ol.questions { margin: 0; padding-left: 22px; display: grid; gap: 12px }
+ol.questions li { padding-left: 4px }
+ol.questions li::marker { font: 700 14px var(--f-display); color: var(--accent) }
+ol.questions small { display: block; color: var(--muted); font-size: 14px }
+
+footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px }
+code { font: 13px var(--f-mono); background: var(--btn); padding: 1px 5px; border-radius: 4px }
+
+@media (max-width: 520px) {
+  .body { padding-left: 0 }
+  .step-top { grid-template-columns: 30px 1fr }
+}
+@media (prefers-reduced-motion: no-preference) { .step { transition: opacity .15s } }
+</style>
+
+<div class="wrap">
+
+<header class="head">
+  <div class="eyebrow">coverbot · этап 1 · на согласование</div>
+  <h1>Анкета кавер-группы</h1>
+  <p class="lead">Что бот спрашивает у группы при регистрации сейчас и что предлагаем упростить. Цель этапа — быстро собрать базу групп: анкета должна проходиться за пару минут, почти целиком кнопками. Код пока не меняем, ждём ОК или правки.</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<section>
+  <h2>Что меняем во всей анкете</h2>
+  <ul class="list">
+    <li><span><b>Согласие на обработку данных — в начале</b>, до первого вопроса. Сейчас оно одной фразой в самом конце.</span></li>
+    <li><span><b>Кнопка «← Назад» на каждом шаге.</b> Сейчас ошибся — только «Заполнить заново» в конце, все 16 шагов с нуля.</span></li>
+    <li><span><b>Шаги собраны в 5 блоков</b>, прогресс показываем блоком: «Цены · 3 из 5» вместо «Шаг 9/16».</span></li>
+    <li><span><b>Черновик не теряется</b>, если бот перезапустился посреди анкеты. Сейчас прогресс пропадает.</span></li>
+    <li><span><b>Первый экран обещает «≈3 минуты, почти всё кнопками»</b> (сейчас «3–5 минут»).</span></li>
+    <li><span><b>Поиск для продюсеров закрыт заглушкой</b>: «Подбор скоро запустим, сейчас собираем базу групп».</span></li>
+  </ul>
+  <div class="blocks" aria-label="Новый порядок блоков">
+    <span class="blk">1 · О группе</span><span class="sep">→</span>
+    <span class="blk">2 · Состав и жанры</span><span class="sep">→</span>
+    <span class="blk">3 · Цены</span><span class="sep">→</span>
+    <span class="blk">4 · Программа</span><span class="sep">→</span>
+    <span class="blk">5 · Видео и контакты</span>
+  </div>
+</section>
+
+<section>
+  <h2>Вопросы по шагам</h2>
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Фильтр шагов">
+      <button type="button" id="f-all" aria-pressed="true">Все 16 шагов</button>
+      <button type="button" id="f-chg" aria-pressed="false">Только изменения</button>
+    </div>
+    <div class="legend"><span>синие плашки — кнопки в боте</span><span>пунктир — ввод текстом</span></div>
+  </div>
+  <div class="steps" id="steps"></div>
+</section>
+
+<section>
+  <h2>Что увидит продюсер</h2>
+  <p class="lead">После анкеты группа видит превью карточки. В каталоге публикуется только она; контакты продюсер получает, когда группа ему подошла.</p>
+  <div class="card-mock" aria-label="Пример карточки, вымышленная группа">🎸 <b>Пример: «Вечерний сет»</b>
+👥 Группа 4–5: Вокал (ж), Гитара, Бас, Барабаны
+🎵 Поп-хиты, Русские хиты, Диско / фанк
+📍 Москва (по России)
+💰 Частное: 120 000 ₽ · Корпоратив: 150 000 ₽ · Новый год: 220 000 ₽
+🎛 3 × 45 мин · Свой звук, включён в цену
+➕ Welcome-музыка, DJ между сетами
+▶️ видео 1 · видео 2</div>
+</section>
+
+<section id="consent">
+  <h2>Согласие на данные</h2>
+  <p class="lead">Экран перед первым вопросом: три строки выжимки, ссылка на полный текст, кнопки «Согласен» и «Не сейчас». Факт согласия храним с датой и версией текста. Полный текст перед запуском проверяет юрист (152-ФЗ).</p>
+  <div class="two">
+    <div class="box">
+      <h3>Что собираем</h3>
+      <ul>
+        <li>Ответы анкеты: название, город, состав, жанры, цены, программа, звук, услуги, ссылки на видео</li>
+        <li>Телефон и сайт, если группа их дала</li>
+        <li>Telegram: ID и юзернейм</li>
+        <li>Даты: согласие, подтверждение цен</li>
+      </ul>
+      <p class="note">Не собираем: паспортные данные, email, реквизиты, фото участников.</p>
+    </div>
+    <div class="box public">
+      <h3>Что публикуется в карточке</h3>
+      <ul>
+        <li>Всё из анкеты, кроме контактов</li>
+        <li>Контакты (Telegram, телефон, сайт) видит только продюсер, которому группа подошла</li>
+        <li>До публикации анкету проверяет модератор</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Зачем и где храним</h3>
+      <ul>
+        <li>Цель одна: подбирать группы под запросы продюсеров</li>
+        <li>База на нашем сервере, третьим лицам не передаём</li>
+        <li>Срок: пока группа в каталоге. Цены не подтверждались 12 месяцев — карточка уходит в архив</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Как удалить</h3>
+      <ul>
+        <li>Кнопка «Удалить мои данные» в разделе «Моя группа» или команда <code>/delete</code></li>
+        <li>Карточка снимается сразу, данные стираются из базы</li>
+        <li>Отозвать согласие = удалить данные</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Нужно решить вместе</h2>
+  <ol class="questions">
+    <li>Сетка цен кнопками: 30к / 50к / 70к / 100к / 150к / 200к / 300к+ — подходит под рынок?<small>Плюс всегда есть «Ввести точно» и «Не берём такие».</small></li>
+    <li>Видео оставляем обязательным?<small>Предлагаем: можно нажать «Пришлю позже», анкета сохранится черновиком, но в каталог без видео не попадёт.</small></li>
+    <li>Новый год — отдельный вопрос или кнопка «Как корпоратив + 30%»?</li>
+    <li>Какие города вывести кнопками?<small>Черновик: Москва, Санкт-Петербург, Екатеринбург, Казань, Новосибирск, Нижний Новгород, Краснодар, Сочи + «Другой».</small></li>
+    <li>Инструменты оставляем обязательными?<small>Для подбора полезно, но это самый долгий кнопочный шаг.</small></li>
+    <li>Срок хранения неактивных карточек: 12 месяцев без подтверждения цен — ок?</li>
+  </ol>
+</section>
+
+<footer>Источник: анкета в боте @coverbro_bot, файлы <code>app/handlers/onboarding.py</code> и <code>app/dictionaries.py</code>. Время шагов — наша оценка, проверим тест-прогоном перед запуском.</footer>
+</div>
+
+<script>
+const D = {
+  TRAVEL: ["Только свой город", "Город + область", "По России"],
+  LINEUPS: ["Соло", "Дуэт", "Трио", "Группа 4–5", "Группа 6+"],
+  INSTR: ["Вокал (м)", "Вокал (ж)", "Гитара", "Бас", "Барабаны", "Клавиши", "Саксофон", "Скрипка", "Труба / духовые", "Перкуссия"],
+  GENRES: ["Танцевальный микс", "Поп-хиты", "Русские хиты", "Зарубежные хиты", "Рок / русский рок", "Ретро 70–90-х", "Диско / фанк", "Джаз / лаунж / свинг", "Акустика", "Mash-up", "Инструментальный кавер", "Этно / фолк"],
+  FORMAT: ["2 × 45 мин", "3 × 30 мин", "3 × 45 мин", "Почасово", "Другое"],
+  SOUND: ["Свой звук, включён в цену", "Свой звук за доплату", "Нужен звук площадки"],
+  SERVICES: ["Welcome-музыка", "Музыка на церемонию", "Песня на заказ", "DJ между сетами", "Усиление состава", "Свой свет", "Ведущий / MC", "Тематическая программа", "Выезд в другой город"],
+};
+const PRICE_BTNS = ["от 30к", "от 50к", "от 70к", "от 100к", "от 150к", "от 200к", "от 300к+", "Ввести точно", "Не берём такие"];
+const TYPE = { text: "текст", single: "кнопки", multi: "мультивыбор", money: "сумма текстом", links: "ссылки текстом", phone: "телефон текстом" };
+
+// t: [секунд сейчас, секунд после]
+const STEPS = [
+  { q: "Как называется ваш проект или группа?", type: "text", req: true, input: "Название", t: [15, 15],
+    why: "Заголовок карточки. Без него не обойтись." },
+  { q: "В каком городе вы базируетесь?", type: "text", req: true, input: "Город", t: [15, 5],
+    why: "Подбор по городу события.",
+    now: { type: "single", text: "Кнопки с крупными городами, «Другой» открывает ввод текстом. Меньше опечаток и разнобоя в написании городов.",
+      chips: ["Москва", "Санкт-Петербург", "Екатеринбург", "Казань", "Новосибирск", "Нижний Новгород", "Краснодар", "Сочи", "Другой"] } },
+  { q: "Куда готовы выезжать?", type: "single", req: true, opts: D.TRAVEL, t: [5, 5],
+    why: "Чтобы предлагать группу на события в других городах." },
+  { q: "Какой у вас состав?", type: "single", req: true, opts: D.LINEUPS, t: [5, 5],
+    why: "Продюсер обычно ищет по формату: дуэт на welcome, группа на банкет." },
+  { q: "Отметьте вокал и инструменты в составе", type: "multi", req: true, opts: D.INSTR, t: [20, 20],
+    why: "Запросы вида «нужен саксофон» или «женский вокал»." },
+  { q: "Какие жанры играете?", type: "multi", req: true, opts: D.GENRES, t: [20, 20],
+    why: "Главный критерий подбора после бюджета." },
+  { q: "Коротко: чем вы отличаетесь? 2–3 предложения", type: "text", req: false, input: "Свободный текст", skip: "Пропустить", t: [60, 5],
+    why: "Помогает точнее подбирать, показывается в карточке.",
+    now: { type: "text", text: "Переносим в самый конец, перед превью. Текст — самое долгое место анкеты, в середине на нём бросают. Остаётся необязательным." } },
+  { q: "Цена «от» за программу на частном событии (свадьба, ДР, юбилей)", type: "money", req: "one", input: "60к или 60 000", skip: "Не берём такие", t: [20, 6],
+    why: "Фильтр по бюджету продюсера.",
+    now: { type: "single", text: "Сетка кнопок «от N». Точная сумма — по кнопке «Ввести точно».", chips: PRICE_BTNS } },
+  { q: "Цена «от» на корпоративе", type: "money", req: "one", input: "Сумма", skip: "Не берём такие", t: [20, 6],
+    why: "Корпоративы — основной спрос.",
+    now: { type: "single", text: "Та же сетка кнопок.", chips: PRICE_BTNS } },
+  { q: "Цена «от» на Новый год (декабрьские корпоративы)", type: "money", req: "one", input: "Сумма", skip: "Не берём такие", t: [20, 6],
+    why: "В декабре цены выше, считаем отдельно.",
+    now: { type: "single", text: "Та же сетка кнопок, плюс, возможно, «Как корпоратив + 30%» (см. вопрос 3 внизу).", chips: ["от 30к", "…", "от 300к+", "Как корпоратив + 30%", "Ввести точно", "Не берём такие"] } },
+  { q: "Что входит в стандартную программу?", type: "single", req: true, opts: D.FORMAT, t: [5, 5],
+    why: "Сравнивать цены разных групп за одинаковый объём." },
+  { q: "Как со звуком?", type: "single", req: true, opts: D.SOUND, t: [5, 5],
+    why: "Влияет на смету продюсера." },
+  { q: "Какие доп. услуги можете предложить?", type: "multi", req: false, opts: D.SERVICES, skip: "Готово", t: [15, 15],
+    why: "Плюс к карточке; можно ничего не отмечать." },
+  { q: "Пришлите 1–3 ссылки на живые выступления", type: "links", req: true, input: "YouTube, VK, Rutube, Яндекс Диск, Telegram", t: [60, 60],
+    why: "Продюсер выбирает по видео. Без видео карточка почти бесполезна.",
+    now: { type: "links", text: "Остаётся текстом. Добавляем кнопку «Пришлю позже»: анкета сохранится черновиком, в каталог без видео не попадёт, бот напомнит через день (см. вопрос 2 внизу).", chips: ["Ссылки текстом", "Пришлю позже"] } },
+  { q: "Телефон для связи (необязательно)", type: "phone", req: false, input: "+7 999 123-45-67", skip: "Пропустить", t: [20, 5],
+    why: "Если у группы нет юзернейма в Telegram — обязателен.",
+    now: { type: "single", text: "Кнопка Telegram «Поделиться номером»: номер подставляется сам, набирать не надо.", chips: ["📱 Поделиться номером", "Пропустить"] } },
+  { q: "Сайт или соцсети (необязательно)", type: "text", req: false, input: "Ссылка", skip: "Пропустить", t: [20, 5],
+    why: "Для продюсеров, которым нужно больше информации." },
+];
+
+const fmt = s => s >= 60 ? (Math.round(s / 6) / 10).toString().replace(".", ",") + " мин" : s + " с";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function chips(step) {
+  const out = [];
+  if (step.opts) step.opts.forEach(o => out.push(`<span class="chip">${esc(o)}</span>`));
+  if (step.input) out.push(`<span class="chip input">${esc(step.input)}</span>`);
+  if (step.skip) out.push(`<span class="chip dim">${esc(step.skip)}</span>`);
+  if (step.type === "multi" && !step.skip) out.push(`<span class="chip dim">Готово</span>`);
+  return `<div class="chips">${out.join("")}</div>`;
+}
+function reqPill(r) {
+  if (r === true) return `<span class="pill req">обязательно</span>`;
+  if (r === "one") return `<span class="pill req">хотя бы одна цена</span>`;
+  return `<span class="pill opt">можно пропустить</span>`;
+}
+
+function render(onlyChanged) {
+  const html = STEPS.map((s, i) => {
+    if (onlyChanged && !s.now) return "";
+    const changed = !!s.now;
+    const time = s.t[0] === s.t[1]
+      ? `<span class="time">≈ ${fmt(s.t[0])}</span>`
+      : `<span class="time"><s>≈ ${fmt(s.t[0])}</s> → <ins>≈ ${fmt(s.t[1])}</ins></span>`;
+    const now = changed ? `<div class="diff now"><span class="lbl">Стало · ${TYPE[s.now.type]}</span><p>${esc(s.now.text)}</p>${s.now.chips ? `<div class="chips">${s.now.chips.map(c => `<span class="chip">${esc(c)}</span>`).join("")}</div>` : ""}</div>` : "";
+    return `<article class="step${changed ? " changed" : ""}">
+      <div class="step-top"><span class="num">${String(i + 1).padStart(2, "0")}</span>
+        <div><h3>${esc(s.q)}</h3><div class="meta"><span class="pill t">${TYPE[s.type]}</span>${reqPill(s.req)}${changed ? `<span class="pill opt">меняем</span>` : ""}</div></div></div>
+      <div class="body">${chips(s)}<p class="why"><b>Зачем:</b> ${esc(s.why)}</p>${now}${time}</div>
+    </article>`;
+  }).join("");
+  document.getElementById("steps").innerHTML = html;
+}
+
+function stats() {
+  const before = STEPS.reduce((a, s) => a + s.t[0], 0) + 20;
+  const after = STEPS.reduce((a, s) => a + s.t[1], 0) + 20;
+  const typedBefore = STEPS.filter(s => ["text", "money", "links", "phone"].includes(s.type)).length;
+  const typedAfter = STEPS.filter(s => { const t = s.now ? s.now.type : s.type; return ["text", "money", "links", "phone"].includes(t); }).length;
+  const required = STEPS.filter(s => s.req === true).length;
+  const minRound = s => Math.round(s / 30) / 2;
+  document.getElementById("stats").innerHTML = `
+    <div class="stat"><b>${minRound(before).toString().replace(".", ",")} <span class="arrow">→</span> <span class="to">${minRound(after).toString().replace(".", ",")}</span></b><span>минут на всю анкету</span></div>
+    <div class="stat"><b>${typedBefore} <span class="arrow">→</span> <span class="to">${typedAfter}</span></b><span>шагов с вводом текста из ${STEPS.length}</span></div>
+    <div class="stat"><b>${required} + 1</b><span>обязательных шагов и хотя бы одна цена</span></div>`;
+}
+
+const bAll = document.getElementById("f-all"), bChg = document.getElementById("f-chg");
+function setFilter(only) {
+  bAll.setAttribute("aria-pressed", String(!only)); bChg.setAttribute("aria-pressed", String(only));
+  render(only);
+  try { localStorage.setItem("anketa-filter", only ? "chg" : "all"); } catch (e) {}
+}
+bAll.addEventListener("click", () => setFilter(false));
+bChg.addEventListener("click", () => setFilter(true));
+let saved = "all"; try { saved = localStorage.getItem("anketa-filter") || "all"; } catch (e) {}
+stats(); setFilter(saved === "chg");
+</script>
