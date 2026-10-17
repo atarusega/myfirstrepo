@@ -95,6 +95,7 @@ const fragmentShader = `
   uniform float uTextTop;
   uniform float uTextH;
   uniform float uTextureCount;
+  uniform float uIndexStep;
   uniform sampler2D uImageAtlas;
   uniform sampler2D uTextAtlas;
   varying vec2 vUv;
@@ -147,7 +148,8 @@ const fragmentShader = `
     float imageAlpha = 1.0 - smoothstep(-edgeSmooth, edgeSmooth, roundDist);
     bool inImageArea = imageUV.x >= 0.0 && imageUV.x <= 1.0 && imageUV.y >= 0.0 && imageUV.y <= 1.0;
     bool inTextArea = cellUV.x >= imageLeft && cellUV.x <= imageLeft + imageSize && cellUV.y >= textBottom && cellUV.y <= uTextTop;
-    float texIndex = mod(cellId.x + cellId.y * 3.0, uTextureCount);
+    // Проект ячейки: (x + k·y) mod N; k подобран в JS так, чтобы повторы были как можно дальше
+    float texIndex = mod(cellId.x + cellId.y * uIndexStep, uTextureCount);
     vec3 color = backgroundColor;
     if (inImageArea && imageAlpha > 0.0) {
       float atlasSize = ceil(sqrt(uTextureCount));
@@ -239,18 +241,7 @@ function createTextTexture(title, textColor, band) {
   return texture;
 }
 
-function blankTexture() {
-  const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = 512;
-  const ctx = canvas.getContext("2d");
-  if (ctx) {
-    ctx.fillStyle = "#111";
-    ctx.fillRect(0, 0, 512, 512);
-  }
-  return new THREE.CanvasTexture(canvas);
-}
-
-function loadImageTexture(src) {
+function loadImage(src) {
   return new Promise((resolve) => {
     const image = new Image();
     let retries = 0;
@@ -258,14 +249,7 @@ function loadImageTexture(src) {
     image.decoding = "async";
     image.onload = async () => {
       try { await image.decode(); } catch {}
-      const texture = new THREE.Texture(image);
-      texture.wrapS = THREE.ClampToEdgeWrapping;
-      texture.wrapT = THREE.ClampToEdgeWrapping;
-      texture.minFilter = THREE.LinearFilter;
-      texture.magFilter = THREE.LinearFilter;
-      texture.flipY = false;
-      texture.needsUpdate = true;
-      resolve(texture);
+      resolve(image);
     };
     image.onerror = () => {
       if (retries === 0) {
@@ -279,52 +263,99 @@ function loadImageTexture(src) {
   });
 }
 
-function createTextureAtlas(textures, isText = false) {
+function atlasTexture(canvas, mipmaps) {
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.minFilter = mipmaps ? THREE.LinearMipmapLinearFilter : THREE.LinearFilter;
+  texture.generateMipmaps = mipmaps;
+  texture.magFilter = THREE.LinearFilter;
+  texture.flipY = false;
+  return texture;
+}
+
+function createTextAtlas(textures) {
   const atlasSize = Math.ceil(Math.sqrt(textures.length));
-  const textureSize = 512;
   const first = textures[0]?.image;
-  const cellW = isText && first ? first.width : textureSize;
-  const cellH = isText && first ? first.height : textureSize;
+  const cellW = first ? first.width : 512;
+  const cellH = first ? first.height : 512;
   const canvas = document.createElement("canvas");
   canvas.width = atlasSize * cellW;
   canvas.height = atlasSize * cellH;
   const ctx = canvas.getContext("2d");
   if (ctx) {
-    if (isText) ctx.clearRect(0, 0, canvas.width, canvas.height);
-    else {
-      ctx.fillStyle = "black";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-    const fallback = textures.find((texture) => texture.source?.data ?? texture.image);
-    const fallbackSource = fallback?.source?.data ?? fallback?.image;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     textures.forEach((texture, index) => {
-      const x = (index % atlasSize) * cellW;
-      const y = Math.floor(index / atlasSize) * cellH;
-      const src = texture.source?.data ?? texture.image;
+      const src = texture.image;
       if (!src) return;
-      const sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height;
-      const side = isText ? 0 : Math.min(sw, sh);
-      try {
-        if (isText) ctx.drawImage(src, x, y, cellW, cellH);
-        else if (!side) ctx.drawImage(src, x, y, textureSize, textureSize);
-        else ctx.drawImage(src, (sw - side) / 2, (sh - side) / 2, side, side, x, y, textureSize, textureSize);
-      }
-      catch {
-        if (fallbackSource) ctx.drawImage(fallbackSource, x, y, textureSize, textureSize);
-      }
+      ctx.drawImage(src, (index % atlasSize) * cellW, Math.floor(index / atlasSize) * cellH, cellW, cellH);
     });
   }
-  const atlasTexture = new THREE.CanvasTexture(canvas);
-  atlasTexture.wrapS = THREE.ClampToEdgeWrapping;
-  atlasTexture.wrapT = THREE.ClampToEdgeWrapping;
-  atlasTexture.minFilter = isText ? THREE.LinearMipmapLinearFilter : THREE.LinearFilter;
-  atlasTexture.generateMipmaps = isText;
-  atlasTexture.magFilter = THREE.LinearFilter;
-  atlasTexture.flipY = false;
-  return atlasTexture;
+  return atlasTexture(canvas, true);
 }
 
-function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reducedMotion, onSelect, imageSize, imageRadius, textSize, drift, paused }) {
+// Сторона ячейки атласа картинок = стороне миниатюры cover.webp (tools/make_covers.py)
+const IMAGE_TILE = 480;
+
+/** Атлас картинок, который заполняется по мере загрузки: сначала в каждой ячейке цвет проекта,
+ *  потом поверх рисуется квадратный кроп картинки. Текстура перезаливается один раз за кадр. */
+function createImageAtlas(count, colors) {
+  const atlasSize = Math.ceil(Math.sqrt(count));
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = atlasSize * IMAGE_TILE;
+  const ctx = canvas.getContext("2d");
+  const cell = (index) => [(index % atlasSize) * IMAGE_TILE, Math.floor(index / atlasSize) * IMAGE_TILE];
+  if (ctx) {
+    ctx.fillStyle = defaultConfig.backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Заглушка: цвет проекта, приглушённый к графиту
+    ctx.globalAlpha = 0.35;
+    for (let i = 0; i < count; i++) {
+      const [x, y] = cell(i);
+      ctx.fillStyle = colors?.[i] || "#555555";
+      ctx.fillRect(x, y, IMAGE_TILE, IMAGE_TILE);
+    }
+    ctx.globalAlpha = 1;
+  }
+  const atlas = { texture: atlasTexture(canvas, false), dirty: false };
+  atlas.draw = (index, image) => {
+    if (!ctx) return;
+    const sw = image.naturalWidth || image.width, sh = image.naturalHeight || image.height;
+    const side = Math.min(sw, sh);
+    const [x, y] = cell(index);
+    try {
+      if (!side) ctx.drawImage(image, x, y, IMAGE_TILE, IMAGE_TILE);
+      else ctx.drawImage(image, (sw - side) / 2, (sh - side) / 2, side, side, x, y, IMAGE_TILE, IMAGE_TILE);
+      atlas.dirty = true;
+    } catch {}
+  };
+  return atlas;
+}
+
+/** Шаг индекса k для формулы «проект ячейки = (x + k·y) mod n».
+ *  Повтор проекта — любой сдвиг (dx, dy) с dx + k·dy ≡ 0 (mod n). Выбираем k, при котором ближайший
+ *  повтор дальше всего относительно экрана: на экране cols колонок и rows строк, повтор виден,
+ *  если |dx| < cols и |dy| < rows. */
+export function pickIndexStep(n, cols, rows) {
+  if (n < 2) return 1;
+  let best = 1, bestScore = -1, bestLen = -1;
+  for (let k = 1; k < n; k++) {
+    let score = Infinity, len = Infinity;
+    for (let dy = 0; dy <= n; dy++) {
+      let dx = (((-k * dy) % n) + n) % n;
+      if (dx > n / 2) dx -= n;
+      if (dy === 0) dx = n; // по горизонтали повтор через n ячеек
+      score = Math.min(score, Math.max(Math.abs(dx) / cols, dy / rows));
+      len = Math.min(len, Math.hypot(dx, dy));
+    }
+    if (score > bestScore || (score === bestScore && len > bestLen)) {
+      best = k; bestScore = score; bestLen = len;
+    }
+  }
+  return best;
+}
+
+function ArtGalleryScene({ images, items, colors, cellSize, zoomLevel, showHint, reducedMotion, onSelect, imageSize, imageRadius, textSize, drift, snapX, paused }) {
   const containerRef = useRef(null);
   // Пока поверх открыт проект, сетку не видно — не рисуем её, чтобы не отнимать видеокарту у ленты
   const pausedRef = useRef(paused);
@@ -355,6 +386,8 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
     let textAtlas;
     const loadedTextures = [];
     let resizeObserver;
+    let atlas;
+    let indexStep = 1;
 
     const state = {
       isDragging: false,
@@ -414,6 +447,12 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
           state.targetOffset.x += drift[0] * k;
           state.targetOffset.y += drift[1] * k;
         }
+        // На телефоне колонки после броска мягко встают по центру экрана
+        // (центр экрана — на линии сетки, по бокам две целые колонки)
+        if (snapX && Math.abs(state.velocity.x) < 0.004) {
+          const aligned = Math.round(state.targetOffset.x / cellSize) * cellSize;
+          state.targetOffset.x += (aligned - state.targetOffset.x) * 0.04 * k;
+        }
       }
       state.offset.x += (state.targetOffset.x - state.offset.x) * lerpFactor;
       state.offset.y += (state.targetOffset.y - state.offset.y) * lerpFactor;
@@ -421,6 +460,11 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       if (plane?.material.uniforms) {
         plane.material.uniforms.uOffset.value.set(state.offset.x, state.offset.y);
         plane.material.uniforms.uZoom.value = state.zoom;
+      }
+      // Подгрузившиеся обложки заливаем в текстуру один раз за кадр
+      if (atlas?.dirty) {
+        atlas.texture.needsUpdate = true;
+        atlas.dirty = false;
       }
       renderer.render(scene, camera);
     };
@@ -443,7 +487,7 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       const wy = sy * distortion * state.zoom + state.offset.y;
       const cx = Math.floor(wx / cellSize), cy = Math.floor(wy / cellSize);
       const n = images.length;
-      return (((cx + cy * 3) % n) + n) % n;
+      return (((cx + cy * indexStep) % n) + n) % n;
     };
 
     const startDrag = (x, y) => {
@@ -528,21 +572,18 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
     };
 
     const init = async () => {
-      const loadedImages = await Promise.all(images.map((src) => loadImageTexture(src)));
-      if (cancelled) {
-        loadedImages.forEach((texture) => texture?.dispose());
-        return;
-      }
-      const replacement = loadedImages.find(Boolean) ?? blankTexture();
-      const imageTiles = loadedImages.map((texture) => texture ?? replacement);
-      loadedTextures.push(...new Set(imageTiles));
+      // Сетку показываем, не дожидаясь картинок: подписи + цветные заглушки, обложки дорисуем по мере загрузки
       try { await document.fonts.load('700 56px "Unbounded"', "АБВ"); } catch {}
       if (cancelled) return;
       const textTextures = items.map((item) => createTextTexture(item.title, defaultConfig.textColor, textBand));
       loadedTextures.push(...textTextures);
-      imageAtlas = createTextureAtlas(imageTiles, false);
-      textAtlas = createTextureAtlas(textTextures, true);
-      if (cancelled) return;
+      textAtlas = createTextAtlas(textTextures);
+      atlas = createImageAtlas(images.length, colors);
+      imageAtlas = atlas.texture;
+
+      // Сколько ячеек видно на экране (с запасом на отдаление при перетаскивании) — от этого зависит шаг индекса
+      const aspect = (container.clientWidth || 1) / (container.clientHeight || 1);
+      indexStep = pickIndexStep(images.length, (2 * aspect * zoomLevel) / cellSize, (2 * zoomLevel) / cellSize);
 
       const uniforms = {
         uOffset: { value: new THREE.Vector2(0, 0) },
@@ -558,6 +599,7 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
         uTextH: { value: textBand.h },
         uRadius: { value: imageRadius },
         uTextureCount: { value: images.length },
+        uIndexStep: { value: indexStep },
         uImageAtlas: { value: imageAtlas },
         uTextAtlas: { value: textAtlas },
       };
@@ -580,6 +622,13 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       onResize();
       animate();
       setReady(true);
+
+      // Обложки грузятся параллельно и встают в атлас каждая по готовности
+      images.forEach((src, index) => {
+        loadImage(src).then((image) => {
+          if (!cancelled && image) atlas.draw(index, image);
+        });
+      });
     };
 
     init();
@@ -603,7 +652,7 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
       renderer?.dispose();
       if (renderer?.domElement?.parentNode === container) container.removeChild(renderer.domElement);
     };
-  }, [images, items, cellSize, zoomLevel, reducedMotion, imageSize, imageRadius, textSize, drift]);
+  }, [images, items, colors, cellSize, zoomLevel, reducedMotion, imageSize, imageRadius, textSize, drift, snapX]);
 
   return (
     <div className="absolute inset-0 cursor-grab active:cursor-grabbing" style={{ touchAction: "none" }} onPointerDown={() => setHint(false)}>
@@ -625,10 +674,11 @@ function ArtGalleryScene({ images, items, cellSize, zoomLevel, showHint, reduced
   );
 }
 
-/** @param {{ images?: string[], items?: { title: string, year: string | number }[], cellSize?: number, zoomLevel?: number, showHint?: boolean, onSelect?: (index: number) => void, imageSize?: number, imageRadius?: number, textSize?: number, paused?: boolean, drift?: [number, number], className?: string, style?: import("react").CSSProperties }} props */
+/** @param {{ images?: string[], items?: { title: string, year: string | number }[], colors?: string[], cellSize?: number, zoomLevel?: number, showHint?: boolean, onSelect?: (index: number) => void, imageSize?: number, imageRadius?: number, textSize?: number, paused?: boolean, drift?: [number, number], snapX?: boolean, className?: string, style?: import("react").CSSProperties }} props */
 export function ArtGallery({
   images = defaultImages,
   items = defaultItems,
+  colors,
   cellSize = defaultConfig.cellSize,
   zoomLevel = defaultConfig.zoomLevel,
   showHint = true,
@@ -636,6 +686,7 @@ export function ArtGallery({
   imageRadius = 0.035,
   textSize = 0.05,
   drift,
+  snapX = false,
   paused = false,
   onSelect,
   className,
@@ -653,6 +704,7 @@ export function ArtGallery({
       <ArtGalleryScene
         images={tiles}
         items={captions}
+        colors={colors}
         cellSize={cellSize}
         zoomLevel={zoomLevel}
         showHint={showHint}
@@ -662,6 +714,7 @@ export function ArtGallery({
         imageRadius={imageRadius}
         textSize={textSize}
         drift={drift}
+        snapX={snapX}
         paused={paused}
       />
     </WebGLSurface>

@@ -4,6 +4,8 @@
 import html, json, re, urllib.request
 from pathlib import Path
 
+from make_covers import make_cover
+
 ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "app"
 IMAGES = APP / "public" / "images"
@@ -76,6 +78,9 @@ def main():
         from PIL import Image
         p["sizes"] = [list(Image.open(folder / f.split("/")[-1]).size) for f in files]
         p["color"], p["textColor"] = accent(folder / "01.jpg")
+        # Миниатюра для сетки (квадрат 480 px, webp) — сетка грузит её, а не 01.jpg
+        make_cover(folder)
+        p["cover"] = f"images/{pid}/cover.webp"
         projects.append(p)
         print(pid, p["title"], len(files))
     DATA.parent.mkdir(parents=True, exist_ok=True)

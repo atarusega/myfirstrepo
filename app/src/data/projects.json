@@ -63,7 +63,8 @@
         800,
         533
       ]
-    ]
+    ],
+    "cover": "images/444/cover.webp"
   },
   {
     "id": 437,
@@ -113,7 +114,8 @@
         800,
         533
       ]
-    ]
+    ],
+    "cover": "images/437/cover.webp"
   },
   {
     "id": 428,
@@ -169,7 +171,8 @@
         800,
         533
       ]
-    ]
+    ],
+    "cover": "images/428/cover.webp"
   },
   {
     "id": 420,
@@ -225,7 +228,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/420/cover.webp"
   },
   {
     "id": 411,
@@ -286,7 +290,8 @@
         800,
         446
       ]
-    ]
+    ],
+    "cover": "images/411/cover.webp"
   },
   {
     "id": 401,
@@ -352,7 +357,8 @@
         800,
         533
       ]
-    ]
+    ],
+    "cover": "images/401/cover.webp"
   },
   {
     "id": 380,
@@ -414,7 +420,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/380/cover.webp"
   },
   {
     "id": 357,
@@ -480,7 +487,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/357/cover.webp"
   },
   {
     "id": 342,
@@ -547,7 +555,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/342/cover.webp"
   },
   {
     "id": 337,
@@ -588,7 +597,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/337/cover.webp"
   },
   {
     "id": 329,
@@ -644,7 +654,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/329/cover.webp"
   },
   {
     "id": 320,
@@ -706,7 +717,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/320/cover.webp"
   },
   {
     "id": 242,
@@ -775,7 +787,8 @@
         533,
         800
       ]
-    ]
+    ],
+    "cover": "images/242/cover.webp"
   },
   {
     "id": 216,
@@ -828,7 +841,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/216/cover.webp"
   },
   {
     "id": 193,
@@ -885,7 +899,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/193/cover.webp"
   },
   {
     "id": 185,
@@ -942,7 +957,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/185/cover.webp"
   },
   {
     "id": 180,
@@ -985,7 +1001,8 @@
         800,
         602
       ]
-    ]
+    ],
+    "cover": "images/180/cover.webp"
   },
   {
     "id": 171,
@@ -1042,7 +1059,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/171/cover.webp"
   },
   {
     "id": 164,
@@ -1091,7 +1109,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/164/cover.webp"
   },
   {
     "id": 110,
@@ -1139,7 +1158,8 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/110/cover.webp"
   },
   {
     "id": 65,
@@ -1183,6 +1203,7 @@
         800,
         450
       ]
-    ]
+    ],
+    "cover": "images/65/cover.webp"
   }
 ]
