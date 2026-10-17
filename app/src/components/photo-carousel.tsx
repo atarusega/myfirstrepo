@@ -263,10 +263,24 @@ export function PhotoCarousel({ items, label, pull, onClose, onIndex }: Props) {
               cards.current[i] = el
             }}
             data-i={i}
-            className="absolute top-1/2 left-1/2 overflow-hidden rounded-[20px] bg-white/5 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)] will-change-transform"
+            className="absolute top-1/2 left-1/2 overflow-hidden rounded-[20px] bg-[#262626] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)] will-change-transform"
             style={{ visibility: "hidden" }}
           >
-            <img src={it.src} alt={it.alt} decoding="async" draggable={false} className="size-full object-cover" />
+            <img
+              src={it.src}
+              alt={it.alt}
+              decoding="async"
+              draggable={false}
+              // Мобильный Safari иногда обрывает загрузку — пробуем ещё дважды, подпись-заглушку прячем
+              onError={(e) => {
+                const img = e.currentTarget
+                const n = Number(img.dataset.retry ?? 0)
+                if (n >= 2) return
+                img.dataset.retry = String(n + 1)
+                setTimeout(() => (img.src = `${it.src}?r=${n + 1}`), 500 * (n + 1))
+              }}
+              className="size-full object-cover text-transparent"
+            />
           </div>
         ))}
       </div>
