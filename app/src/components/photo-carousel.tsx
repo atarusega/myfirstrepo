@@ -73,7 +73,8 @@ export function PhotoCarousel({ items, label, pull, onClose, onIndex }: Props) {
       el.style.marginLeft = `${-cw / 2}px`
       el.style.marginTop = `${-ch / 2}px`
       el.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateY(${th * 0.45}rad) rotateZ(${tilt}deg)`
-      el.style.zIndex = String(100 - Math.round(a * 10))
+      // Ближе к центру — выше; шаг мелкий, чтобы при листании порядок менялся плавно, без «перескоков»
+      el.style.zIndex = String(1000 - Math.round(a * 100))
       el.style.opacity = String(Math.max(0, Math.min(1, 2.4 - a)))
       el.style.filter = `brightness(${1 - Math.min(a, 1.5) * 0.35})`
       el.style.cursor = a < 0.5 ? "grab" : "pointer"
@@ -255,7 +256,9 @@ export function PhotoCarousel({ items, label, pull, onClose, onIndex }: Props) {
         if (e.pointerType === "mouse") lean.current.tx = lean.current.ty = 0
       }}
     >
-      <div ref={stage} className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
+      {/* Без preserve-3d: карточки — плоские слои с собственной перспективой, порядок задаёт z-index.
+          В настоящем 3D повёрнутые соседние карточки пересекали бы плоскость текущей (полоски поверх фото). */}
+      <div ref={stage} className="absolute inset-0" style={{ perspective: "1100px" }}>
         {items.map((it, i) => (
           <div
             key={it.src}
