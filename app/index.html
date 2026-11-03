@@ -22,8 +22,28 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <link rel="manifest" href="site.webmanifest" />
+    <!-- Яндекс Метрика. Номер счётчика подставляется при сборке из app/.env (VITE_YM_COUNTER_ID).
+         Пока там заглушка (не цифры), счётчик не загружается. -->
+    <script type="text/javascript">
+      (function (id) {
+        if (!/^\d+$/.test(id)) return;
+        (function (m, e, t, r, i, k, a) {
+          m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
+          m[i].l = 1 * new Date();
+          for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) return; }
+          (k = e.createElement(t)), (a = e.getElementsByTagName(t)[0]), (k.async = 1), (k.src = r), a.parentNode.insertBefore(k, a);
+        })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+        ym(Number(id), "init", {
+          webvisor: true,
+          clickmap: true,
+          trackLinks: true,
+          accurateTrackBounce: true,
+        });
+      })("%VITE_YM_COUNTER_ID%");
+    </script>
   </head>
   <body>
+    <noscript><div><img src="https://mc.yandex.ru/watch/%VITE_YM_COUNTER_ID%" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

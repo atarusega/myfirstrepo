@@ -4,6 +4,8 @@ import { ArrowUpRight, Send } from "lucide-react"
 import { ArtGallery } from "@/components/block/art-gallery"
 import { BrandLogo, BrandMark } from "@/components/brand"
 import { ProjectViewer } from "@/components/project-viewer"
+import { CookieNotice } from "@/components/cookie-notice"
+import { reachGoal, trackProjectOpen } from "@/lib/analytics"
 import { captions, colors, covers, projects } from "@/data/projects"
 
 const CHANNEL = "https://t.me/struktorum"
@@ -21,6 +23,12 @@ const DESKTOP = { cellSize: 0.75, imageSize: 0.64, textSize: 0.05, drift: undefi
 export default function App() {
   const [open, setOpen] = useState<number | null>(null)
   const [layout] = useState(() => (isPortrait() ? MOBILE : DESKTOP))
+
+  // Открытие проекта: окно поверх сетки + просмотр /projects/<id> и цель case_open в Метрике
+  const openProject = (index: number) => {
+    setOpen(index)
+    if (projects[index]) trackProjectOpen(projects[index])
+  }
 
   return (
     <main className="flex h-full w-full flex-col bg-graphite">
@@ -58,6 +66,7 @@ export default function App() {
             target="_blank"
             rel="noopener"
             aria-label="Обсудить проект с Никитой в Telegram"
+            onClick={() => reachGoal("contact_click", { contact: "telegram" })}
             className="flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-3 py-2 text-brand transition-colors hover:bg-brand-soft md:px-4"
           >
             <Send className="size-4" strokeWidth={2.25} aria-hidden="true" />
@@ -78,7 +87,7 @@ export default function App() {
           drift={layout.drift}
           snapX={layout.snapX}
           paused={open !== null}
-          onSelect={setOpen}
+          onSelect={openProject}
           className="h-full"
         />
         {/* Телефон: описание плашкой поверх сетки, чтобы не отнимать высоту у плиток */}
@@ -93,6 +102,8 @@ export default function App() {
       <AnimatePresence>
         {open !== null && <ProjectViewer key={open} project={projects[open]} onClose={() => setOpen(null)} />}
       </AnimatePresence>
+
+      <CookieNotice />
     </main>
   )
 }
