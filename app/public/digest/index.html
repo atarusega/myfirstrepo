@@ -65,6 +65,14 @@
   .top .theme:hover { color: var(--blue); }
   .top .theme .icon { display: none; }
   .card h3, .card .sum { overflow-wrap: anywhere; }
+  /* Вся карточка — ссылка на материал: ссылка заголовка растянута на карточку, остальные кнопки поверх неё */
+  .card { position: relative; transition: border-color .15s; }
+  .card h3 a { color: inherit; }
+  .card h3 a::after { content: ""; position: absolute; inset: 0; border-radius: 12px; z-index: 1; }
+  .card h3 a:hover { text-decoration: none; }
+  .card.go:hover { border-color: var(--blue); }
+  .card.go:hover h3 a { color: var(--blue); }
+  .card .more, .card .links a { position: relative; z-index: 2; }
 
   /* Меню разделов: прилипает под верхней полосой */
   .secs {
@@ -156,7 +164,7 @@
 </header>
 <nav class="secs" id="secs"></nav>
 <main class="wrap" id="app"></main>
-<script src="data.js?v=mw5bl4x0"></script>
+<script src="data.js?v=mw5cb5vl"></script>
 <script>
 (function () {
   var LATEST = window.DIGEST || { groups: [], main: [], stories: [], built: "", date: "", days: [] };
@@ -225,7 +233,11 @@
     row.appendChild(el("span", "name", s.name || ""));
     if (typeof s.score === "number") row.appendChild(el("span", "score", s.score.toFixed(1)));
     c.appendChild(row);
-    c.appendChild(el("h3", null, s.title));
+    // Клик по карточке открывает материал: первый источник, если его нет — ссылку «Попробовать»
+    var main = (s.sources && s.sources[0] && s.sources[0].url) || s.tryUrl;
+    var h3 = el("h3");
+    if (main) { h3.appendChild(link(main, s.title)); c.classList.add("go"); } else h3.textContent = s.title;
+    c.appendChild(h3);
     if (s.summary) {
       c.appendChild(el("p", "sum", s.summary));
       if (s.summary.length > (big ? 360 : 220)) {
