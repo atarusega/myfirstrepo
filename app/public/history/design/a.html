@@ -67,7 +67,7 @@ svg.pend{position:absolute;left:0;top:0;pointer-events:none}
 .ev span{color:var(--blue);font-weight:600;margin-right:6px}
 
 /* карточка */
-#card{position:fixed;top:0;right:0;width:460px;max-width:100%;height:100vh;background:var(--paper);border-left:1px solid var(--ink);transform:translateX(100%);transition:transform .25s;z-index:30;overflow-y:auto}
+#card{position:fixed;top:0;right:0;width:min(460px,100vw);height:100vh;background:var(--paper);border-left:1px solid var(--ink);transform:translateX(100%);transition:transform .25s;z-index:30;overflow-y:auto}
 #card.on{transform:none}
 .c-top{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;border-bottom:1px solid var(--ink);font-size:11px;text-transform:uppercase;letter-spacing:.08em;position:sticky;top:0;background:var(--paper)}
 .c-top button{border:1px solid var(--ink);background:none;padding:4px 10px;font-size:11px;margin-left:6px}
@@ -110,6 +110,12 @@ ul.feat li::before{content:"— ";color:var(--blue)}
 .pst .pm{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:end;border-top:1px solid var(--ink);padding-top:12px}
 .pst .py{font:800 54px/0.8 var(--head);color:var(--blue);letter-spacing:-.03em}
 .pst .pw{font-size:12px;line-height:1.45}
+ @media (max-width:600px){
+  header{grid-template-columns:1fr;padding:20px 16px 16px} h1{font-size:30px} .stats{gap:16px} .stat b{font-size:20px}
+  nav{padding:0;overflow-x:auto} nav .hint{display:none} .lab{padding-left:12px;width:120px}
+  .c-top,.c-body{padding-left:16px;padding-right:16px} .c-credit{padding:6px 16px}
+  .pst{width:100vw;height:125vw;padding:14px;gap:10px} .pst h2{font-size:20px} .pst .py{font-size:36px} .pst .pw{font-size:10px}
+}
 .pst-close{position:absolute;top:20px;right:20px;color:#fff;background:none;border:1px solid #fff;padding:6px 12px}
 </style>
 </head>
