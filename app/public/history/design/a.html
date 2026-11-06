@@ -4,125 +4,125 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>История дизайна — музейная карточка</title>
+<title>История дизайна — периоды и стулья</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#F4F1EA; --paper2:#EAE6DC; --ink:#1C1C1C; --ink2:#5B5952; --rule:#CFC9BB;
+  --paper:#F4F1EA; --paper2:#E9E4D8; --paper3:#DED8C9; --ink:#1C1C1C; --ink2:#6B685F; --rule:#D3CDBE;
   --blue:#3A3ED8; --orange:#F2642A; --mint:#9FE3D4; --lilac:#D9BDF2; --yellow:#F2B31A;
-  --label:190px; --mono:'IBM Plex Mono',monospace; --head:'Unbounded',sans-serif;
+  --mono:'IBM Plex Mono',monospace; --head:'Unbounded',sans-serif;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--paper);color:var(--ink);font:13px/1.5 var(--mono)}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:13px/1.5 var(--mono);overflow:hidden}
 a{color:var(--blue)}
-button{font:inherit;cursor:pointer}
+button{font:inherit;cursor:pointer;color:inherit}
 
-/* шапка */
-header{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;padding:28px 32px 20px;border-bottom:1px solid var(--ink)}
-h1{font:800 44px/0.95 var(--head);margin:0;letter-spacing:-.02em;text-transform:uppercase}
-h1 small{display:block;font:500 12px/1.4 var(--mono);letter-spacing:.08em;margin-top:12px;color:var(--ink2);text-transform:uppercase}
-.stats{display:flex;gap:28px}
-.stat b{display:block;font:600 28px/1 var(--head);color:var(--blue)}
-.stat span{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
-nav{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--ink);padding:8px 32px;display:flex;flex-direction:column;gap:6px}
+/* шапка: одна строка */
+header{display:flex;align-items:baseline;gap:28px;padding:18px 32px 14px;border-bottom:1px solid var(--ink)}
+h1{font:800 26px/1 var(--head);margin:0;letter-spacing:-.02em;text-transform:uppercase;white-space:nowrap}
+.sub{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+.stats{display:flex;gap:22px;margin-left:auto}
+.stat{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);white-space:nowrap}
+.stat b{font:600 15px/1 var(--head);color:var(--ink);margin-right:5px}
+
+/* панель */
+nav{position:relative;z-index:20;background:var(--paper);border-bottom:1px solid var(--ink);padding:10px 32px;display:flex;flex-direction:column;gap:8px}
 nav .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 nav .nl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);margin-right:4px}
-.tg,.zm{border:1px solid var(--ink);background:var(--paper);padding:3px 10px;font-size:11px;display:inline-flex;align-items:center;gap:6px}
-.tg i{width:9px;height:9px;display:inline-block;border:1px solid var(--ink)}
-.tg.off{border-color:var(--rule);color:var(--ink2);text-decoration:line-through}
-.tg.off i{background:transparent!important;border-color:var(--rule)}
-.tg.all{border-style:dashed}
+.zm{border:1px solid var(--ink);background:var(--paper);padding:4px 11px;font-size:11px;display:inline-flex;align-items:center;gap:6px;transition:background .12s}
 .zm.on{background:var(--ink);color:var(--paper)}
-.tg:hover,.zm:hover{border-color:var(--blue);color:var(--blue)}
+.zm:hover{background:var(--blue);border-color:var(--blue);color:#fff}
+.leg{display:inline-flex;gap:12px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);margin-left:18px}
+.leg i{display:inline-block;width:14px;height:8px;vertical-align:middle;margin-right:4px;border:1px solid var(--ink)}
+.leg i.d{background:var(--ink)} .leg i.m{background:var(--paper)} .leg i.s{background:var(--blue);border-color:var(--blue)}
 
-
-/* полоса-обзор, эпоха, поиск */
-#ov{position:relative;height:34px;flex:1;border:1px solid var(--ink);background:var(--paper2);cursor:pointer;overflow:hidden;touch-action:none}
-.ov-y{position:absolute;top:1px;font-size:9px;color:var(--ink2);padding-left:3px;border-left:1px solid var(--rule);height:100%}
+/* обзор, эпоха, поиск */
+#ov{position:relative;height:30px;flex:1;border:1px solid var(--ink);background:var(--paper2);cursor:pointer;overflow:hidden;touch-action:none}
+.ov-y{position:absolute;top:0;font-size:9px;color:var(--ink2);padding-left:3px;border-left:1px solid var(--rule);height:100%}
 .ov-m{position:absolute;height:2px;background:var(--ink)} .ov-m.s{background:var(--blue)}
 .ov-c{position:absolute;bottom:2px;width:2px;height:5px;background:var(--orange)}
 #ovf{position:absolute;top:0;bottom:0;border:2px solid var(--blue);background:rgba(58,62,216,.10);cursor:grab}
-#era{margin-left:auto;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42%}
-#era b{font:600 13px var(--head);color:var(--blue);margin-right:6px}
-#q{border:1px solid var(--ink);background:#fff;font:inherit;font-size:11px;padding:3px 8px;width:220px}
+#era{margin-left:auto;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%;color:var(--ink2)}
+#era b{font:600 13px var(--head);color:var(--ink);margin-right:8px}
+#q{border:1px solid var(--ink);background:#fff;font:inherit;font-size:11px;padding:4px 10px;width:230px;outline:0}
+#q:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(58,62,216,.15)}
 .srch{position:relative}
-#res{position:absolute;top:calc(100% + 2px);left:0;width:360px;background:var(--paper);border:1px solid var(--ink);z-index:50;max-height:380px;overflow:auto;box-shadow:4px 4px 0 var(--paper2)}
+#res{position:absolute;top:calc(100% + 4px);left:0;width:380px;background:var(--paper);border:1px solid var(--ink);z-index:50;max-height:380px;overflow:auto;box-shadow:6px 6px 0 var(--paper3)}
 #res:empty{display:none}
-#res div{padding:6px 10px;cursor:pointer;border-bottom:1px solid var(--rule);font-size:12px}
+#res div{padding:7px 12px;cursor:pointer;border-bottom:1px solid var(--rule);font-size:12px}
 #res div:hover,#res div.on{background:var(--paper2)}
 #res span{font-size:10px;text-transform:uppercase;color:var(--blue);margin-right:8px}
 #res em{color:var(--ink2);font-style:normal;margin-left:6px}
 .hl{outline:3px solid var(--orange)!important;outline-offset:3px;z-index:7!important}
 
 /* таймлайн */
-#tl{position:relative;overflow:auto;height:calc(100vh - 78px);scrollbar-color:var(--ink) var(--paper2);cursor:grab}
+#tl{position:relative;overflow:auto;scrollbar-color:var(--ink) var(--paper2);cursor:grab}
 #tl.drag{cursor:grabbing;user-select:none}
-#canvas{position:relative}
-.ruler{position:sticky;top:0;height:30px;border-bottom:1px solid var(--ink);background:var(--paper);z-index:8}
-.tick{position:absolute;top:0;height:100%;border-left:1px solid var(--ink);font-size:11px;padding:6px 0 0 5px}
-.tick.minor{border-color:var(--rule);color:transparent}
-.grid{position:absolute;top:30px;bottom:0;border-left:1px dashed var(--rule);pointer-events:none}
+#canvas{position:relative;min-height:100%}
+.ruler{position:sticky;top:0;height:34px;border-bottom:1px solid var(--ink);background:var(--paper);z-index:8}
+.tick{position:absolute;top:0;height:100%;border-left:1px solid var(--ink);font:600 11px var(--head);padding:11px 0 0 6px;letter-spacing:.02em}
+.tick.minor{border-color:var(--rule);color:transparent;height:40%;top:auto;bottom:0}
+.grid{position:absolute;top:34px;bottom:0;border-left:1px solid var(--rule);pointer-events:none}
 .lane{position:relative;border-bottom:1px solid var(--ink)}
 .lane .body{position:absolute;left:0;right:0;bottom:0}
-.lab{position:sticky;left:12px;top:36px;z-index:6;display:inline-flex;align-items:baseline;gap:8px;margin:8px 0 0 12px;padding:6px 10px;background:var(--paper);border:1px solid var(--ink);box-shadow:3px 3px 0 var(--paper2);max-width:calc(100vw - 40px);white-space:nowrap}
-.lab b{font:600 13px/1 var(--head)}
-.lab i{display:inline-block;width:10px;height:10px;align-self:center}
+.lab{position:sticky;left:0;top:34px;z-index:6;display:inline-flex;align-items:baseline;gap:10px;margin:0;padding:10px 16px 8px 32px;background:linear-gradient(90deg,var(--paper) 85%,transparent);white-space:nowrap;max-width:calc(100vw - 20px);pointer-events:none}
+.lab b{font:800 13px/1 var(--head);text-transform:uppercase;letter-spacing:.04em}
+.lab b::before{content:attr(data-n);color:var(--blue);margin-right:8px}
 .lab em{font-style:normal;font-size:11px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis}
-.lab button{border:0;background:none;font-size:10px;color:var(--ink2);text-decoration:underline;padding:0 0 0 6px}
-.lab button:hover{color:var(--orange)}
+.lab .k{display:inline-block;width:12px;height:8px;border:1px solid var(--ink);margin:0 3px 0 8px;vertical-align:middle;background:var(--paper)} .lab .k.d2{background:var(--ink)} .lab .k.d1{box-shadow:inset 0 0 0 2px var(--ink)} .lab .k.s1{border-color:var(--blue);box-shadow:inset 0 0 0 2px var(--blue)} .lab .k.s2{background:var(--blue);border-color:var(--blue)}
+.dec{position:absolute;bottom:0;font:800 76px/.8 var(--head);letter-spacing:-.05em;color:var(--ink);opacity:.045;pointer-events:none;user-select:none}
+
+/* периоды */
+.mv{position:absolute;z-index:2;height:24px;display:flex;align-items:center;padding:0 9px;font:600 10.5px/1 var(--head);white-space:nowrap;overflow:hidden;cursor:pointer;border:1px solid var(--ink);background:var(--paper);transition:transform .12s,box-shadow .12s;letter-spacing:.01em}
+.mv.d2{background:var(--ink);color:var(--paper)}
+.mv.d1{background:var(--paper);box-shadow:inset 0 0 0 2px var(--ink)}
+.mv.s1{background:var(--paper);border-color:var(--blue);color:var(--blue);box-shadow:inset 0 0 0 2px var(--blue)}
+.mv.s2{background:var(--blue);border-color:var(--blue);color:#fff}
+.mv.open-end{border-right:0;-webkit-mask:linear-gradient(90deg,#000 80%,transparent);mask:linear-gradient(90deg,#000 80%,transparent)}
+.mv:hover,.mv.on{transform:translateY(-1px);box-shadow:3px 3px 0 var(--orange);z-index:5;border-color:var(--orange)}
+.mv.off{opacity:.3}
 .band{position:absolute;left:0;right:0;border-top:1px dashed var(--rule)}
-.band.s{background:rgba(58,62,216,.04)}
-.band span{position:sticky;left:16px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);display:inline-block;padding:2px 0 0}
+.band span{position:sticky;left:32px;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink2);display:inline-block;padding:2px 0 0;opacity:.8}
 
-/* маятник */
-.axis{position:absolute;left:0;right:0;border-top:1px solid var(--ink)}
-.axis-lab{position:absolute;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
-.mv{position:absolute;z-index:2;height:26px;display:flex;align-items:center;padding:0 8px;font:600 11px/1 var(--head);white-space:nowrap;overflow:hidden;cursor:pointer;border:1px solid var(--ink);background:var(--paper)}
-.mv.simple{background:var(--blue);border-color:var(--blue);color:#fff}
-.mv.mid{background:var(--paper2)}
-.mv:hover,.it:hover .th,.chip:hover{outline:2px solid var(--orange);outline-offset:1px}
-.mv.open-end{border-right:1px dashed}
-svg.pend{position:absolute;left:0;top:0;pointer-events:none}
-
-/* предметы */
-.it{position:absolute;cursor:pointer;width:64px}
-.th{width:64px;height:64px;background:var(--paper2);position:relative;overflow:hidden}
-.th img{width:100%;height:100%;object-fit:cover;filter:url(#duo);display:block}
-.th.none{background:repeating-linear-gradient(45deg,var(--paper2) 0 6px,var(--paper) 6px 12px);border:1px solid var(--rule)}
-.it .y{font-size:10px;margin-top:2px;color:var(--ink2)}
-.it .t{font-size:10px;line-height:1.2;max-height:24px;overflow:hidden}
-.chip{position:absolute;display:flex;gap:6px;align-items:center;height:30px;padding-right:8px;background:var(--paper);border:1px solid var(--rule);cursor:pointer;white-space:nowrap;font-size:11px}
-.chip .th{width:28px;height:28px}
-.chip b{font-weight:500}
-.chip span{color:var(--ink2)}
-.ev{position:absolute;font-size:11px;white-space:nowrap;padding-left:8px;border-left:2px solid var(--ink);cursor:pointer;line-height:1.25}
-.ev span{color:var(--blue);font-weight:600;margin-right:6px}
+/* стулья */
+.it{position:absolute;cursor:pointer;width:64px;transition:opacity .15s}
+.it.off{opacity:.25}
+.th{width:64px;height:64px;background:var(--paper2);position:relative;overflow:hidden;transition:transform .15s}
+.th img{width:100%;height:100%;object-fit:cover;filter:url(#duo);display:block;transition:filter .2s}
+.it:hover .th,.it.on .th{transform:translateY(-2px);box-shadow:3px 3px 0 var(--orange)}
+.it:hover .th img{filter:none}
+.th.none{background:var(--paper2);border:1px solid var(--rule);display:flex;align-items:flex-end;padding:6px}
+.th.none span{font:600 9px/1.2 var(--head);color:var(--ink2);overflow:hidden;max-height:100%}
+.it .y{font:600 11px/1 var(--head);margin-top:6px}
+.it .pin{position:absolute;top:-6px;width:1px;height:6px;background:var(--ink);opacity:.5}
+.it .t{font-size:10px;line-height:1.25;max-height:26px;overflow:hidden;color:var(--ink2);margin-top:3px}
 
 /* карточка */
-#card{position:fixed;top:0;right:0;width:min(460px,100vw);height:100vh;background:var(--paper);border-left:1px solid var(--ink);transform:translateX(100%);transition:transform .25s;z-index:30;overflow-y:auto}
+#card{position:fixed;top:0;right:0;width:min(460px,100vw);height:100vh;background:var(--paper);border-left:1px solid var(--ink);transform:translateX(100%);transition:transform .25s;z-index:30;overflow-y:auto;box-shadow:-12px 0 32px rgba(28,28,28,.08)}
 #card.on{transform:none}
-.c-top{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;border-bottom:1px solid var(--ink);font-size:11px;text-transform:uppercase;letter-spacing:.08em;position:sticky;top:0;background:var(--paper)}
-.c-top button{border:1px solid var(--ink);background:none;padding:4px 10px;font-size:11px;margin-left:6px}
-.c-top button.pri{background:var(--blue);color:#fff;border-color:var(--blue)}
+.c-top{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;border-bottom:1px solid var(--ink);font-size:10px;text-transform:uppercase;letter-spacing:.1em;position:sticky;top:0;background:var(--paper);z-index:2}
+.c-top button{border:1px solid var(--ink);background:none;padding:5px 11px;font-size:11px;margin-left:6px;text-transform:none;letter-spacing:0}
+.c-top button.pri{background:var(--ink);color:var(--paper)}
+.c-top button:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
 .c-img{aspect-ratio:4/3;background:var(--paper2);border-bottom:1px solid var(--ink)}
 .c-img img{width:100%;height:100%;object-fit:contain;background:#fff;display:block}
 .c-img.none{display:grid;place-items:center;padding:24px;text-align:center;font-size:11px;color:var(--ink2);background:repeating-linear-gradient(45deg,var(--paper2) 0 8px,var(--paper) 8px 16px)}
 .c-credit{font-size:10px;color:var(--ink2);padding:6px 24px;border-bottom:1px solid var(--rule)}
-.c-body{padding:20px 24px 40px}
-.c-kind{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);font-weight:600}
-.c-title{font:600 26px/1.1 var(--head);margin:8px 0 6px}
-.c-years{font:600 40px/1 var(--head);color:var(--blue);margin:14px 0 4px;letter-spacing:-.02em}
+.c-body{padding:22px 24px 48px}
+.c-kind{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);font-weight:600}
+.c-title{font:600 24px/1.12 var(--head);margin:8px 0 6px;letter-spacing:-.01em}
+.c-years{font:800 44px/1 var(--head);margin:16px 0 4px;letter-spacing:-.03em}
 .c-src{font-size:10px;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
-dl{display:grid;grid-template-columns:110px 1fr;gap:8px 12px;margin:20px 0;padding:16px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--rule)}
-dt{color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+dl{display:grid;grid-template-columns:100px 1fr;gap:9px 12px;margin:20px 0;padding:16px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--rule)}
+dt{color:var(--ink2);font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding-top:2px}
 dd{margin:0}
-.lnk{color:var(--blue);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
-.c-p{font-size:13px;line-height:1.6;margin:0 0 14px}
+.lnk{color:var(--blue);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.c-p{font-size:13px;line-height:1.65;margin:0 0 14px}
 ul.feat{list-style:none;padding:0;margin:0 0 16px}
-ul.feat li{padding:6px 0;border-bottom:1px dashed var(--rule)}
+ul.feat li{padding:7px 0;border-bottom:1px dashed var(--rule)}
 ul.feat li::before{content:"— ";color:var(--blue)}
-.orn{display:flex;gap:4px;align-items:center;font-size:10px;text-transform:uppercase;color:var(--ink2);margin:16px 0}
+.orn{display:flex;gap:4px;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);margin:16px 0}
 .orn i{width:22px;height:8px;border:1px solid var(--ink)}
 .orn i.on{background:var(--ink)}
 .refs{margin-top:20px;font-size:11px}
@@ -130,9 +130,10 @@ ul.feat li::before{content:"— ";color:var(--blue)}
 .wk{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0 16px}
 .wk .th{width:100%;height:auto;aspect-ratio:1}
 .wk div{cursor:pointer;font-size:10px;line-height:1.2}
+.wk div:hover .th img{filter:none}
 
 /* кадр 4:5 */
-#poster{position:fixed;inset:0;background:rgba(28,28,28,.85);display:none;place-items:center;z-index:40}
+#poster{position:fixed;inset:0;background:rgba(28,28,28,.88);display:none;place-items:center;z-index:40}
 #poster.on{display:grid}
 .pst{width:540px;height:675px;background:var(--paper);display:grid;grid-template-rows:auto 1fr auto auto;padding:28px;gap:16px;position:relative}
 .pst .ph{display:flex;justify-content:space-between;font-size:11px;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--ink);padding-bottom:10px}
@@ -143,13 +144,13 @@ ul.feat li::before{content:"— ";color:var(--blue)}
 .pst .pm{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:end;border-top:1px solid var(--ink);padding-top:12px}
 .pst .py{font:800 54px/0.8 var(--head);color:var(--blue);letter-spacing:-.03em}
 .pst .pw{font-size:12px;line-height:1.45}
- @media (max-width:600px){
-  header{grid-template-columns:1fr;padding:20px 16px 16px} h1{font-size:30px} .stats{gap:16px} .stat b{font-size:20px}
-  nav{padding:6px 10px} nav .row{flex-wrap:nowrap;overflow-x:auto} #era{display:none} #q{width:150px} .lab em{display:none} #tl{height:calc(100vh - 70px)}
+.pst-close{position:absolute;top:20px;right:20px;color:#fff;background:none;border:1px solid #fff;padding:6px 12px}
+@media (max-width:600px){
+  header{padding:14px 16px 12px;gap:12px;flex-wrap:wrap} h1{font-size:18px} .sub{display:none} .stats{gap:12px;margin-left:0;width:100%} .stat b{font-size:13px}
+  nav{padding:8px 12px} nav .row{flex-wrap:nowrap;overflow-x:auto} .zm{white-space:nowrap;flex:none} #era{display:none} .leg{display:none} #q{width:150px} .lab{padding-left:16px} .lab em{display:none} .band span{left:16px}
   .c-top,.c-body{padding-left:16px;padding-right:16px} .c-credit{padding:6px 16px}
   .pst{width:100vw;height:125vw;padding:14px;gap:10px} .pst h2{font-size:20px} .pst .py{font-size:36px} .pst .pw{font-size:10px}
 }
-.pst-close{position:absolute;top:20px;right:20px;color:#fff;background:none;border:1px solid #fff;padding:6px 12px}
 </style>
 </head>
 <body>
@@ -166,10 +167,15 @@ ul.feat li::before{content:"— ";color:var(--blue)}
 </svg>
 
 <header>
-  <h1>История<br>дизайна<small>1830 — 2020 · таймлайн-шпаргалка · Структорум</small></h1>
+  <h1>История дизайна</h1>
+  <span class="sub">1830 — 2020 · периоды и стулья · Структорум</span>
   <div class="stats" id="stats"></div>
 </header>
-<nav id="nav"><div class="row" id="tracks"></div><div class="row"><span class="row" id="zoom"></span><button class="zm" onclick="fit()">вписать в экран</button><span class="srch"><input id="q" placeholder="поиск: Баухаус, Панто, бук…" autocomplete="off"><div id="res"></div></span><span id="era"></span></div><div class="row"><div id="ov" title="Вся история. Тяни рамку или кликни, чтобы перейти"></div></div></nav>
+<nav id="nav">
+  <div class="row"><span class="row" id="zoom"></span><button class="zm" onclick="fit()">вписать в экран</button>
+    <span class="srch"><input id="q" placeholder="поиск: Баухаус, Панто, бук…" autocomplete="off"><div id="res"></div></span><span id="era"></span></div>
+  <div class="row"><div id="ov" title="Вся история. Тяни рамку или кликни, чтобы перейти"></div></div>
+</nav>
 <div id="tl"><div id="canvas"></div></div>
 
 <aside id="card"></aside>
@@ -180,155 +186,106 @@ ul.feat li::before{content:"— ";color:var(--blue)}
 const DB = window.DB, $ = s => document.querySelector(s);
 const byId = {}; for (const k of ['movements','people','works']) for (const e of DB[k]) byId[e.id] = Object.assign(e, {_k:k});
 const nameOf = id => byId[id] ? (byId[id].name || byId[id].title) : id;
+const CHAIRS = DB.works.filter(w => w.tracks.includes('chairs') && w.year);
 
-/* дорожки: ключ, название, подпись, цвет */
-const LANES = [
-  ['styles', 'Маятник стилей', 'стиль выше — больше декора, ниже — проще', null],
-  ['line', 'Линия маятника', 'куда качалась мода по десятилетиям', 'var(--orange)'],
-  ['chairs', 'Стулья', 'ключевые стулья по годам', 'var(--orange)'],
-  ['materials', 'Материалы и технологии', 'гнутое дерево, сталь, пластик…', 'var(--yellow)'],
-  ['for-all', 'Массовый дизайн', 'вещи для всех: серия, цена, доступность', 'var(--mint)'],
-  ['schools', 'Школы и выставки', 'мастерские, школы, выставки, объединения', 'var(--lilac)'],
-  ['russia', 'Дизайн в России', 'от неорусского стиля до ВХУТЕМАСа', 'var(--blue)'],
-  ['eco', 'Экодизайн', 'ресурсы, переработка, долговечность', 'var(--mint)'],
-];
 const store = {get(k, d) { try { const v = JSON.parse(localStorage.getItem('dh_' + k)); return v ?? d } catch { return d } }, set(k, v) { try { localStorage.setItem('dh_' + k, JSON.stringify(v)) } catch {} }};
 const ZOOMS = [8, 14, 24, 36];
-let PX = store.get('px', 24), hidden = new Set(store.get('hidden', []));
+let PX = store.get('px', 24);
 const Y0 = 1825, Y1 = 2025, L = 40;
 const X = y => L + (Math.max(y, Y0) - Y0) * PX;
 let W = 0;
 
-/* картинка: img_file из базы или site/img/<id>.jpg|png, иначе штриховка */
-function img(e, cls = 'th', duo = true) {
+/* картинка: img_file из базы или site/img/<id>.jpg|png, иначе плашка с названием */
+function img(e, cls = 'th', duo = true, label = '') {
   const d = document.createElement('div'); d.className = cls;
   const src = e.img_file ? ['../' + e.img_file] : ['../img/' + e.id + '.jpg', '../img/' + e.id + '.png'];
   const im = new Image(); let i = 0; im.loading = 'lazy'; im.alt = ''; im.draggable = false;
   if (!duo) im.style.filter = 'none';
-  im.onerror = () => { if (++i < src.length) im.src = src[i]; else { im.remove(); d.classList.add('none'); } };
+  im.onerror = () => { if (++i < src.length) im.src = src[i]; else { im.remove(); d.classList.add('none'); if (label) d.innerHTML = `<span>${label}</span>`; } };
   im.src = src[0]; d.appendChild(im); return d;
 }
 
 /* упаковка по строкам */
-function pack(items, gap = 8) {
+function pack(items, gap = 8, slack = 0) {
   const ends = [];
   for (const it of items.sort((a, b) => a.x0 - b.x0)) {
-    let r = ends.findIndex(e => e + gap <= it.x0); if (r < 0) { r = ends.length; ends.push(0); }
+    let r = ends.findIndex(e => e + gap <= it.x0 + slack); if (r < 0) { r = ends.length; ends.push(-1e9); }
+    const dx = Math.max(0, ends[r] + gap - it.x0); it.x0 += dx; it.x1 += dx; it.dx = dx;
     ends[r] = it.x1; it.row = r;
   }
   return ends.length;
 }
-const cut = (s, n) => s.length > n ? s.slice(0, n - 1) + '…' : s;
-const HEAD = 46; // место под название дорожки
+const HEAD = 40;
 
 function render() {
   const canvas = $('#canvas'); canvas.innerHTML = ''; W = X(Y1) + 80; canvas.style.width = W + 'px';
   /* линейка */
   const ruler = document.createElement('div'); ruler.className = 'ruler'; canvas.appendChild(ruler);
-  const step = PX < 12 ? 10 : 5;
+  const step = PX < 12 ? 10 : 5, majorEvery = PX < 12 ? 20 : 10;
   for (let y = 1830; y <= 2020; y += step) {
-    const t = document.createElement('div'); const major = y % (PX < 12 ? 20 : 10) == 0;
+    const t = document.createElement('div'); const major = y % majorEvery == 0;
     t.className = 'tick' + (major ? '' : ' minor'); t.style.left = X(y) + 'px'; t.textContent = y; ruler.appendChild(t);
     if (major) { const g = document.createElement('div'); g.className = 'grid'; g.style.left = X(y) + 'px'; canvas.appendChild(g); }
   }
-  function lane(key, h, legend = '') {
-    const [, title, sub, color] = LANES.find(l => l[0] == key);
+  function lane(n, title, sub, h) {
     const l = document.createElement('div'); l.className = 'lane'; l.style.height = (h + HEAD) + 'px'; l.style.width = W + 'px';
-    l.innerHTML = `<div class="lab">${color ? `<i style="background:${color}"></i>` : ''}<b>${title}</b><em>${sub}${legend}</em><button title="Скрыть дорожку" onclick="toggle('${key}')">скрыть</button></div>`;
+    l.innerHTML = `<div class="lab"><b data-n="${n}">${title}</b><em>${sub}</em></div>`;
     const body = document.createElement('div'); body.className = 'body'; body.style.top = HEAD + 'px'; l.appendChild(body);
     canvas.appendChild(l); return body;
   }
 
-  /* 1. маятник стилей */
-  if (!hidden.has('styles')) {
-    const ms = DB.movements.map(m => ({m, x0: X(m.start), x1: Math.max(X(m.end || m.start + 12), X(m.start) + 40)}));
-    const lv = {}; ms.forEach(o => (lv[o.m.ornament] = lv[o.m.ornament] || []).push(o));
-    const rows = {}; for (const k in lv) rows[k] = pack(lv[k], 4);
-    const RH = 28, levels = [2, 1, 0, -1, -2], NAMES = {2: 'много декора', 1: 'декор', 0: 'середина', '-1': 'проще', '-2': 'минимум'};
-    let y = 8; const top = {};
-    for (const k of levels) { top[k] = y; y += Math.max(rows[k] || 1, 1) * RH + 12; }
-    const showLine = !hidden.has('line');
-    const l = lane('styles', y, showLine ? ' · <span style="color:var(--orange)">━ средний уровень декора по десятилетиям</span>' : '');
-    const mid = top[0] + RH / 2;
-    for (const k of levels) {
-      const b = document.createElement('div'); b.className = 'band' + (k < 0 ? ' s' : ''); b.style.top = (top[k] - 6) + 'px';
-      b.style.height = (Math.max(rows[k] || 1, 1) * RH + 12) + 'px'; b.innerHTML = `<span>${k > 0 ? '↑' : k < 0 ? '↓' : '·'} ${NAMES[k]}</span>`; l.appendChild(b);
-    }
+  /* 01. периоды: цвет — уровень декора */
+  {
+    const ms = DB.movements.map(m => ({m, x0: X(m.start), x1: Math.max(X(m.end || m.start + 12), X(m.start) + 36)}));
+    const RH = 27, n = pack(ms, 5), y = 12 + n * RH;
+    const l = lane('01', 'Периоды', '<i class="k d2"></i>декор <i class="k d1"></i>умеренный <i class="k"></i>середина <i class="k s1"></i>проще <i class="k s2"></i>минимум · клик — карточка', y);
+    const CL = {2: 'd2', 1: 'd1', 0: '', '-1': 's1', '-2': 's2'};
     for (const o of ms) {
-      const d = document.createElement('div'), orn = o.m.ornament;
-      d.className = 'mv' + (orn < 0 ? ' simple' : orn == 0 ? ' mid' : '') + (o.m.end ? '' : ' open-end');
-      d.style.left = o.x0 + 'px'; d.style.width = (o.x1 - o.x0) + 'px'; d.style.top = (top[orn] + o.row * RH) + 'px';
-      d.textContent = o.m.name; d.title = `${o.m.name} ${o.m.start}–${o.m.end || '…'}`; d.dataset.id = o.m.id; d.onclick = () => open(o.m.id); l.appendChild(d);
-    }
-    if (showLine) {
-      const pts = [];
-      for (let dec = 1830; dec <= 2010; dec += 10) {
-        const act = DB.movements.filter(m => m.start <= dec + 9 && (m.end || m.start + 12) >= dec);
-        if (!act.length) continue;
-        const avg = act.reduce((s, m) => s + m.ornament, 0) / act.length;
-        pts.push([X(dec + 5), mid - avg * (top[0] - top[1]), dec, avg, act.length]);
-      }
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.classList.add('pend');
-      svg.setAttribute('width', W); svg.setAttribute('height', y);
-      const p = pts.map((q, i) => (i ? 'L' : 'M') + q[0] + ' ' + q[1]).join(' ');
-      svg.innerHTML = `<path d="${p}" fill="none" stroke="#F2642A" stroke-width="2.5" stroke-linejoin="round"/>` +
-        pts.map(q => `<circle cx="${q[0]}" cy="${q[1]}" r="4" fill="#F2642A"><title>${q[2]}-е: ${q[3] > 0.3 ? 'больше декора' : q[3] < -0.3 ? 'проще' : 'середина'} (среднее по ${q[4]} стилям: ${q[3].toFixed(1)})</title></circle>`).join('');
-      l.appendChild(svg);
+      const d = document.createElement('div');
+      d.className = 'mv ' + CL[o.m.ornament] + (o.m.end ? '' : ' open-end');
+      d.style.left = o.x0 + 'px'; d.style.width = (o.x1 - o.x0) + 'px'; d.style.top = (6 + o.row * RH) + 'px';
+      d.textContent = o.m.name; d.title = `${o.m.name} · ${o.m.start}–${o.m.end || '…'}`; d.dataset.id = o.m.id;
+      d.onclick = () => open(o.m.id);
+      d.onmouseenter = () => linkMv(o.m.id, true); d.onmouseleave = () => linkMv(o.m.id, false);
+      l.appendChild(d);
     }
   }
 
-  /* 2. стулья — картинки */
-  if (!hidden.has('chairs')) {
-    const T = PX >= 24 ? 64 : 44, big = PX >= 24;
-    const ws = DB.works.filter(w => w.tracks.includes('chairs') && w.year).map(w => ({w, x0: X(w.year) - T / 2, x1: X(w.year) + T / 2 + (big ? 4 : 0)}));
-    const RH = big ? 104 : T + 20, n = pack(ws, 6), l = lane('chairs', 6 + n * RH);
+  /* 02. стулья */
+  {
+    const T = PX >= 36 ? 88 : PX >= 24 ? 72 : PX >= 14 ? 56 : 40, big = PX >= 24;
+    const ws = CHAIRS.map(w => ({w, x0: X(w.year) - T / 2, x1: X(w.year) + T / 2}));
+    const RH = T + (big ? 46 : 20), n = pack(ws, 10, T * 0.9);
+    const l = lane('02', 'Стулья', `${CHAIRS.length} ключевых стульев · наведи — цвет, клик — карточка`, 10 + n * RH + (PX >= 14 ? 40 : 0));
+    const decStep = PX >= 24 ? 10 : 20;
+    if (PX >= 14) for (let y = 1830; y <= 2020; y += decStep) l.insertAdjacentHTML('beforeend', `<div class="dec" style="left:${X(y) + 8}px">${y}</div>`);
     for (const o of ws) {
-      const d = document.createElement('div'); d.className = 'it'; d.style.width = T + 'px'; d.style.left = o.x0 + 'px'; d.style.top = (4 + o.row * RH) + 'px';
-      const th = img(o.w); th.style.width = th.style.height = T + 'px'; d.appendChild(th);
+      const d = document.createElement('div'); d.className = 'it'; d.style.width = T + 'px'; d.style.left = o.x0 + 'px'; d.style.top = (10 + o.row * RH) + 'px';
+      const th = img(o.w, 'th', true, o.w.title); th.style.width = th.style.height = T + 'px'; d.appendChild(th);
+      if (o.dx > 2) d.insertAdjacentHTML('beforeend', `<i class="pin" style="left:${T / 2 - o.dx}px"></i>`);
       d.insertAdjacentHTML('beforeend', `<div class="y">${o.w.year}</div>${big ? `<div class="t">${o.w.title}</div>` : ''}`);
-      d.title = `${o.w.year} · ${o.w.title}`; d.dataset.id = o.w.id; d.onclick = () => open(o.w.id); l.appendChild(d);
+      d.title = `${o.w.year} · ${o.w.title}${o.w.movement ? ' · ' + nameOf(o.w.movement) : ''}`; d.dataset.id = o.w.id;
+      d.onclick = () => open(o.w.id);
+      d.onmouseenter = () => linkChair(o.w, true); d.onmouseleave = () => linkChair(o.w, false);
+      l.appendChild(d);
     }
   }
-
-  /* 3. остальные дорожки — фишки */
-  const used = new Set(), N = PX >= 24 ? 26 : PX >= 14 ? 16 : 0;
-  for (const k of ['materials', 'for-all', 'schools', 'russia', 'eco']) {
-    const items = [];
-    for (const w of DB.works) {
-      if (!w.year || used.has(w.id) || w.tracks.includes('chairs') || !w.tracks.includes(k)) continue;
-      used.add(w.id); if (hidden.has(k)) continue;
-      const x = X(w.year); items.push({w, x0: x, x1: x + 38 + Math.min(w.title.length, N) * 6.6});
-    }
-    if (hidden.has(k)) continue;
-    for (const e of DB.events.filter(e => e.tracks[0] == k && e.year >= 1800)) {
-      const x = X(e.year); items.push({e, x0: x, x1: x + 44 + Math.min(e.title.length, N + 10) * 6.6});
-    }
-    const RH = 36, n = pack(items, 8), l = lane(k, 4 + n * RH);
-    for (const o of items) {
-      if (o.w) {
-        const d = document.createElement('div'); d.className = 'chip'; d.style.left = o.x0 + 'px'; d.style.top = (2 + o.row * RH) + 'px';
-        d.appendChild(img(o.w)); d.insertAdjacentHTML('beforeend', `<span>${o.w.year}</span>${N ? `<b>${cut(o.w.title, N)}</b>` : ''}`);
-        d.title = `${o.w.year} · ${o.w.title}`; d.dataset.id = o.w.id; d.onclick = () => open(o.w.id); l.appendChild(d);
-      } else {
-        const d = document.createElement('div'); d.className = 'ev'; d.style.left = o.x0 + 'px'; d.style.top = (4 + o.row * RH) + 'px';
-        d.innerHTML = `<span>${o.e.year}</span>${cut(o.e.title, N + 10)}`; d.title = `${o.e.year} · ${o.e.title}`; d.onclick = () => openEv(o.e); l.appendChild(d);
-      }
-    }
-  }
-  if (hidden.size == LANES.length) canvas.insertAdjacentHTML('beforeend', '<p style="padding:40px">Все дорожки скрыты — включи нужные в панели сверху.</p>');
   drawNav(); if (typeof syncOv == 'function' && $('#ovf')) syncOv();
 }
 
-/* панель: дорожки, масштаб, переход по годам */
-function drawNav() {
-  $('#tracks').innerHTML = '<span class="nl">Дорожки</span>' + LANES.map(([k, t, , c]) =>
-    `<button class="tg${hidden.has(k) ? ' off' : ''}" onclick="toggle('${k}')"><i style="background:${c || 'var(--ink)'}"></i>${t}</button>`).join('') +
-    (hidden.size ? `<button class="tg all" onclick="hidden.clear();save()">показать все</button>` : '');
-  $('#zoom').innerHTML = '<span class="nl">Масштаб</span>' + ZOOMS.map((z, i) => `<button class="zm${z == PX ? ' on' : ''}" onclick="zoom(${z})">${['век', 'полвека', 'десятилетия', 'годы'][i]}</button>`).join('') +
-    '<span class="nl" style="margin-left:16px">Перейти</span>' + [1850, 1900, 1925, 1950, 1975, 2000].map(y => `<button class="zm" onclick="go(${y})">${y}</button>`).join('');
+/* связь: период ↔ стулья */
+function linkMv(id, on) {
+  for (const d of document.querySelectorAll('#canvas .it')) { const m = byId[d.dataset.id].movement; d.classList.toggle('off', on && m != id); d.classList.toggle('on', on && m == id); }
 }
-function save() { store.set('hidden', [...hidden]); render(); }
-function toggle(k) { hidden.has(k) ? hidden.delete(k) : hidden.add(k); save(); }
+function linkChair(w, on) {
+  if (!w.movement) return;
+  const b = document.querySelector(`#canvas .mv[data-id="${w.movement}"]`); if (b) b.classList.toggle('on', on);
+}
+
+/* панель: масштаб */
+function drawNav() {
+  $('#zoom').innerHTML = '<span class="nl">Масштаб</span>' + ZOOMS.map((z, i) => `<button class="zm${z == PX ? ' on' : ''}" onclick="zoom(${z})">${['век', 'полвека', 'десятилетия', 'годы'][i]}</button>`).join('');
+}
 function centerYear() { const tl = $('#tl'); return Y0 + (tl.scrollLeft + tl.clientWidth / 2 - L) / PX; }
 function go(y) { const tl = $('#tl'); tl.scrollTo({left: X(y) - tl.clientWidth / 3, behavior: 'smooth'}); }
 function zoom(z) { const c = centerYear(), tl = $('#tl'); PX = z; store.set('px', z); render(); tl.scrollLeft = X(c) - tl.clientWidth / 2; }
@@ -343,15 +300,14 @@ function zoom(z) { const c = centerYear(), tl = $('#tl'); PX = z; store.set('px'
   tl.addEventListener('click', e => { if (tl.classList.contains('drag')) { e.stopPropagation(); e.preventDefault(); } }, true);
 })();
 
-
 /* полоса-обзор всей истории, подпись эпохи, «вписать», поиск */
 const tl = $('#tl'), ov = $('#ov');
 function drawOv() {
   const w = ov.clientWidth, OX = y => (Math.max(y, Y0) - Y0) / (Y1 - Y0) * w;
   let h = '';
   for (let y = 1850; y <= 2000; y += 25) h += `<span class="ov-y" style="left:${OX(y)}px">${y}</span>`;
-  for (const m of DB.movements) h += `<i class="ov-m${m.ornament < 0 ? ' s' : ''}" style="left:${OX(m.start)}px;width:${Math.max(OX(m.end || m.start + 12) - OX(m.start), 2)}px;top:${13 + (2 - m.ornament) * 3}px"></i>`;
-  for (const c of DB.works) if (c.year && c.tracks.includes('chairs')) h += `<b class="ov-c" style="left:${OX(c.year)}px"></b>`;
+  for (const m of DB.movements) h += `<i class="ov-m${m.ornament < 0 ? ' s' : ''}" style="left:${OX(m.start)}px;width:${Math.max(OX(m.end || m.start + 12) - OX(m.start), 2)}px;top:${11 + (2 - m.ornament) * 3}px"></i>`;
+  for (const c of CHAIRS) h += `<b class="ov-c" style="left:${OX(c.year)}px"></b>`;
   ov.innerHTML = h + '<div id="ovf"></div>'; syncOv();
 }
 function syncOv() {
@@ -373,11 +329,11 @@ let raf = 0; tl.addEventListener('scroll', () => { cancelAnimationFrame(raf); ra
   ov.addEventListener('touchmove', e => { to(e.touches[0].clientX); e.preventDefault(); }, {passive: false});
 })();
 function fit() { PX = Math.max(3, (tl.clientWidth - L - 60) / (Y1 - Y0)); store.set('px', PX); render(); tl.scrollLeft = 0; }
-function fitH() { tl.style.height = (innerHeight - $('#nav').offsetHeight) + 'px'; }
+function fitH() { tl.style.height = (innerHeight - $('header').offsetHeight - $('#nav').offsetHeight) + 'px'; }
 addEventListener('resize', () => { fitH(); drawOv(); });
 
 const q = $('#q'), res = $('#res'), ALL = [...DB.movements, ...DB.works, ...DB.people];
-const KIND = {movements: 'стиль', works: 'работа', people: 'человек'};
+const KIND = {movements: 'период', works: 'работа', people: 'человек'};
 q.addEventListener('input', () => {
   const s = q.value.trim().toLowerCase(); if (s.length < 2) { res.innerHTML = ''; return; }
   const hit = ALL.filter(e => [e.name, e.title, e.orig, ...(e.aka || []), ...(e.material || [])].some(v => v && String(v).toLowerCase().includes(s))).slice(0, 12);
@@ -392,8 +348,7 @@ q.addEventListener('keydown', e => {
 });
 function find(id) {
   const e = byId[id]; if (!e) return;
-  let el = document.querySelector(`#canvas [data-id="${id}"]`);
-  if (!el && e._k != 'people' && hidden.size) { hidden.clear(); save(); el = document.querySelector(`#canvas [data-id="${id}"]`); }
+  const el = document.querySelector(`#canvas [data-id="${id}"]`);
   open(id);
   if (el) {
     const r = el.getBoundingClientRect(), t = tl.getBoundingClientRect();
@@ -404,8 +359,8 @@ function find(id) {
 addEventListener('keydown', e => { if (e.key == '/' && document.activeElement != q) { q.focus(); e.preventDefault(); } });
 
 render(); fitH(); drawOv();
-$('#stats').innerHTML = [[DB.movements.length, 'течений'], [DB.works.length, 'работ'], [DB.works.filter(w => w.tracks.includes('chairs')).length, 'стульев'], [DB.people.length, 'людей']]
-  .map(([n, t]) => `<div class="stat"><b>${n}</b><span>${t}</span></div>`).join('');
+$('#stats').innerHTML = [[DB.movements.length, 'периодов'], [CHAIRS.length, 'стула'], [DB.people.length, 'людей']]
+  .map(([n, t]) => `<div class="stat"><b>${n}</b>${t}</div>`).join('');
 
 /* карточка */
 const card = $('#card'), poster = $('#poster');
@@ -414,12 +369,12 @@ const SRC = {'лекция': 'дата из лекции', 'справка': 'д
 let cur = null;
 function open(id) {
   const e = byId[id]; if (!e) return; cur = e; history.replaceState(null, '', '#' + id);
-  const k = e._k, kind = k == 'movements' ? 'Течение' : k == 'people' ? (e.role || 'Человек') : (e.type || 'Работа');
+  const k = e._k, kind = k == 'movements' ? 'Период' : k == 'people' ? (e.role || 'Человек') : (e.type || 'Работа');
   const yrs = k == 'movements' ? `${e.start}–${e.end || '…'}` : k == 'people' ? `${e.born || '?'}–${e.died || ''}` : (e.year || '—');
   let body = '';
   if (k == 'works') {
     body = `<dl>${e.author?.length ? `<dt>Автор</dt><dd>${e.author.map(link).join(', ')}</dd>` : ''}
-      ${e.movement ? `<dt>Стиль</dt><dd>${link(e.movement)}</dd>` : ''}${e.place ? `<dt>Где</dt><dd>${e.place}</dd>` : ''}
+      ${e.movement ? `<dt>Период</dt><dd>${link(e.movement)}</dd>` : ''}${e.place ? `<dt>Где</dt><dd>${e.place}</dd>` : ''}
       ${e.material?.length ? `<dt>Материал</dt><dd>${e.material.join(', ')}</dd>` : ''}</dl><p class="c-p">${e.why || ''}</p>`;
   } else if (k == 'movements') {
     body = `<div class="orn">простота ${[-2, -1, 0, 1, 2].map(v => `<i class="${v == e.ornament ? 'on' : ''}"></i>`).join('')} декор</div>
@@ -429,12 +384,12 @@ function open(id) {
       <div class="c-kind">Работы</div><div class="wk" id="wk"></div>`;
   } else {
     body = `<dl>${e.orig ? `<dt>Ориг.</dt><dd>${e.orig}</dd>` : ''}${e.country ? `<dt>Страна</dt><dd>${e.country}</dd>` : ''}
-      ${e.movements?.length ? `<dt>Стиль</dt><dd>${e.movements.map(link).join(', ')}</dd>` : ''}</dl><p class="c-p">${e.fact || ''}</p>
+      ${e.movements?.length ? `<dt>Период</dt><dd>${e.movements.map(link).join(', ')}</dd>` : ''}</dl><p class="c-p">${e.fact || ''}</p>
       <div class="c-kind">Работы</div><div class="wk" id="wk"></div>`;
   }
   const wiki = [e.wiki_ru && `<a href="${e.wiki_ru}" target="_blank">Википедия RU</a>`, e.wiki_en && `<a href="${e.wiki_en}" target="_blank">Wikipedia EN</a>`].filter(Boolean).join('');
   const refs = (e.refs || []).map(r => `<a>Занятие ${r.lesson} · ${r.t}</a>`).join('');
-  card.innerHTML = `<div class="c-top"><span>${k == 'movements' ? 'Стиль' : k == 'people' ? 'Персона' : 'Экспонат'} · ${e.id}</span>
+  card.innerHTML = `<div class="c-top"><span>${k == 'movements' ? 'Период' : k == 'people' ? 'Персона' : 'Экспонат'}</span>
     <span><button class="pri" onclick="openPoster()">Кадр 4:5</button><button onclick="card.classList.remove('on')">✕</button></span></div>
     <div id="cimg"></div>${e.img_credit ? `<div class="c-credit">Фото: ${e.img_credit}</div>` : ''}
     <div class="c-body"><div class="c-kind">${kind}</div><div class="c-title">${e.name || e.title}</div>
@@ -444,18 +399,11 @@ function open(id) {
   if (k == 'movements' || k == 'people') {
     const ws = DB.works.filter(w => k == 'movements' ? w.movement == e.id || (e.works || []).includes(w.id) : (w.author || []).includes(e.id)).slice(0, 12);
     const wk = card.querySelector('#wk');
-    for (const w of ws) { const d = document.createElement('div'); d.appendChild(img(w)); d.insertAdjacentHTML('beforeend', w.title); d.onclick = () => open(w.id); wk.appendChild(d); }
+    for (const w of ws) { const d = document.createElement('div'); d.appendChild(img(w, 'th', true, w.title)); d.insertAdjacentHTML('beforeend', w.title); d.onclick = () => open(w.id); wk.appendChild(d); }
     if (!ws.length) wk.previousElementSibling.remove();
   }
   ci.querySelector('img')?.addEventListener('error', () => { if (ci.classList.contains('none')) ci.textContent = 'Картинки пока нет — сгенерим по промпту'; });
   card.querySelector('#cimg').replaceWith(ci); card.classList.add('on'); card.scrollTop = 0;
-}
-function openEv(e) {
-  cur = {title: e.title, year: e.year, _k: 'events', why: ''};
-  card.innerHTML = `<div class="c-top"><span>Событие</span><span><button onclick="card.classList.remove('on')">✕</button></span></div>
-    <div class="c-body"><div class="c-kind">Событие</div><div class="c-years">${e.year}</div><div class="c-title">${e.title}</div>
-    <div class="refs" style="color:var(--ink2)">Звучало в лекции: Занятие ${e.lesson} · ${e.t}</div></div>`;
-  card.classList.add('on');
 }
 /* кадр для поста */
 function openPoster() {
