@@ -36,6 +36,25 @@ nav .nl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(-
 .zm.on{background:var(--ink);color:var(--paper)}
 .tg:hover,.zm:hover{border-color:var(--blue);color:var(--blue)}
 
+
+/* полоса-обзор, эпоха, поиск */
+#ov{position:relative;height:34px;flex:1;border:1px solid var(--ink);background:var(--paper2);cursor:pointer;overflow:hidden;touch-action:none}
+.ov-y{position:absolute;top:1px;font-size:9px;color:var(--ink2);padding-left:3px;border-left:1px solid var(--rule);height:100%}
+.ov-m{position:absolute;height:2px;background:var(--ink)} .ov-m.s{background:var(--blue)}
+.ov-c{position:absolute;bottom:2px;width:2px;height:5px;background:var(--orange)}
+#ovf{position:absolute;top:0;bottom:0;border:2px solid var(--blue);background:rgba(58,62,216,.10);cursor:grab}
+#era{margin-left:auto;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42%}
+#era b{font:600 13px var(--head);color:var(--blue);margin-right:6px}
+#q{border:1px solid var(--ink);background:#fff;font:inherit;font-size:11px;padding:3px 8px;width:220px}
+.srch{position:relative}
+#res{position:absolute;top:calc(100% + 2px);left:0;width:360px;background:var(--paper);border:1px solid var(--ink);z-index:50;max-height:380px;overflow:auto;box-shadow:4px 4px 0 var(--paper2)}
+#res:empty{display:none}
+#res div{padding:6px 10px;cursor:pointer;border-bottom:1px solid var(--rule);font-size:12px}
+#res div:hover,#res div.on{background:var(--paper2)}
+#res span{font-size:10px;text-transform:uppercase;color:var(--blue);margin-right:8px}
+#res em{color:var(--ink2);font-style:normal;margin-left:6px}
+.hl{outline:3px solid var(--orange)!important;outline-offset:3px;z-index:7!important}
+
 /* таймлайн */
 #tl{position:relative;overflow:auto;height:calc(100vh - 78px);scrollbar-color:var(--ink) var(--paper2);cursor:grab}
 #tl.drag{cursor:grabbing;user-select:none}
@@ -126,7 +145,7 @@ ul.feat li::before{content:"— ";color:var(--blue)}
 .pst .pw{font-size:12px;line-height:1.45}
  @media (max-width:600px){
   header{grid-template-columns:1fr;padding:20px 16px 16px} h1{font-size:30px} .stats{gap:16px} .stat b{font-size:20px}
-  nav{padding:6px 10px} nav .row{flex-wrap:nowrap;overflow-x:auto} .lab em{display:none} #tl{height:calc(100vh - 70px)}
+  nav{padding:6px 10px} nav .row{flex-wrap:nowrap;overflow-x:auto} #era{display:none} #q{width:150px} .lab em{display:none} #tl{height:calc(100vh - 70px)}
   .c-top,.c-body{padding-left:16px;padding-right:16px} .c-credit{padding:6px 16px}
   .pst{width:100vw;height:125vw;padding:14px;gap:10px} .pst h2{font-size:20px} .pst .py{font-size:36px} .pst .pw{font-size:10px}
 }
@@ -150,7 +169,7 @@ ul.feat li::before{content:"— ";color:var(--blue)}
   <h1>История<br>дизайна<small>1830 — 2020 · таймлайн-шпаргалка · Структорум</small></h1>
   <div class="stats" id="stats"></div>
 </header>
-<nav id="nav"><div class="row" id="tracks"></div><div class="row" id="zoom"></div></nav>
+<nav id="nav"><div class="row" id="tracks"></div><div class="row"><span class="row" id="zoom"></span><button class="zm" onclick="fit()">вписать в экран</button><span class="srch"><input id="q" placeholder="поиск: Баухаус, Панто, бук…" autocomplete="off"><div id="res"></div></span><span id="era"></span></div><div class="row"><div id="ov" title="Вся история. Тяни рамку или кликни, чтобы перейти"></div></div></nav>
 <div id="tl"><div id="canvas"></div></div>
 
 <aside id="card"></aside>
@@ -239,7 +258,7 @@ function render() {
       const d = document.createElement('div'), orn = o.m.ornament;
       d.className = 'mv' + (orn < 0 ? ' simple' : orn == 0 ? ' mid' : '') + (o.m.end ? '' : ' open-end');
       d.style.left = o.x0 + 'px'; d.style.width = (o.x1 - o.x0) + 'px'; d.style.top = (top[orn] + o.row * RH) + 'px';
-      d.textContent = o.m.name; d.title = `${o.m.name} ${o.m.start}–${o.m.end || '…'}`; d.onclick = () => open(o.m.id); l.appendChild(d);
+      d.textContent = o.m.name; d.title = `${o.m.name} ${o.m.start}–${o.m.end || '…'}`; d.dataset.id = o.m.id; d.onclick = () => open(o.m.id); l.appendChild(d);
     }
     if (showLine) {
       const pts = [];
@@ -267,7 +286,7 @@ function render() {
       const d = document.createElement('div'); d.className = 'it'; d.style.width = T + 'px'; d.style.left = o.x0 + 'px'; d.style.top = (4 + o.row * RH) + 'px';
       const th = img(o.w); th.style.width = th.style.height = T + 'px'; d.appendChild(th);
       d.insertAdjacentHTML('beforeend', `<div class="y">${o.w.year}</div>${big ? `<div class="t">${o.w.title}</div>` : ''}`);
-      d.title = `${o.w.year} · ${o.w.title}`; d.onclick = () => open(o.w.id); l.appendChild(d);
+      d.title = `${o.w.year} · ${o.w.title}`; d.dataset.id = o.w.id; d.onclick = () => open(o.w.id); l.appendChild(d);
     }
   }
 
@@ -289,7 +308,7 @@ function render() {
       if (o.w) {
         const d = document.createElement('div'); d.className = 'chip'; d.style.left = o.x0 + 'px'; d.style.top = (2 + o.row * RH) + 'px';
         d.appendChild(img(o.w)); d.insertAdjacentHTML('beforeend', `<span>${o.w.year}</span>${N ? `<b>${cut(o.w.title, N)}</b>` : ''}`);
-        d.title = `${o.w.year} · ${o.w.title}`; d.onclick = () => open(o.w.id); l.appendChild(d);
+        d.title = `${o.w.year} · ${o.w.title}`; d.dataset.id = o.w.id; d.onclick = () => open(o.w.id); l.appendChild(d);
       } else {
         const d = document.createElement('div'); d.className = 'ev'; d.style.left = o.x0 + 'px'; d.style.top = (4 + o.row * RH) + 'px';
         d.innerHTML = `<span>${o.e.year}</span>${cut(o.e.title, N + 10)}`; d.title = `${o.e.year} · ${o.e.title}`; d.onclick = () => openEv(o.e); l.appendChild(d);
@@ -297,7 +316,7 @@ function render() {
     }
   }
   if (hidden.size == LANES.length) canvas.insertAdjacentHTML('beforeend', '<p style="padding:40px">Все дорожки скрыты — включи нужные в панели сверху.</p>');
-  drawNav();
+  drawNav(); if (typeof syncOv == 'function' && $('#ovf')) syncOv();
 }
 
 /* панель: дорожки, масштаб, переход по годам */
@@ -324,7 +343,67 @@ function zoom(z) { const c = centerYear(), tl = $('#tl'); PX = z; store.set('px'
   tl.addEventListener('click', e => { if (tl.classList.contains('drag')) { e.stopPropagation(); e.preventDefault(); } }, true);
 })();
 
-render();
+
+/* полоса-обзор всей истории, подпись эпохи, «вписать», поиск */
+const tl = $('#tl'), ov = $('#ov');
+function drawOv() {
+  const w = ov.clientWidth, OX = y => (Math.max(y, Y0) - Y0) / (Y1 - Y0) * w;
+  let h = '';
+  for (let y = 1850; y <= 2000; y += 25) h += `<span class="ov-y" style="left:${OX(y)}px">${y}</span>`;
+  for (const m of DB.movements) h += `<i class="ov-m${m.ornament < 0 ? ' s' : ''}" style="left:${OX(m.start)}px;width:${Math.max(OX(m.end || m.start + 12) - OX(m.start), 2)}px;top:${13 + (2 - m.ornament) * 3}px"></i>`;
+  for (const c of DB.works) if (c.year && c.tracks.includes('chairs')) h += `<b class="ov-c" style="left:${OX(c.year)}px"></b>`;
+  ov.innerHTML = h + '<div id="ovf"></div>'; syncOv();
+}
+function syncOv() {
+  const f = $('#ovf'); if (!f) return; const w = ov.clientWidth, k = w / (Y1 - Y0);
+  const y0 = Y0 + (tl.scrollLeft - L) / PX, span = tl.clientWidth / PX;
+  f.style.left = Math.max(0, (y0 - Y0) * k) + 'px'; f.style.width = Math.max(6, Math.min(w, span * k)) + 'px';
+  const c = Math.round(centerYear()), act = DB.movements.filter(m => m.start <= c && (m.end || m.start + 12) >= c)
+    .sort((a, b) => b.start - a.start).slice(0, 4).map(m => m.name);
+  $('#era').innerHTML = `<b>${Math.floor(c / 10) * 10}-е</b>${act.join(', ')}`;
+}
+let raf = 0; tl.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(syncOv); });
+(() => {
+  let d = false;
+  const to = cx => { const r = ov.getBoundingClientRect(); tl.scrollLeft = X(Y0 + (cx - r.left) / r.width * (Y1 - Y0)) - tl.clientWidth / 2; };
+  ov.addEventListener('mousedown', e => { d = true; to(e.clientX); e.preventDefault(); e.stopPropagation(); });
+  addEventListener('mousemove', e => { if (d) to(e.clientX); });
+  addEventListener('mouseup', () => { d = false; });
+  ov.addEventListener('touchstart', e => to(e.touches[0].clientX), {passive: true});
+  ov.addEventListener('touchmove', e => { to(e.touches[0].clientX); e.preventDefault(); }, {passive: false});
+})();
+function fit() { PX = Math.max(3, (tl.clientWidth - L - 60) / (Y1 - Y0)); store.set('px', PX); render(); tl.scrollLeft = 0; }
+function fitH() { tl.style.height = (innerHeight - $('#nav').offsetHeight) + 'px'; }
+addEventListener('resize', () => { fitH(); drawOv(); });
+
+const q = $('#q'), res = $('#res'), ALL = [...DB.movements, ...DB.works, ...DB.people];
+const KIND = {movements: 'стиль', works: 'работа', people: 'человек'};
+q.addEventListener('input', () => {
+  const s = q.value.trim().toLowerCase(); if (s.length < 2) { res.innerHTML = ''; return; }
+  const hit = ALL.filter(e => [e.name, e.title, e.orig, ...(e.aka || []), ...(e.material || [])].some(v => v && String(v).toLowerCase().includes(s))).slice(0, 12);
+  res.innerHTML = hit.map((e, i) => `<div data-id="${e.id}" class="${i ? '' : 'on'}"><span>${KIND[e._k]}</span>${e.name || e.title}<em>${e.year || e.start || e.born || ''}</em></div>`).join('') || '<div>ничего не нашлось</div>';
+});
+res.addEventListener('click', e => { const it = e.target.closest('[data-id]'); if (!it) return; res.innerHTML = ''; q.value = ''; q.blur(); find(it.dataset.id); });
+q.addEventListener('keydown', e => {
+  if (e.key == 'Enter') res.querySelector('.on')?.click();
+  if (e.key == 'Escape') { res.innerHTML = ''; q.blur(); }
+  if (e.key == 'ArrowDown' || e.key == 'ArrowUp') { const a = [...res.querySelectorAll('[data-id]')], i = a.findIndex(x => x.classList.contains('on'));
+    if (!a.length) return; a[i]?.classList.remove('on'); a[(i + (e.key == 'ArrowDown' ? 1 : a.length - 1)) % a.length].classList.add('on'); e.preventDefault(); }
+});
+function find(id) {
+  const e = byId[id]; if (!e) return;
+  let el = document.querySelector(`#canvas [data-id="${id}"]`);
+  if (!el && e._k != 'people' && hidden.size) { hidden.clear(); save(); el = document.querySelector(`#canvas [data-id="${id}"]`); }
+  open(id);
+  if (el) {
+    const r = el.getBoundingClientRect(), t = tl.getBoundingClientRect();
+    tl.scrollTo({left: tl.scrollLeft + r.left - t.left - (t.width - 460) / 2, top: tl.scrollTop + r.top - t.top - t.height / 3, behavior: 'smooth'});
+    el.classList.add('hl'); setTimeout(() => el.classList.remove('hl'), 3000);
+  } else { const y = e.year || e.start || e.born; if (y) go(y); }
+}
+addEventListener('keydown', e => { if (e.key == '/' && document.activeElement != q) { q.focus(); e.preventDefault(); } });
+
+render(); fitH(); drawOv();
 $('#stats').innerHTML = [[DB.movements.length, 'течений'], [DB.works.length, 'работ'], [DB.works.filter(w => w.tracks.includes('chairs')).length, 'стульев'], [DB.people.length, 'людей']]
   .map(([n, t]) => `<div class="stat"><b>${n}</b><span>${t}</span></div>`).join('');
 
