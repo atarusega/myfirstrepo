@@ -10,6 +10,8 @@ import { captions, colors, covers, projects } from "@/data/projects"
 
 const CHANNEL = "https://t.me/struktorum"
 const PROFILE = "https://t.me/nkt_klmv"
+// AI-дайджест: статическая страница из ~/ai-digest, лежит в public/digest
+const DIGEST = "./digest/"
 // Кто и что — на первом экране (формулировка из отзыва, согласовать с Никитой)
 const TAGLINE = "Никита Климов — 3D-визуализация бренд-зон и фестов"
 
@@ -52,6 +54,10 @@ export default function App() {
 
         {/* Справа: канал — тихой ссылкой, личка — кнопкой */}
         <nav className="flex shrink-0 items-center gap-3 text-[11px] font-medium uppercase tracking-[0.06em] md:gap-6 md:text-[13px]">
+          {/* Уже 1024 px в шапке нет места (логотип + кнопки занимают всю ширину) — дайджест открывают по прямой ссылке */}
+          <a href={DIGEST} className="hidden transition-opacity hover:opacity-70 lg:block">
+            Дайджест
+          </a>
           <a
             href={CHANNEL}
             target="_blank"

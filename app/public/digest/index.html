@@ -9,14 +9,33 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
+<script>
+  // Тема ставится до отрисовки, чтобы страница не мигала светлой
+  try { if (localStorage.getItem("digest-theme") === "light") document.documentElement.dataset.theme = "light"; } catch (e) {}
+</script>
 <style>
+  /* Тёмная тема по умолчанию (графит сайта); светлая — по кнопке, выбор хранится в браузере */
   :root {
+    color-scheme: dark;
+    --bg: #1C1C1C;
+    --ink: #ECECE7;
+    --sub: #9A9A93;
+    --line: #333331;
+    --blue: #8E91FF;
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
     --bg: #FAFAF7;
     --ink: #1C1C1C;
     --sub: #6A6A65;
     --line: #E4E3DE;
     --blue: #3A3ED8;
   }
+  .kicker { display: flex; justify-content: space-between; gap: 16px; }
+  .theme-btn {
+    font: inherit; color: var(--sub); background: none; border: 0; padding: 0; cursor: pointer;
+  }
+  .theme-btn:hover { color: var(--blue); }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
@@ -88,7 +107,7 @@
 </head>
 <body>
 <div class="wrap" id="app"></div>
-<script src="data.js?v=mw543yrv"></script>
+<script src="data.js?v=mw58lmjf"></script>
 <script>
 (function () {
   var D = window.DIGEST || { groups: [], main: [], stories: [], built: "" };
@@ -156,7 +175,19 @@
   var mainStories = (D.main || []).slice(0, 5).map(function (id) { mainIds[id] = 1; return byId[id]; }).filter(Boolean);
 
   var header = el("header");
-  var k = el("p", "kicker"); k.appendChild(link("/", "Struktorum")); k.lastChild.target = "_self"; k.appendChild(document.createTextNode(" · " + fmtDate(D.built))); header.appendChild(k);
+  var k = el("div", "kicker");
+  var kl = el("span"); kl.appendChild(link("/", "Struktorum")); kl.lastChild.target = "_self"; kl.appendChild(document.createTextNode(" · " + fmtDate(D.built)));
+  k.appendChild(kl);
+  var root = document.documentElement;
+  var tb = el("button", "theme-btn"); tb.type = "button";
+  function themeLabel() { tb.textContent = root.dataset.theme === "light" ? "Тёмная тема" : "Светлая тема"; }
+  tb.onclick = function () {
+    if (root.dataset.theme === "light") delete root.dataset.theme; else root.dataset.theme = "light";
+    try { localStorage.setItem("digest-theme", root.dataset.theme || "dark"); } catch (e) {}
+    themeLabel();
+  };
+  themeLabel(); k.appendChild(tb);
+  header.appendChild(k);
   header.appendChild(el("h1", null, "AI-дайджест"));
   header.appendChild(el("p", "lead", "Главное за 3 дня для 3D, картинок и видео"));
   app.appendChild(header);
