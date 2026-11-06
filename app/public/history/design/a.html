@@ -105,7 +105,7 @@ ul.feat li::before{content:"— ";color:var(--blue)}
 .pst .ph{display:flex;justify-content:space-between;font-size:11px;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--ink);padding-bottom:10px}
 .pst .ph b{color:var(--blue)}
 .pst .pi{overflow:hidden;background:#fff;display:grid;place-items:center}
-.pst .pi img{width:100%;height:100%;object-fit:contain}
+.pst .pi img{width:100%;height:100%;object-fit:cover}
 .pst h2{font:800 30px/1.02 var(--head);margin:0;text-transform:uppercase;letter-spacing:-.01em}
 .pst .pm{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:end;border-top:1px solid var(--ink);padding-top:12px}
 .pst .py{font:800 54px/0.8 var(--head);color:var(--blue);letter-spacing:-.03em}
@@ -142,9 +142,9 @@ const DB = window.DB, $ = s => document.querySelector(s);
 const byId = {}; for (const k of ['movements','people','works']) for (const e of DB[k]) byId[e.id] = Object.assign(e, {_k:k});
 const nameOf = id => byId[id] ? (byId[id].name || byId[id].title) : id;
 
-/* шкала: 1700–1840 сжато, дальше 24 px на год */
-const Y0 = 1700, YC = 1840, Y1 = 2025, PX = 24, L = 200;
-const X = y => L + (y < YC ? (y - Y0) * 2 : (YC - Y0) * 2 + (y - YC) * PX);
+/* шкала: с 1825 года, 24 px на год; более ранние — к левому краю */
+const Y0 = 1825, Y1 = 2025, PX = 24, L = 200;
+const X = y => L + (Math.max(y, Y0) - Y0) * PX;
 const W = X(Y1) + 120;
 
 /* картинка: img_file из базы или site/img/<id>.jpg|png, иначе штриховка */
@@ -170,10 +170,10 @@ function pack(items, gap = 8) {
 const canvas = $('#canvas'); canvas.style.width = W + 'px';
 /* линейка */
 const ruler = document.createElement('div'); ruler.className = 'ruler'; canvas.appendChild(ruler);
-for (let y = 1700; y <= 2020; y += (y < YC ? 20 : 5)) {
-  const t = document.createElement('div'); const major = y < YC ? y % 20 == 0 : y % 10 == 0;
+for (let y = 1830; y <= 2020; y += 5) {
+  const t = document.createElement('div'); const major = y % 10 == 0;
   t.className = 'tick' + (major ? '' : ' minor'); t.style.left = X(y) + 'px'; t.textContent = y; ruler.appendChild(t);
-  if (major && y >= YC) { const g = document.createElement('div'); g.className = 'grid'; g.style.left = X(y) + 'px'; canvas.appendChild(g); }
+  if (major) { const g = document.createElement('div'); g.className = 'grid'; g.style.left = X(y) + 'px'; canvas.appendChild(g); }
 }
 
 function lane(title, sub, color, h) {
@@ -187,7 +187,7 @@ function lane(title, sub, color, h) {
   const ms = DB.movements.map(m => ({m, x0: X(m.start), x1: X(m.end || m.start + 12)}));
   const lv = {}; ms.forEach(o => (lv[o.m.ornament] = lv[o.m.ornament] || []).push(o));
   const rows = {}; for (const k in lv) rows[k] = pack(lv[k], 4);
-  const RH = 30, levels = [2, 1, 0, -1, -2];
+  const RH = 28, levels = [2, 1, 0, -1, -2];
   let y = 36; const top = {};
   for (const k of levels) { top[k] = y; y += Math.max(rows[k] || 1, 1) * RH + 14; }
   const h = y + 10, l = lane('Стили', 'маятник: декор ↑ простота ↓', null, h);
@@ -271,7 +271,7 @@ const link = id => byId[id] ? `<span class="lnk" onclick="open('${id}')">${nameO
 const SRC = {'лекция': 'дата из лекции', 'справка': 'дата не проверена', 'интернет': 'дата: Википедия'};
 let cur = null;
 function open(id) {
-  const e = byId[id]; if (!e) return; cur = e;
+  const e = byId[id]; if (!e) return; cur = e; history.replaceState(null, '', '#' + id);
   const k = e._k, kind = k == 'movements' ? 'Течение' : k == 'people' ? (e.role || 'Человек') : (e.type || 'Работа');
   const yrs = k == 'movements' ? `${e.start}–${e.end || '…'}` : k == 'people' ? `${e.born || '?'}–${e.died || ''}` : (e.year || '—');
   let body = '';
@@ -327,7 +327,9 @@ function openPoster() {
 }
 poster.onclick = ev => { if (ev.target === poster) poster.classList.remove('on'); };
 document.addEventListener('keydown', ev => { if (ev.key == 'Escape') { poster.classList.remove('on'); card.classList.remove('on'); } });
-$('#tl').scrollLeft = X(1840) - L - 40;
+/* ссылка на элемент: #id или #poster:id */
+const h = decodeURIComponent(location.hash.slice(1));
+if (h) { const id = h.replace(/^poster:/, ''); if (byId[id]) { open(id); $('#tl').scrollLeft = X(byId[id].year || byId[id].start || byId[id].born || 1850) - 600; if (h.startsWith('poster:')) openPoster(); } }
 </script>
 </body>
 </html>
