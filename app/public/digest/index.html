@@ -18,100 +18,153 @@
   :root {
     color-scheme: dark;
     --bg: #1C1C1C;
+    --card: #242423;
     --ink: #ECECE7;
     --sub: #9A9A93;
-    --line: #333331;
+    --line: #343432;
     --blue: #8E91FF;
+    --blue-soft: rgba(142, 145, 255, .14);
   }
   :root[data-theme="light"] {
     color-scheme: light;
     --bg: #FAFAF7;
+    --card: #FFFFFF;
     --ink: #1C1C1C;
     --sub: #6A6A65;
     --line: #E4E3DE;
     --blue: #3A3ED8;
+    --blue-soft: rgba(58, 62, 216, .09);
   }
-  .kicker { display: flex; justify-content: space-between; gap: 16px; }
-  .theme-btn {
-    font: inherit; color: var(--sub); background: none; border: 0; padding: 0; cursor: pointer;
-  }
-  .theme-btn:hover { color: var(--blue); }
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
   body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: "IBM Plex Sans", system-ui, sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 15px; line-height: 1.5;
   }
-  .wrap { max-width: 680px; margin: 0 auto; padding: 48px 16px 96px; }
   a { color: var(--blue); text-decoration: none; }
   a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  .mono { font-family: "IBM Plex Mono", monospace; }
 
-  header { padding-bottom: 32px; border-bottom: 1px solid var(--ink); }
-  .kicker a { color: var(--sub); }
-  .kicker { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--sub); margin: 0 0 16px; }
-  h1 {
-    font-family: "Unbounded", sans-serif; font-weight: 700;
-    font-size: 40px; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 16px;
+  /* Верхняя полоса: сайт · название · выпуск · тема */
+  .top {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; align-items: center; gap: 16px;
+    padding: 0 24px; height: 52px;
+    background: var(--bg); border-bottom: 1px solid var(--line);
+    font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--sub);
   }
-  .lead { margin: 0; font-size: 17px; color: var(--sub); }
+  .top .site a { color: var(--sub); }
+  .top .brand { color: var(--ink); font-weight: 500; }
+  .top .sp { flex: 1; }
+  .top select {
+    font: inherit; color: var(--ink); background: var(--card); border: 1px solid var(--line);
+    border-radius: 6px; padding: 5px 8px; max-width: 200px;
+  }
+  .top .theme { white-space: nowrap; }
+  .top .theme:hover { color: var(--blue); }
+  .top .theme .icon { display: none; }
+  .card h3, .card .sum { overflow-wrap: anywhere; }
 
-  .sec-head {
-    display: flex; align-items: baseline; gap: 12px;
-    margin: 56px 0 0; padding-bottom: 10px; border-bottom: 1px solid var(--line);
+  /* Меню разделов: прилипает под верхней полосой */
+  .secs {
+    position: sticky; top: 52px; z-index: 4;
+    display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
+    padding: 10px 24px; background: var(--bg); border-bottom: 1px solid var(--line);
   }
-  .sec-head h2 {
-    font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 18px;
-    letter-spacing: -0.01em; margin: 0;
+  .secs::-webkit-scrollbar { display: none; }
+  .secs a {
+    flex: none; display: inline-flex; align-items: baseline; gap: 6px;
+    padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line);
+    color: var(--ink); font-size: 13px; font-weight: 500; white-space: nowrap;
   }
+  .secs a:hover { text-decoration: none; border-color: var(--sub); }
+  .secs a.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .secs a .n { font-family: "IBM Plex Mono", monospace; font-size: 11px; opacity: .6; }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 24px 96px; }
+
+  .hero { margin: 8px 0 40px; }
+  h1 { font-family: "Unbounded", sans-serif; font-weight: 700; font-size: 40px; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 10px; }
+  .lead { margin: 0; font-size: 16px; color: var(--sub); }
+  .lead b { color: var(--blue); font-weight: 500; }
+
+  section { scroll-margin-top: 110px; }
+  .sec-head { display: flex; align-items: baseline; gap: 12px; margin: 48px 0 16px; }
+  .sec-head h2 { font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 20px; letter-spacing: -0.01em; margin: 0; }
   .sec-head .cnt { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--sub); }
-  .sec-head.main h2 { color: var(--blue); }
+  #main .sec-head h2 { color: var(--blue); }
 
-  .item { padding: 24px 0; border-bottom: 1px solid var(--line); }
-  .item:last-child { border-bottom: 0; }
-  .item h3 {
-    font-family: "Unbounded", sans-serif; font-weight: 500;
-    font-size: 19px; line-height: 1.3; letter-spacing: -0.01em; margin: 0 0 8px;
+  /* Сетка карточек */
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .grid.main .card:first-child { grid-column: 1 / -1; }
+  .card {
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 18px 18px 16px; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--line);
   }
-  .meta {
-    font-family: "IBM Plex Mono", monospace; font-size: 12.5px; line-height: 1.5;
-    color: var(--sub); margin: 0 0 10px;
-    display: flex; justify-content: space-between; gap: 16px;
-  }
-  .meta .score { color: var(--blue); flex: none; }
-  .sum { margin: 0 0 12px; font-size: 16px; }
-  .links { font-size: 14px; color: var(--sub); display: flex; flex-wrap: wrap; gap: 4px 16px; }
-  .links .try { font-weight: 500; }
-  .links .src a { color: var(--sub); }
-  .links .src a:hover { color: var(--blue); }
-  .dot { color: var(--line); margin: 0 2px; }
+  .card .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--sub); }
+  .card .name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card.new .name::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--blue); margin-right: 7px; vertical-align: 1px; }
+  .card .score { flex: none; color: var(--blue); font-weight: 500; font-size: 15px; }
+  .card h3 { font-family: "Unbounded", sans-serif; font-weight: 500; font-size: 16px; line-height: 1.3; letter-spacing: -0.01em; margin: 0; }
+  .card .sum { margin: 0; color: var(--ink); opacity: .85; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+  .card.open .sum { display: block; }
+  .card .more { align-self: flex-start; font-size: 13px; color: var(--sub); margin-top: -4px; }
+  .card .more:hover { color: var(--blue); }
+  .card .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .card .tags span { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--blue); background: var(--blue-soft); padding: 2px 8px; border-radius: 999px; }
+  .card .links { margin-top: auto; padding-top: 6px; font-size: 13px; color: var(--sub); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .card .links .try { font-weight: 500; }
+  .card .links .src a { color: var(--sub); }
+  .card .links .src a:hover { color: var(--blue); }
 
   /* Главное: крупнее */
-  .item.big { padding: 32px 0; }
-  .item.big .num { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--blue); margin-bottom: 10px; }
-  .item.big h3 { font-size: 26px; line-height: 1.2; letter-spacing: -0.02em; font-weight: 600; margin-bottom: 12px; }
-  .item.big .sum { font-size: 17px; }
+  .grid.main .card { gap: 12px; padding: 24px 24px 20px; }
+  .grid.main .card h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+  .grid.main .card:first-child h3 { font-size: 28px; }
+  .grid.main .card .sum { font-size: 16px; -webkit-line-clamp: 6; }
+  .grid.main .card .num { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--blue); }
 
-  footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--line); font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--sub); }
+  .empty { color: var(--sub); padding: 48px 0; }
+  footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--line); font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--sub); max-width: 680px; }
 
-  @media (max-width: 520px) {
-    .wrap { padding: 32px 16px 64px; }
+  @media (max-width: 1000px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) {
+    .top { padding: 0 16px; gap: 10px; height: 48px; }
+    .top .brand { display: none; }
+    .secs { top: 48px; padding: 8px 16px; }
+    .wrap { padding: 24px 16px 64px; }
     h1 { font-size: 30px; }
-    .item.big h3 { font-size: 22px; }
-    .item h3 { font-size: 17px; }
+    .grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .top .theme .full { display: none; }
+    .top .theme .icon { display: inline; font-size: 16px; }
+    .grid.main .card { padding: 20px 18px 16px; }
+    .grid.main .card:first-child h3 { font-size: 22px; }
+    .grid.main .card h3 { font-size: 18px; }
+    section { scroll-margin-top: 100px; }
   }
 </style>
 </head>
 <body>
-<div class="wrap" id="app"></div>
-<script src="data.js?v=mw58lmjf"></script>
+<header class="top">
+  <span class="site"><a href="/">Struktorum</a></span>
+  <span class="brand">AI-дайджест</span>
+  <span class="sp"></span>
+  <select id="dsel" aria-label="Выпуск за день"></select>
+  <button class="theme" id="theme" type="button"></button>
+</header>
+<nav class="secs" id="secs"></nav>
+<main class="wrap" id="app"></main>
+<script src="data.js?v=mw5bl4x0"></script>
 <script>
 (function () {
-  var D = window.DIGEST || { groups: [], main: [], stories: [], built: "" };
+  var LATEST = window.DIGEST || { groups: [], main: [], stories: [], built: "", date: "", days: [] };
   var app = document.getElementById("app");
+  var secs = document.getElementById("secs");
+  var dsel = document.getElementById("dsel");
+  var root = document.documentElement;
+  var MONTHS = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
 
   function el(tag, cls, text) {
     var e = document.createElement(tag);
@@ -124,89 +177,150 @@
     a.href = href; a.target = "_blank"; a.rel = "noopener";
     return a;
   }
-  function fmtDate(iso) {
-    var d = new Date(iso);
-    if (isNaN(d)) return "";
-    return d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+  function fmtDay(key, withYear) {           // "2026-11-06" → "6 ноября"
+    var p = key.split("-");
+    return +p[2] + " " + MONTHS[+p[1] - 1] + (withYear ? " " + p[0] : "");
   }
-  function secHead(title, count, cls) {
-    var h = el("div", "sec-head" + (cls ? " " + cls : ""));
-    h.appendChild(el("h2", null, title));
-    h.appendChild(el("span", "cnt", String(count)));
-    return h;
-  }
-  function renderItem(s, big, idx) {
-    var it = el("article", "item" + (big ? " big" : ""));
-    if (big) it.appendChild(el("div", "num", String(idx + 1).padStart(2, "0")));
-    it.appendChild(el("h3", null, s.title));
-
-    var meta = el("div", "meta");
-    var parts = [];
-    if (s.name) parts.push(s.name);
-    if (s.tags && s.tags.length) parts.push(s.tags.join(" · "));
-    meta.appendChild(el("span", null, parts.join(" · ")));
-    if (typeof s.score === "number") meta.appendChild(el("span", "score", s.score.toFixed(1)));
-    it.appendChild(meta);
-
-    if (s.summary) it.appendChild(el("p", "sum", s.summary));
-
-    var links = el("div", "links");
-    if (s.tryUrl) {
-      var t = link(s.tryUrl, "Попробовать →");
-      t.className = "try";
-      links.appendChild(t);
-    }
-    if (s.sources && s.sources.length) {
-      var src = el("span", "src");
-      src.appendChild(document.createTextNode("Источники: "));
-      s.sources.forEach(function (x, i) {
-        if (i) src.appendChild(el("span", "dot", " · "));
-        src.appendChild(link(x.url, x.name));
-      });
-      links.appendChild(src);
-    }
-    if (links.childNodes.length) it.appendChild(links);
-    return it;
+  function plural(n, one, few, many) {
+    var m = n % 10, h = n % 100;
+    return n + " " + (h > 10 && h < 20 ? many : m === 1 ? one : m > 1 && m < 5 ? few : many);
   }
 
-  var byId = {};
-  D.stories.forEach(function (s) { byId[s.id] = s; });
-  var mainIds = {};
-  var mainStories = (D.main || []).slice(0, 5).map(function (id) { mainIds[id] = 1; return byId[id]; }).filter(Boolean);
-
-  var header = el("header");
-  var k = el("div", "kicker");
-  var kl = el("span"); kl.appendChild(link("/", "Struktorum")); kl.lastChild.target = "_self"; kl.appendChild(document.createTextNode(" · " + fmtDate(D.built)));
-  k.appendChild(kl);
-  var root = document.documentElement;
-  var tb = el("button", "theme-btn"); tb.type = "button";
-  function themeLabel() { tb.textContent = root.dataset.theme === "light" ? "Тёмная тема" : "Светлая тема"; }
+  // Тема
+  var tb = document.getElementById("theme");
+  function themeLabel() {
+    var light = root.dataset.theme === "light";
+    tb.innerHTML = "";
+    tb.appendChild(el("span", "full", light ? "Тёмная тема" : "Светлая тема"));
+    tb.appendChild(el("span", "icon", light ? "☾" : "☀"));   // ☾ / ☀ на телефоне
+    tb.setAttribute("aria-label", light ? "Тёмная тема" : "Светлая тема");
+  }
   tb.onclick = function () {
     if (root.dataset.theme === "light") delete root.dataset.theme; else root.dataset.theme = "light";
     try { localStorage.setItem("digest-theme", root.dataset.theme || "dark"); } catch (e) {}
     themeLabel();
   };
-  themeLabel(); k.appendChild(tb);
-  header.appendChild(k);
-  header.appendChild(el("h1", null, "AI-дайджест"));
-  header.appendChild(el("p", "lead", "Главное за 3 дня для 3D, картинок и видео"));
-  app.appendChild(header);
+  themeLabel();
 
-  if (mainStories.length) {
-    app.appendChild(secHead("Главное", mainStories.length, "main"));
-    mainStories.forEach(function (s, i) { app.appendChild(renderItem(s, true, i)); });
+  // «Новое»: всё, что появилось после прошлого визита. В первый визит пометок нет.
+  var prevVisit = null;
+  try {
+    prevVisit = localStorage.getItem("digest-visit");
+    localStorage.setItem("digest-visit", new Date().toISOString());
+  } catch (e) {}
+  var isNew = function (s) { return !!(prevVisit && s.firstSeen && s.firstSeen > prevVisit); };
+
+  // Выпуски по дням
+  var days = LATEST.days && LATEST.days.length ? LATEST.days : [LATEST.date];
+  days.forEach(function (d, i) {
+    var o = el("option", null, fmtDay(d) + (i === 0 ? " · свежий" : ""));
+    o.value = d; dsel.appendChild(o);
+  });
+  dsel.onchange = function () { show(dsel.value, true); };
+
+  function renderCard(s, big, idx) {
+    var c = el("article", "card" + (isNew(s) ? " new" : ""));
+    if (big) c.appendChild(el("div", "num", String(idx + 1).padStart(2, "0")));
+    var row = el("div", "row");
+    row.appendChild(el("span", "name", s.name || ""));
+    if (typeof s.score === "number") row.appendChild(el("span", "score", s.score.toFixed(1)));
+    c.appendChild(row);
+    c.appendChild(el("h3", null, s.title));
+    if (s.summary) {
+      c.appendChild(el("p", "sum", s.summary));
+      if (s.summary.length > (big ? 360 : 220)) {
+        var more = el("button", "more", "Подробнее"); more.type = "button";
+        more.onclick = function () { c.classList.toggle("open"); more.textContent = c.classList.contains("open") ? "Свернуть" : "Подробнее"; };
+        c.appendChild(more);
+      }
+    }
+    if (s.tags && s.tags.length) {
+      var tags = el("div", "tags");
+      s.tags.forEach(function (t) { tags.appendChild(el("span", null, t)); });
+      c.appendChild(tags);
+    }
+    var links = el("div", "links");
+    if (s.tryUrl) { var t = link(s.tryUrl, "Попробовать →"); t.className = "try"; links.appendChild(t); }
+    if (s.sources && s.sources.length) {
+      var src = el("span", "src");
+      s.sources.forEach(function (x, i) {
+        if (i) src.appendChild(document.createTextNode(" · "));
+        src.appendChild(link(x.url, x.name));
+      });
+      links.appendChild(src);
+    }
+    c.appendChild(links);
+    return c;
   }
 
-  D.groups.forEach(function (g) {
-    var list = D.stories
-      .filter(function (s) { return s.group === g.id && !mainIds[s.id]; })
-      .sort(function (a, b) { return (b.score || 0) - (a.score || 0); });
-    if (!list.length) return;
-    app.appendChild(secHead(g.title, list.length));
-    list.forEach(function (s) { app.appendChild(renderItem(s, false)); });
-  });
+  function render(D) {
+    app.innerHTML = ""; secs.innerHTML = "";
+    var byId = {}; D.stories.forEach(function (s) { byId[s.id] = s; });
+    var mainIds = {};
+    var mainStories = (D.main || []).slice(0, 5).map(function (id) { mainIds[id] = 1; return byId[id]; }).filter(Boolean);
+    var fresh = D.stories.filter(isNew).length;
 
-  app.appendChild(el("footer", null, "Собирается раз в день из Reddit, Hacker News, Hugging Face, TLDR AI и myshli. Синяя цифра — важность новости для 3D-дизайнера по шкале 0–10. Тексты — пересказ, подробности по ссылкам на источники."));
+    var hero = el("div", "hero");
+    hero.appendChild(el("h1", null, "AI-дайджест"));
+    var lead = el("p", "lead");
+    lead.appendChild(document.createTextNode("Выпуск " + fmtDay(D.date, true) + " · главное за 3 дня для 3D, картинок и видео · " + plural(D.stories.length, "новость", "новости", "новостей")));
+    if (fresh) { lead.appendChild(document.createTextNode(" · ")); lead.appendChild(el("b", null, plural(fresh, "новая", "новые", "новых") + " с прошлого визита")); }
+    hero.appendChild(lead);
+    app.appendChild(hero);
+
+    var sections = [];
+    if (mainStories.length) sections.push({ id: "main", title: "Главное", list: mainStories, big: true });
+    D.groups.forEach(function (g) {
+      var list = D.stories.filter(function (s) { return s.group === g.id && !mainIds[s.id]; })
+        .sort(function (a, b) { return (b.score || 0) - (a.score || 0); });
+      if (list.length) sections.push({ id: g.id, title: g.title, list: list });
+    });
+    if (!sections.length) app.appendChild(el("p", "empty", "За этот день новостей нет."));
+
+    sections.forEach(function (sec) {
+      var a = el("a", null, sec.title); a.href = "#" + sec.id;
+      a.appendChild(el("span", "n", String(sec.list.length)));
+      secs.appendChild(a);
+
+      var s = el("section"); s.id = sec.id;
+      var h = el("div", "sec-head");
+      h.appendChild(el("h2", null, sec.title));
+      h.appendChild(el("span", "cnt", String(sec.list.length)));
+      s.appendChild(h);
+      var grid = el("div", "grid" + (sec.big ? " main" : ""));
+      sec.list.forEach(function (st, i) { grid.appendChild(renderCard(st, sec.big, i)); });
+      s.appendChild(grid);
+      app.appendChild(s);
+    });
+
+    app.appendChild(el("footer", null, "Собирается раз в день из Reddit, Hacker News, Hugging Face, TLDR AI и myshli. Синяя цифра — важность новости для 3D-дизайнера по шкале 0–10. Точка у названия — новость появилась после вашего прошлого визита. Тексты — пересказ, подробности по ссылкам на источники."));
+
+    // Подсветка текущего раздела в меню
+    var links = [].slice.call(secs.querySelectorAll("a"));
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          links.forEach(function (l) { l.classList.toggle("on", l.getAttribute("href") === "#" + e.target.id); });
+        });
+      }, { rootMargin: "-120px 0px -70% 0px" });
+      sections.forEach(function (sec) { io.observe(document.getElementById(sec.id)); });
+    }
+  }
+
+  var cache = {}; cache[LATEST.date] = LATEST;
+  function show(date, push) {
+    dsel.value = date;
+    if (push) history.replaceState(null, "", date === days[0] ? location.pathname : "?d=" + date);
+    if (cache[date]) return render(cache[date]);
+    app.innerHTML = ""; app.appendChild(el("p", "empty", "Загружаю выпуск…"));
+    fetch("days/" + date + ".json").then(function (r) { return r.json(); })
+      .then(function (D) { cache[date] = D; render(D); })
+      .catch(function () { app.innerHTML = ""; app.appendChild(el("p", "empty", "Не удалось загрузить выпуск за этот день.")); });
+  }
+
+  var want = new URLSearchParams(location.search).get("d");
+  show(days.indexOf(want) >= 0 ? want : days[0], false);
 })();
 </script>
 </body>
