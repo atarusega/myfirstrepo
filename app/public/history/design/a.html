@@ -25,27 +25,41 @@ h1 small{display:block;font:500 12px/1.4 var(--mono);letter-spacing:.08em;margin
 .stats{display:flex;gap:28px}
 .stat b{display:block;font:600 28px/1 var(--head);color:var(--blue)}
 .stat span{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
-nav{display:flex;gap:0;align-items:center;padding:0 32px;border-bottom:1px solid var(--rule);height:44px;position:sticky;top:0;background:var(--paper);z-index:20}
-nav .jump{border:0;background:none;padding:0 12px;height:44px;font-size:12px;color:var(--ink2);border-right:1px solid var(--rule)}
-nav .jump:hover{color:var(--blue);background:var(--paper2)}
-nav .hint{margin-left:auto;font-size:11px;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
+nav{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--ink);padding:8px 32px;display:flex;flex-direction:column;gap:6px}
+nav .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+nav .nl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);margin-right:4px}
+.tg,.zm{border:1px solid var(--ink);background:var(--paper);padding:3px 10px;font-size:11px;display:inline-flex;align-items:center;gap:6px}
+.tg i{width:9px;height:9px;display:inline-block;border:1px solid var(--ink)}
+.tg.off{border-color:var(--rule);color:var(--ink2);text-decoration:line-through}
+.tg.off i{background:transparent!important;border-color:var(--rule)}
+.tg.all{border-style:dashed}
+.zm.on{background:var(--ink);color:var(--paper)}
+.tg:hover,.zm:hover{border-color:var(--blue);color:var(--blue)}
 
 /* таймлайн */
-#tl{position:relative;overflow-x:auto;overflow-y:hidden;scrollbar-color:var(--ink) var(--paper2)}
+#tl{position:relative;overflow:auto;height:calc(100vh - 78px);scrollbar-color:var(--ink) var(--paper2);cursor:grab}
+#tl.drag{cursor:grabbing;user-select:none}
 #canvas{position:relative}
-.ruler{position:sticky;top:0;height:30px;border-bottom:1px solid var(--ink);background:var(--paper);z-index:5}
+.ruler{position:sticky;top:0;height:30px;border-bottom:1px solid var(--ink);background:var(--paper);z-index:8}
 .tick{position:absolute;top:0;height:100%;border-left:1px solid var(--ink);font-size:11px;padding:6px 0 0 5px}
 .tick.minor{border-color:var(--rule);color:transparent}
 .grid{position:absolute;top:30px;bottom:0;border-left:1px dashed var(--rule);pointer-events:none}
-.lane{position:relative;border-bottom:1px solid var(--rule)}
-.lab{position:sticky;left:0;width:var(--label);height:100%;z-index:4;background:linear-gradient(90deg,var(--paper) 85%,transparent);padding:12px 0 0 32px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;float:left}
-.lab i{display:inline-block;width:8px;height:8px;margin-right:8px;vertical-align:1px}
-.lab em{display:block;font-style:normal;font-weight:400;color:var(--ink2);letter-spacing:0;text-transform:none;margin-top:4px}
+.lane{position:relative;border-bottom:1px solid var(--ink)}
+.lane .body{position:absolute;left:0;right:0;bottom:0}
+.lab{position:sticky;left:12px;top:36px;z-index:6;display:inline-flex;align-items:baseline;gap:8px;margin:8px 0 0 12px;padding:6px 10px;background:var(--paper);border:1px solid var(--ink);box-shadow:3px 3px 0 var(--paper2);max-width:calc(100vw - 40px);white-space:nowrap}
+.lab b{font:600 13px/1 var(--head)}
+.lab i{display:inline-block;width:10px;height:10px;align-self:center}
+.lab em{font-style:normal;font-size:11px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis}
+.lab button{border:0;background:none;font-size:10px;color:var(--ink2);text-decoration:underline;padding:0 0 0 6px}
+.lab button:hover{color:var(--orange)}
+.band{position:absolute;left:0;right:0;border-top:1px dashed var(--rule)}
+.band.s{background:rgba(58,62,216,.04)}
+.band span{position:sticky;left:16px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);display:inline-block;padding:2px 0 0}
 
 /* маятник */
 .axis{position:absolute;left:0;right:0;border-top:1px solid var(--ink)}
 .axis-lab{position:absolute;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
-.mv{position:absolute;height:26px;display:flex;align-items:center;padding:0 8px;font:600 11px/1 var(--head);white-space:nowrap;overflow:hidden;cursor:pointer;border:1px solid var(--ink);background:var(--paper)}
+.mv{position:absolute;z-index:2;height:26px;display:flex;align-items:center;padding:0 8px;font:600 11px/1 var(--head);white-space:nowrap;overflow:hidden;cursor:pointer;border:1px solid var(--ink);background:var(--paper)}
 .mv.simple{background:var(--blue);border-color:var(--blue);color:#fff}
 .mv.mid{background:var(--paper2)}
 .mv:hover,.it:hover .th,.chip:hover{outline:2px solid var(--orange);outline-offset:1px}
@@ -112,7 +126,7 @@ ul.feat li::before{content:"— ";color:var(--blue)}
 .pst .pw{font-size:12px;line-height:1.45}
  @media (max-width:600px){
   header{grid-template-columns:1fr;padding:20px 16px 16px} h1{font-size:30px} .stats{gap:16px} .stat b{font-size:20px}
-  nav{padding:0;overflow-x:auto} nav .hint{display:none} .lab{padding-left:12px;width:120px}
+  nav{padding:6px 10px} nav .row{flex-wrap:nowrap;overflow-x:auto} .lab em{display:none} #tl{height:calc(100vh - 70px)}
   .c-top,.c-body{padding-left:16px;padding-right:16px} .c-credit{padding:6px 16px}
   .pst{width:100vw;height:125vw;padding:14px;gap:10px} .pst h2{font-size:20px} .pst .py{font-size:36px} .pst .pw{font-size:10px}
 }
@@ -136,7 +150,7 @@ ul.feat li::before{content:"— ";color:var(--blue)}
   <h1>История<br>дизайна<small>1830 — 2020 · таймлайн-шпаргалка · Структорум</small></h1>
   <div class="stats" id="stats"></div>
 </header>
-<nav id="nav"><span class="hint">Клик — карточка · Shift+колесо — по годам</span></nav>
+<nav id="nav"><div class="row" id="tracks"></div><div class="row" id="zoom"></div></nav>
 <div id="tl"><div id="canvas"></div></div>
 
 <aside id="card"></aside>
@@ -148,16 +162,29 @@ const DB = window.DB, $ = s => document.querySelector(s);
 const byId = {}; for (const k of ['movements','people','works']) for (const e of DB[k]) byId[e.id] = Object.assign(e, {_k:k});
 const nameOf = id => byId[id] ? (byId[id].name || byId[id].title) : id;
 
-/* шкала: с 1825 года, 24 px на год; более ранние — к левому краю */
-const Y0 = 1825, Y1 = 2025, PX = 24, L = 200;
+/* дорожки: ключ, название, подпись, цвет */
+const LANES = [
+  ['styles', 'Маятник стилей', 'стиль выше — больше декора, ниже — проще', null],
+  ['line', 'Линия маятника', 'куда качалась мода по десятилетиям', 'var(--orange)'],
+  ['chairs', 'Стулья', 'ключевые стулья по годам', 'var(--orange)'],
+  ['materials', 'Материалы и технологии', 'гнутое дерево, сталь, пластик…', 'var(--yellow)'],
+  ['for-all', 'Массовый дизайн', 'вещи для всех: серия, цена, доступность', 'var(--mint)'],
+  ['schools', 'Школы и выставки', 'мастерские, школы, выставки, объединения', 'var(--lilac)'],
+  ['russia', 'Дизайн в России', 'от неорусского стиля до ВХУТЕМАСа', 'var(--blue)'],
+  ['eco', 'Экодизайн', 'ресурсы, переработка, долговечность', 'var(--mint)'],
+];
+const store = {get(k, d) { try { const v = JSON.parse(localStorage.getItem('dh_' + k)); return v ?? d } catch { return d } }, set(k, v) { try { localStorage.setItem('dh_' + k, JSON.stringify(v)) } catch {} }};
+const ZOOMS = [8, 14, 24, 36];
+let PX = store.get('px', 24), hidden = new Set(store.get('hidden', []));
+const Y0 = 1825, Y1 = 2025, L = 40;
 const X = y => L + (Math.max(y, Y0) - Y0) * PX;
-const W = X(Y1) + 120;
+let W = 0;
 
 /* картинка: img_file из базы или site/img/<id>.jpg|png, иначе штриховка */
 function img(e, cls = 'th', duo = true) {
   const d = document.createElement('div'); d.className = cls;
   const src = e.img_file ? ['../' + e.img_file] : ['../img/' + e.id + '.jpg', '../img/' + e.id + '.png'];
-  const im = new Image(); let i = 0; im.loading = 'lazy'; im.alt = '';
+  const im = new Image(); let i = 0; im.loading = 'lazy'; im.alt = ''; im.draggable = false;
   if (!duo) im.style.filter = 'none';
   im.onerror = () => { if (++i < src.length) im.src = src[i]; else { im.remove(); d.classList.add('none'); } };
   im.src = src[0]; d.appendChild(im); return d;
@@ -172,104 +199,134 @@ function pack(items, gap = 8) {
   }
   return ends.length;
 }
+const cut = (s, n) => s.length > n ? s.slice(0, n - 1) + '…' : s;
+const HEAD = 46; // место под название дорожки
 
-const canvas = $('#canvas'); canvas.style.width = W + 'px';
-/* линейка */
-const ruler = document.createElement('div'); ruler.className = 'ruler'; canvas.appendChild(ruler);
-for (let y = 1830; y <= 2020; y += 5) {
-  const t = document.createElement('div'); const major = y % 10 == 0;
-  t.className = 'tick' + (major ? '' : ' minor'); t.style.left = X(y) + 'px'; t.textContent = y; ruler.appendChild(t);
-  if (major) { const g = document.createElement('div'); g.className = 'grid'; g.style.left = X(y) + 'px'; canvas.appendChild(g); }
-}
+function render() {
+  const canvas = $('#canvas'); canvas.innerHTML = ''; W = X(Y1) + 80; canvas.style.width = W + 'px';
+  /* линейка */
+  const ruler = document.createElement('div'); ruler.className = 'ruler'; canvas.appendChild(ruler);
+  const step = PX < 12 ? 10 : 5;
+  for (let y = 1830; y <= 2020; y += step) {
+    const t = document.createElement('div'); const major = y % (PX < 12 ? 20 : 10) == 0;
+    t.className = 'tick' + (major ? '' : ' minor'); t.style.left = X(y) + 'px'; t.textContent = y; ruler.appendChild(t);
+    if (major) { const g = document.createElement('div'); g.className = 'grid'; g.style.left = X(y) + 'px'; canvas.appendChild(g); }
+  }
+  function lane(key, h, legend = '') {
+    const [, title, sub, color] = LANES.find(l => l[0] == key);
+    const l = document.createElement('div'); l.className = 'lane'; l.style.height = (h + HEAD) + 'px'; l.style.width = W + 'px';
+    l.innerHTML = `<div class="lab">${color ? `<i style="background:${color}"></i>` : ''}<b>${title}</b><em>${sub}${legend}</em><button title="Скрыть дорожку" onclick="toggle('${key}')">скрыть</button></div>`;
+    const body = document.createElement('div'); body.className = 'body'; body.style.top = HEAD + 'px'; l.appendChild(body);
+    canvas.appendChild(l); return body;
+  }
 
-function lane(title, sub, color, h) {
-  const l = document.createElement('div'); l.className = 'lane'; l.style.height = h + 'px'; l.style.width = W + 'px';
-  l.innerHTML = `<div class="lab">${color ? `<i style="background:${color}"></i>` : ''}${title}<em>${sub}</em></div>`;
-  canvas.appendChild(l); return l;
-}
-
-/* 1. маятник стилей */
-(() => {
-  const ms = DB.movements.map(m => ({m, x0: X(m.start), x1: X(m.end || m.start + 12)}));
-  const lv = {}; ms.forEach(o => (lv[o.m.ornament] = lv[o.m.ornament] || []).push(o));
-  const rows = {}; for (const k in lv) rows[k] = pack(lv[k], 4);
-  const RH = 28, levels = [2, 1, 0, -1, -2];
-  let y = 36; const top = {};
-  for (const k of levels) { top[k] = y; y += Math.max(rows[k] || 1, 1) * RH + 14; }
-  const h = y + 10, l = lane('Стили', 'маятник: декор ↑ простота ↓', null, h);
-  const mid = top[0] + RH / 2;
-  const ax = document.createElement('div'); ax.className = 'axis'; ax.style.top = mid + 'px'; l.appendChild(ax);
-  for (const [k, t] of [[2, 'Декор'], [-2, 'Простота']]) {
-    const a = document.createElement('div'); a.className = 'axis-lab'; a.style.top = (top[k] - 18) + 'px'; a.style.left = (L + 10) + 'px'; a.textContent = (k > 0 ? '↑ ' : '↓ ') + t; l.appendChild(a);
-  }
-  for (const o of ms) {
-    const d = document.createElement('div'), orn = o.m.ornament;
-    d.className = 'mv' + (orn < 0 ? ' simple' : orn == 0 ? ' mid' : '') + (o.m.end ? '' : ' open-end');
-    d.style.left = o.x0 + 'px'; d.style.width = Math.max(o.x1 - o.x0, 40) + 'px'; d.style.top = (top[orn] + o.row * RH) + 'px';
-    d.textContent = o.m.name; d.title = `${o.m.name} ${o.m.start}–${o.m.end || '…'}`; d.onclick = () => open(o.m.id); l.appendChild(d);
-  }
-  /* средний уровень по десятилетиям */
-  const pts = [];
-  for (let dec = 1830; dec <= 2010; dec += 10) {
-    const act = DB.movements.filter(m => m.start <= dec + 9 && (m.end || m.start + 12) >= dec);
-    if (!act.length) continue;
-    const avg = act.reduce((s, m) => s + m.ornament, 0) / act.length;
-    pts.push([X(dec + 5), mid - avg * (top[0] - top[1]) ]);
-  }
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.classList.add('pend');
-  svg.setAttribute('width', W); svg.setAttribute('height', h);
-  const p = pts.map((q, i) => (i ? 'L' : 'M') + q[0] + ' ' + q[1]).join(' ');
-  svg.innerHTML = `<path d="${p}" fill="none" stroke="#F2642A" stroke-width="2.5" stroke-linejoin="round"/>` + pts.map(q => `<circle cx="${q[0]}" cy="${q[1]}" r="3.5" fill="#F2642A"/>`).join('');
-  l.appendChild(svg);
-})();
-
-/* 2. стулья — картинки */
-(() => {
-  const ws = DB.works.filter(w => w.tracks.includes('chairs') && w.year).map(w => ({w, x0: X(w.year) - 32, x1: X(w.year) + 36}));
-  const n = pack(ws, 6), RH = 104, l = lane('Стулья', ws.length + ' шт.', 'var(--orange)', 20 + n * RH);
-  for (const o of ws) {
-    const d = document.createElement('div'); d.className = 'it'; d.style.left = o.x0 + 'px'; d.style.top = (14 + o.row * RH) + 'px';
-    d.appendChild(img(o.w)); d.insertAdjacentHTML('beforeend', `<div class="y">${o.w.year}</div><div class="t">${o.w.title}</div>`);
-    d.onclick = () => open(o.w.id); l.appendChild(d);
-  }
-})();
-
-/* 3. остальные треки — фишки */
-const TR = [['materials', 'Материалы', 'var(--yellow)', 'новые материалы и технологии'], ['for-all', 'Для всех', 'var(--mint)', 'массовое и доступное'],
-            ['schools', 'Школы', 'var(--lilac)', 'мастерские, школы, выставки'], ['russia', 'Россия', 'var(--blue)', 'от модерна до ВХУТЕМАСа'], ['eco', 'Экология', 'var(--mint)', 'ресурсы и переработка']];
-const used = new Set();
-for (const [k, title, color, sub] of TR) {
-  const items = [];
-  for (const w of DB.works) {
-    if (!w.year || used.has(w.id) || w.tracks.includes('chairs') || !w.tracks.includes(k)) continue;
-    used.add(w.id); const x = X(w.year); items.push({w, x0: x, x1: x + 44 + Math.min(w.title.length, 26) * 6.6});
-  }
-  for (const e of DB.events.filter(e => e.tracks[0] == k && e.year >= 1800)) {
-    const x = X(e.year); items.push({e, x0: x, x1: x + 30 + Math.min(e.title.length, 36) * 6.6});
-  }
-  const n = pack(items, 10), RH = 36, l = lane(title, sub, color, 16 + n * RH);
-  for (const o of items) {
-    if (o.w) {
-      const d = document.createElement('div'); d.className = 'chip'; d.style.left = o.x0 + 'px'; d.style.top = (10 + o.row * RH) + 'px';
-      d.appendChild(img(o.w)); const t = o.w.title.length > 26 ? o.w.title.slice(0, 25) + '…' : o.w.title;
-      d.insertAdjacentHTML('beforeend', `<span>${o.w.year}</span><b>${t}</b>`); d.title = o.w.title; d.onclick = () => open(o.w.id); l.appendChild(d);
-    } else {
-      const d = document.createElement('div'); d.className = 'ev'; d.style.left = o.x0 + 'px'; d.style.top = (12 + o.row * RH) + 'px';
-      const t = o.e.title.length > 36 ? o.e.title.slice(0, 35) + '…' : o.e.title;
-      d.innerHTML = `<span>${o.e.year}</span>${t}`; d.title = o.e.title; d.onclick = () => openEv(o.e); l.appendChild(d);
+  /* 1. маятник стилей */
+  if (!hidden.has('styles')) {
+    const ms = DB.movements.map(m => ({m, x0: X(m.start), x1: Math.max(X(m.end || m.start + 12), X(m.start) + 40)}));
+    const lv = {}; ms.forEach(o => (lv[o.m.ornament] = lv[o.m.ornament] || []).push(o));
+    const rows = {}; for (const k in lv) rows[k] = pack(lv[k], 4);
+    const RH = 28, levels = [2, 1, 0, -1, -2], NAMES = {2: 'много декора', 1: 'декор', 0: 'середина', '-1': 'проще', '-2': 'минимум'};
+    let y = 8; const top = {};
+    for (const k of levels) { top[k] = y; y += Math.max(rows[k] || 1, 1) * RH + 12; }
+    const showLine = !hidden.has('line');
+    const l = lane('styles', y, showLine ? ' · <span style="color:var(--orange)">━ средний уровень декора по десятилетиям</span>' : '');
+    const mid = top[0] + RH / 2;
+    for (const k of levels) {
+      const b = document.createElement('div'); b.className = 'band' + (k < 0 ? ' s' : ''); b.style.top = (top[k] - 6) + 'px';
+      b.style.height = (Math.max(rows[k] || 1, 1) * RH + 12) + 'px'; b.innerHTML = `<span>${k > 0 ? '↑' : k < 0 ? '↓' : '·'} ${NAMES[k]}</span>`; l.appendChild(b);
+    }
+    for (const o of ms) {
+      const d = document.createElement('div'), orn = o.m.ornament;
+      d.className = 'mv' + (orn < 0 ? ' simple' : orn == 0 ? ' mid' : '') + (o.m.end ? '' : ' open-end');
+      d.style.left = o.x0 + 'px'; d.style.width = (o.x1 - o.x0) + 'px'; d.style.top = (top[orn] + o.row * RH) + 'px';
+      d.textContent = o.m.name; d.title = `${o.m.name} ${o.m.start}–${o.m.end || '…'}`; d.onclick = () => open(o.m.id); l.appendChild(d);
+    }
+    if (showLine) {
+      const pts = [];
+      for (let dec = 1830; dec <= 2010; dec += 10) {
+        const act = DB.movements.filter(m => m.start <= dec + 9 && (m.end || m.start + 12) >= dec);
+        if (!act.length) continue;
+        const avg = act.reduce((s, m) => s + m.ornament, 0) / act.length;
+        pts.push([X(dec + 5), mid - avg * (top[0] - top[1]), dec, avg, act.length]);
+      }
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.classList.add('pend');
+      svg.setAttribute('width', W); svg.setAttribute('height', y);
+      const p = pts.map((q, i) => (i ? 'L' : 'M') + q[0] + ' ' + q[1]).join(' ');
+      svg.innerHTML = `<path d="${p}" fill="none" stroke="#F2642A" stroke-width="2.5" stroke-linejoin="round"/>` +
+        pts.map(q => `<circle cx="${q[0]}" cy="${q[1]}" r="4" fill="#F2642A"><title>${q[2]}-е: ${q[3] > 0.3 ? 'больше декора' : q[3] < -0.3 ? 'проще' : 'середина'} (среднее по ${q[4]} стилям: ${q[3].toFixed(1)})</title></circle>`).join('');
+      l.appendChild(svg);
     }
   }
+
+  /* 2. стулья — картинки */
+  if (!hidden.has('chairs')) {
+    const T = PX >= 24 ? 64 : 44, big = PX >= 24;
+    const ws = DB.works.filter(w => w.tracks.includes('chairs') && w.year).map(w => ({w, x0: X(w.year) - T / 2, x1: X(w.year) + T / 2 + (big ? 4 : 0)}));
+    const RH = big ? 104 : T + 20, n = pack(ws, 6), l = lane('chairs', 6 + n * RH);
+    for (const o of ws) {
+      const d = document.createElement('div'); d.className = 'it'; d.style.width = T + 'px'; d.style.left = o.x0 + 'px'; d.style.top = (4 + o.row * RH) + 'px';
+      const th = img(o.w); th.style.width = th.style.height = T + 'px'; d.appendChild(th);
+      d.insertAdjacentHTML('beforeend', `<div class="y">${o.w.year}</div>${big ? `<div class="t">${o.w.title}</div>` : ''}`);
+      d.title = `${o.w.year} · ${o.w.title}`; d.onclick = () => open(o.w.id); l.appendChild(d);
+    }
+  }
+
+  /* 3. остальные дорожки — фишки */
+  const used = new Set(), N = PX >= 24 ? 26 : PX >= 14 ? 16 : 0;
+  for (const k of ['materials', 'for-all', 'schools', 'russia', 'eco']) {
+    const items = [];
+    for (const w of DB.works) {
+      if (!w.year || used.has(w.id) || w.tracks.includes('chairs') || !w.tracks.includes(k)) continue;
+      used.add(w.id); if (hidden.has(k)) continue;
+      const x = X(w.year); items.push({w, x0: x, x1: x + 38 + Math.min(w.title.length, N) * 6.6});
+    }
+    if (hidden.has(k)) continue;
+    for (const e of DB.events.filter(e => e.tracks[0] == k && e.year >= 1800)) {
+      const x = X(e.year); items.push({e, x0: x, x1: x + 44 + Math.min(e.title.length, N + 10) * 6.6});
+    }
+    const RH = 36, n = pack(items, 8), l = lane(k, 4 + n * RH);
+    for (const o of items) {
+      if (o.w) {
+        const d = document.createElement('div'); d.className = 'chip'; d.style.left = o.x0 + 'px'; d.style.top = (2 + o.row * RH) + 'px';
+        d.appendChild(img(o.w)); d.insertAdjacentHTML('beforeend', `<span>${o.w.year}</span>${N ? `<b>${cut(o.w.title, N)}</b>` : ''}`);
+        d.title = `${o.w.year} · ${o.w.title}`; d.onclick = () => open(o.w.id); l.appendChild(d);
+      } else {
+        const d = document.createElement('div'); d.className = 'ev'; d.style.left = o.x0 + 'px'; d.style.top = (4 + o.row * RH) + 'px';
+        d.innerHTML = `<span>${o.e.year}</span>${cut(o.e.title, N + 10)}`; d.title = `${o.e.year} · ${o.e.title}`; d.onclick = () => openEv(o.e); l.appendChild(d);
+      }
+    }
+  }
+  if (hidden.size == LANES.length) canvas.insertAdjacentHTML('beforeend', '<p style="padding:40px">Все дорожки скрыты — включи нужные в панели сверху.</p>');
+  drawNav();
 }
 
-/* шапка: цифры и переходы */
+/* панель: дорожки, масштаб, переход по годам */
+function drawNav() {
+  $('#tracks').innerHTML = '<span class="nl">Дорожки</span>' + LANES.map(([k, t, , c]) =>
+    `<button class="tg${hidden.has(k) ? ' off' : ''}" onclick="toggle('${k}')"><i style="background:${c || 'var(--ink)'}"></i>${t}</button>`).join('') +
+    (hidden.size ? `<button class="tg all" onclick="hidden.clear();save()">показать все</button>` : '');
+  $('#zoom').innerHTML = '<span class="nl">Масштаб</span>' + ZOOMS.map((z, i) => `<button class="zm${z == PX ? ' on' : ''}" onclick="zoom(${z})">${['век', 'полвека', 'десятилетия', 'годы'][i]}</button>`).join('') +
+    '<span class="nl" style="margin-left:16px">Перейти</span>' + [1850, 1900, 1925, 1950, 1975, 2000].map(y => `<button class="zm" onclick="go(${y})">${y}</button>`).join('');
+}
+function save() { store.set('hidden', [...hidden]); render(); }
+function toggle(k) { hidden.has(k) ? hidden.delete(k) : hidden.add(k); save(); }
+function centerYear() { const tl = $('#tl'); return Y0 + (tl.scrollLeft + tl.clientWidth / 2 - L) / PX; }
+function go(y) { const tl = $('#tl'); tl.scrollTo({left: X(y) - tl.clientWidth / 3, behavior: 'smooth'}); }
+function zoom(z) { const c = centerYear(), tl = $('#tl'); PX = z; store.set('px', z); render(); tl.scrollLeft = X(c) - tl.clientWidth / 2; }
+
+/* перетаскивание мышью */
+(() => {
+  const tl = $('#tl'); let d = null;
+  tl.addEventListener('mousedown', e => { if (e.button) return; d = {x: e.clientX, y: e.clientY, l: tl.scrollLeft, t: tl.scrollTop, m: false}; });
+  addEventListener('mousemove', e => { if (!d) return; const dx = e.clientX - d.x, dy = e.clientY - d.y;
+    if (Math.abs(dx) + Math.abs(dy) > 5) { d.m = true; tl.classList.add('drag'); } if (d.m) { tl.scrollLeft = d.l - dx; tl.scrollTop = d.t - dy; } });
+  addEventListener('mouseup', () => { if (d && d.m) setTimeout(() => tl.classList.remove('drag'), 0); d = null; });
+  tl.addEventListener('click', e => { if (tl.classList.contains('drag')) { e.stopPropagation(); e.preventDefault(); } }, true);
+})();
+
+render();
 $('#stats').innerHTML = [[DB.movements.length, 'течений'], [DB.works.length, 'работ'], [DB.works.filter(w => w.tracks.includes('chairs')).length, 'стульев'], [DB.people.length, 'людей']]
   .map(([n, t]) => `<div class="stat"><b>${n}</b><span>${t}</span></div>`).join('');
-const nav = $('#nav');
-for (const y of [1830, 1850, 1880, 1900, 1920, 1940, 1960, 1980, 2000]) {
-  const b = document.createElement('button'); b.className = 'jump'; b.textContent = y + '-е';
-  b.onclick = () => $('#tl').scrollTo({left: X(y) - L - 40, behavior: 'smooth'}); nav.insertBefore(b, nav.lastChild);
-}
-$('#tl').addEventListener('wheel', e => { if (!e.shiftKey && Math.abs(e.deltaY) > Math.abs(e.deltaX) && e.target.closest('#tl')) { $('#tl').scrollLeft += e.deltaY; e.preventDefault(); } }, {passive: false});
 
 /* карточка */
 const card = $('#card'), poster = $('#poster');
@@ -335,7 +392,7 @@ poster.onclick = ev => { if (ev.target === poster) poster.classList.remove('on')
 document.addEventListener('keydown', ev => { if (ev.key == 'Escape') { poster.classList.remove('on'); card.classList.remove('on'); } });
 /* ссылка на элемент: #id или #poster:id */
 const h = decodeURIComponent(location.hash.slice(1));
-if (h) { const id = h.replace(/^poster:/, ''); if (byId[id]) { open(id); $('#tl').scrollLeft = X(byId[id].year || byId[id].start || byId[id].born || 1850) - 600; if (h.startsWith('poster:')) openPoster(); } }
+if (h) { const id = h.replace(/^poster:/, ''); if (byId[id]) { open(id); go(byId[id].year || byId[id].start || byId[id].born || 1850); if (h.startsWith('poster:')) openPoster(); } }
 </script>
 </body>
 </html>
