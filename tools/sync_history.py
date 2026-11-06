@@ -13,6 +13,10 @@ pages = []
 for f in glob.glob(os.path.join(SRC, "design", "*.html")):
     shutil.copy(f, os.path.join(DST, "design")); pages.append(os.path.basename(f))
 
+src_names = set(os.listdir(os.path.join(SRC, "img")))
+for f in os.listdir(os.path.join(DST, "img")):  # картинки, убранные из базы (чужие совпадения), удалить и с сайта
+    if f not in src_names: os.remove(os.path.join(DST, "img", f)); print("  удалена", f)
+
 n = 0
 for f in glob.glob(os.path.join(SRC, "img", "*")):
     name = os.path.basename(f); out = os.path.join(DST, "img", name)
