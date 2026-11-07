@@ -36,6 +36,7 @@
 
 - `sync_telegram.py` — тянет посты t.me/struktorum по списку `POSTS`, качает фото, пишет `projects.json` (с sizes и цветами). Названия — словарь `TITLES`. **Новый проект = добавить id поста в `POSTS` (+ название в `TITLES`), запустить, закоммитить.** Запуск: `PYTHONIOENCODING=utf-8 python tools/sync_telegram.py` (иначе падает вывод в cp1251).
 - `make_covers.py` — `images/<id>/cover.webp` (квадрат 480 px) для сетки + поле `cover` в projects.json. Запускается из `sync_telegram.py`; отдельно — если менялись `01.jpg`.
+- `make_progressive.py` — переводит JPEG в `app/public` в прогрессивные (quality="keep", потеря ≥43 дБ PSNR, глазом не видна). `sync_telegram.py` вызывает его для новых фото, `make_og.py` сохраняет прогрессивным сразу. **История дизайна (`history/img`, `sync_history.py`) не трогается — так решил Никита**; скрипт пропускает её. jpegtran (без потерь) не установлен — автоматический режим запретил ставить его из npm.
 - `make_favicons.py` — фавиконки и манифест из знака.
 - `make_og.py` — картинка превью 1200×630 (нужны `pip install fonttools brotli`, шрифт берётся из node_modules). После смены обложек — перегенерировать.
 

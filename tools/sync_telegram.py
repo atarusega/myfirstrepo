@@ -5,6 +5,7 @@ import html, json, re, urllib.request
 from pathlib import Path
 
 from make_covers import make_cover
+from make_progressive import make_progressive
 
 ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "app"
@@ -72,6 +73,7 @@ def main():
             f = folder / f"{i:02d}.jpg"
             if not f.exists():
                 f.write_bytes(get(u))
+                make_progressive(f)  # Telegram отдаёт обычный JPEG — делаем прогрессивный
             files.append(f"images/{pid}/{f.name}")
         p["images"] = files
         # Размеры фото: лента в просмотре проекта сразу знает ширину кадров и не дёргается при загрузке

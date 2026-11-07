@@ -82,7 +82,7 @@ def main():
         im.paste(cover, (left + i * (size + gap), top), cover)
 
     draw_text(d, (left, top + size + 34), "STRUKTORUM.SPACE", load_font(500, 20), SOFT, spacing=0.1)
-    im.save(OUT, quality=88, optimize=True)
+    im.save(OUT, quality=88, optimize=True, progressive=True)
     print("ok:", OUT, OUT.stat().st_size // 1024, "KB")
 
 
