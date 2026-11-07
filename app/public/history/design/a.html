@@ -23,6 +23,8 @@ header{display:flex;align-items:baseline;gap:28px;padding:18px 32px 14px;border-
 h1{font:800 26px/1 var(--head);margin:0;letter-spacing:-.02em;text-transform:uppercase;white-space:nowrap}
 .sub{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
 .stats{display:flex;gap:22px;margin-left:auto}
+.xlink{font:600 12px/1 var(--head);text-transform:uppercase;letter-spacing:.04em;text-decoration:none;color:var(--paper);background:var(--ink);padding:8px 12px;white-space:nowrap;align-self:center}
+.xlink:hover{background:var(--blue)}
 .stat{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);white-space:nowrap}
 .stat b{font:600 15px/1 var(--head);color:var(--ink);margin-right:5px}
 
@@ -170,6 +172,7 @@ ul.feat li::before{content:"— ";color:var(--blue)}
   <h1>История дизайна</h1>
   <span class="sub">1830 — 2020 · периоды и стулья · Структорум</span>
   <div class="stats" id="stats"></div>
+  <a class="xlink" href="../../chairs/">Стулья →</a>
 </header>
 <nav id="nav">
   <div class="row"><span class="row" id="zoom"></span><button class="zm" onclick="fit()">вписать в экран</button>
