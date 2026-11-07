@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Стулья — история в 100 предметах</title>
+<meta name="description" content="Лента стульев от Египта до 3D-печати: кто, когда, почему такой и в чём прорыв.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F1EA; --paper2:#E9E4D8; --paper3:#DED8C9; --ink:#1C1C1C; --ink2:#6B685F; --rule:#D3CDBE;
+  --blue:#3A3ED8; --orange:#F2642A; --mint:#9FE3D4; --lilac:#D9BDF2; --yellow:#F2B31A;
+  --mono:'IBM Plex Mono',monospace; --head:'Unbounded',sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:13px/1.5 var(--mono);height:100%}
+body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+a{color:var(--blue)}
+button{font:inherit;cursor:pointer;color:inherit;background:none;border:0;padding:0}
+header{display:flex;align-items:baseline;gap:22px;padding:16px 28px 12px;border-bottom:1px solid var(--ink);flex-wrap:wrap}
+h1{font:800 26px/1 var(--head);margin:0;letter-spacing:-.02em;text-transform:uppercase;white-space:nowrap}
+.sub{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+.stats{display:flex;gap:18px;margin-left:auto;flex-wrap:wrap}
+.stat{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);white-space:nowrap}
+.stat b{font:600 15px/1 var(--head);color:var(--ink);margin-right:5px}
+header a.hist{font-size:11px;text-transform:uppercase;letter-spacing:.06em;text-decoration:none;border-bottom:1px solid var(--blue)}
+nav{position:relative;z-index:20;background:var(--paper);border-bottom:1px solid var(--ink);padding:8px 28px;display:flex;flex-direction:column;gap:7px}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.nl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);margin-right:4px}
+.chip{border:1px solid var(--ink);background:var(--paper);padding:4px 10px;font-size:11px;display:inline-flex;align-items:center;gap:6px;transition:background .12s,color .12s;white-space:nowrap}
+.chip small{color:var(--ink2);font-size:10px}
+.chip.on{background:var(--ink);color:var(--paper)} .chip.on small{color:var(--paper3)}
+.chip:hover{background:var(--blue);border-color:var(--blue);color:#fff}
+.chip.vw.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.sep{width:1px;height:18px;background:var(--rule);margin:0 6px}
+#q{border:1px solid var(--ink);background:#fff;font:inherit;font-size:11px;padding:4px 10px;width:220px;outline:0}
+#q:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(58,62,216,.15)}
+.ml{margin-left:auto}
+main{flex:1;position:relative;min-height:0}
+.view{position:absolute;inset:0;display:none;overflow:auto;scrollbar-color:var(--ink) var(--paper2)}
+.view.on{display:block}
+/* лента */
+#tl{cursor:grab}
+#tl.drag{cursor:grabbing;user-select:none}
+#canvas{position:relative;min-height:100%}
+.ruler{position:sticky;top:0;height:34px;border-bottom:1px solid var(--ink);background:var(--paper);z-index:8}
+.tick{position:absolute;top:0;height:100%;border-left:1px solid var(--ink);font:600 11px var(--head);padding:11px 0 0 6px;white-space:nowrap}
+.tick.minor{border-color:var(--rule);color:transparent;height:40%;top:auto;bottom:0}
+.grid{position:absolute;top:34px;bottom:0;border-left:1px solid var(--rule);pointer-events:none}
+.eran{position:absolute;top:44px;font:800 64px/.8 var(--head);letter-spacing:-.05em;color:var(--ink);opacity:.05;pointer-events:none;user-select:none;white-space:nowrap}
+#lines{position:absolute;left:0;top:0;pointer-events:none;z-index:1}
+#lines path{fill:none;stroke:var(--rule);stroke-width:1;opacity:.7}
+#lines path.anc{stroke:var(--orange);stroke-width:1.8;opacity:1}
+#lines path.des{stroke:var(--blue);stroke-width:1.4;opacity:1}
+.it{position:absolute;cursor:pointer;width:72px;transition:opacity .15s;z-index:2}
+.it.dim{opacity:.18}
+.th{width:72px;height:72px;background:var(--paper2);position:relative;overflow:hidden;transition:transform .15s;border:1px solid var(--rule)}
+.th img{width:100%;height:100%;object-fit:cover;filter:url(#duo);display:block;transition:filter .2s}
+.it:hover .th,.it.on .th{transform:translateY(-2px);box-shadow:3px 3px 0 var(--orange);border-color:var(--ink)}
+.it:hover .th img,.it.on .th img{filter:none}
+.th.none{display:flex;align-items:flex-end;padding:5px;background:repeating-linear-gradient(45deg,var(--paper2) 0 6px,var(--paper) 6px 12px)}
+.th.none span{font:600 8.5px/1.2 var(--head);color:var(--ink2);overflow:hidden;max-height:100%}
+.it .y{font:600 11px/1 var(--head);margin-top:6px}
+.it .t{font-size:10px;line-height:1.25;max-height:26px;overflow:hidden;color:var(--ink2);margin-top:3px}
+.it.key .y::after{content:"";display:inline-block;width:5px;height:5px;background:var(--blue);margin-left:5px;vertical-align:middle}
+/* стена */
+#wall{padding:20px 28px 60px}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px 14px}
+.wit{cursor:pointer}
+.wit .th{width:100%;height:auto;aspect-ratio:1}
+.wit .y{font:600 11px/1 var(--head);margin-top:7px;display:flex;justify-content:space-between}
+.wit .y em{font-style:normal;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);font-family:var(--mono);font-weight:400}
+.wit .t{font-size:11px;line-height:1.3;margin-top:3px}
+.wit:hover .th,.wit.on .th{box-shadow:3px 3px 0 var(--orange);border-color:var(--ink)} .wit:hover .th img{filter:none}
+.ghead{grid-column:1/-1;font:800 13px var(--head);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--ink);padding:18px 0 6px;margin-top:6px}
+.ghead:first-child{margin-top:0;padding-top:0}
+.ghead::before{content:attr(data-n);color:var(--blue);margin-right:10px}
+/* тиражи */
+#units{padding:24px 28px 60px;max-width:1100px}
+.ulead{font-size:12px;color:var(--ink2);max-width:640px;margin:0 0 22px}
+.ubar{display:grid;grid-template-columns:56px 1fr;gap:0 14px;align-items:center;margin:0 0 14px;cursor:pointer}
+.ubar .th{width:56px;height:56px}
+.ubar .bar{height:28px;background:var(--ink);display:flex;align-items:center;padding:0 10px;color:var(--paper);font:600 12px var(--head);white-space:nowrap;min-width:fit-content;transition:background .12s}
+.ubar:hover .bar{background:var(--blue)}
+.ubar .cap{font-size:11px;margin-top:5px}
+.ubar .cap b{font:600 12px var(--head)} .ubar .cap em{font-style:normal;color:var(--ink2);margin-left:8px}
+/* сравнение */
+#cmp{padding:20px 28px 60px}
+.cgrid{display:grid;grid-template-columns:130px 1fr 1fr;gap:0;border:1px solid var(--ink);max-width:1100px}
+.cgrid>div{padding:10px 14px;border-bottom:1px solid var(--rule);border-right:1px solid var(--rule);font-size:12px;line-height:1.55}
+.cgrid>div:nth-child(3n){border-right:0}
+.cgrid>div.k{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);background:var(--paper2)}
+.cgrid .cimg{height:220px;display:grid;place-items:center;background:#fff}
+.cgrid .cimg img{max-width:100%;max-height:200px;object-fit:contain}
+.cgrid .cname{font:600 16px/1.2 var(--head)}
+.cgrid .cname small{display:block;font:800 30px/1 var(--head);margin-bottom:6px;letter-spacing:-.02em}
+.csel{display:flex;gap:12px;margin:0 0 16px;flex-wrap:wrap}
+.csel select{font:inherit;font-size:11px;border:1px solid var(--ink);background:#fff;padding:5px 8px;max-width:360px}
+.csel .nl{align-self:center}
+/* карточка */
+#card{position:fixed;top:0;right:0;width:min(480px,100vw);height:100vh;background:var(--paper);border-left:1px solid var(--ink);transform:translateX(100%);transition:transform .25s;z-index:30;overflow-y:auto;box-shadow:-12px 0 32px rgba(28,28,28,.08)}
+#card.on{transform:none}
+.c-top{display:flex;justify-content:space-between;align-items:center;padding:10px 22px;border-bottom:1px solid var(--ink);font-size:10px;text-transform:uppercase;letter-spacing:.1em;position:sticky;top:0;background:var(--paper);z-index:2;gap:8px}
+.c-top .btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.c-top button{border:1px solid var(--ink);padding:5px 10px;font-size:11px;text-transform:none;letter-spacing:0;white-space:nowrap}
+.c-top button.pri{background:var(--ink);color:var(--paper)}
+.c-top button:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+.c-img{aspect-ratio:4/3;background:#fff;border-bottom:1px solid var(--ink);position:relative}
+.c-img img{width:100%;height:100%;object-fit:contain;display:block}
+.c-img.none{display:grid;place-items:center;padding:24px;text-align:center;font-size:11px;color:var(--ink2);background:repeating-linear-gradient(45deg,var(--paper2) 0 8px,var(--paper) 8px 16px)}
+.c-img.none button{border:1px solid var(--ink);padding:5px 10px;margin-top:10px;font-size:11px}
+.c-credit{font-size:10px;color:var(--ink2);padding:6px 22px;border-bottom:1px solid var(--rule)}
+.c-body{padding:20px 22px 48px}
+.c-kind{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);font-weight:600}
+.c-kind i{font-style:normal;color:var(--ink2);margin-left:10px}
+.c-title{font:600 22px/1.15 var(--head);margin:8px 0 2px;letter-spacing:-.01em}
+.c-en{font-size:11px;color:var(--ink2)}
+.c-years{font:800 46px/1 var(--head);margin:14px 0 2px;letter-spacing:-.03em}
+.c-years small{font:400 11px var(--mono);color:var(--ink2);letter-spacing:0;margin-left:10px}
+dl{display:grid;grid-template-columns:96px 1fr;gap:8px 12px;margin:18px 0;padding:14px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--rule);font-size:12px}
+dt{color:var(--ink2);font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding-top:2px}
+dd{margin:0}
+.blk{margin:0 0 14px;padding:12px 14px;border:1px solid var(--ink);position:relative}
+.blk h4{margin:0 0 6px;font:600 10px var(--head);text-transform:uppercase;letter-spacing:.1em;color:var(--blue)}
+.blk p{margin:0;font-size:13px;line-height:1.6}
+.blk.fact{background:var(--ink);color:var(--paper);box-shadow:4px 4px 0 var(--yellow)} .blk.fact h4{color:var(--yellow)}
+.blk.leg{border-style:dashed} .blk.leg h4{color:var(--orange)}
+.lin{margin:16px 0;font-size:11px}
+.lin h4{margin:0 0 6px;font:600 10px var(--head);text-transform:uppercase;letter-spacing:.1em;color:var(--ink2)}
+.lin .chip{margin:0 4px 4px 0;font-size:11px}
+.lin .chip.a{border-color:var(--orange)} .lin .chip.d{border-color:var(--blue)}
+.refs{margin-top:18px;font-size:11px;color:var(--ink2)}
+.refs a{display:inline-block;margin:0 10px 6px 0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
+.navk{display:flex;justify-content:space-between;margin-top:22px;font-size:11px}
+.navk button{border:1px solid var(--ink);padding:5px 10px;max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.navk button:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:9px 16px;font-size:12px;opacity:0;transition:.2s;z-index:60;pointer-events:none;box-shadow:4px 4px 0 var(--yellow)}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.hint{font-size:10px;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
+#fbtn{display:none}
+@media (max-width:720px){#fbtn{display:inline-flex}#filters{display:none}nav.open #filters{display:flex}header{padding:12px 16px 10px;gap:12px}nav{padding:8px 16px}#wall,#units,#cmp{padding:16px 16px 60px}.cgrid{grid-template-columns:90px 1fr 1fr}#q{width:150px}.stats{display:none}}
+</style>
+</head>
+<body>
+<svg style="position:absolute;width:0;height:0" aria-hidden="true"><filter id="duo" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncR type="table" tableValues="0.11 0.957"/><feFuncG type="table" tableValues="0.11 0.945"/><feFuncB type="table" tableValues="0.11 0.918"/></feComponentTransfer></filter></svg>
+
+<header>
+  <h1>Стулья</h1>
+  <span class="sub">История в <span id="n-all"></span> предметах · почему такой и в чём прорыв</span>
+  <div class="stats">
+    <span class="stat"><b id="s-span"></b>лет</span>
+    <span class="stat"><b id="s-img"></b>с фото</span>
+    <span class="stat"><b id="s-lin"></b>связей</span>
+    <a class="hist" href="../history/">← История дизайна</a>
+  </div>
+</header>
+
+<nav>
+  <div class="row">
+    <span class="nl">Вид</span>
+    <button class="chip vw on" data-v="tl">Лента</button>
+    <button class="chip vw" data-v="wall">Стена</button>
+    <button class="chip vw" data-v="units">Тиражи</button>
+    <button class="chip vw" data-v="cmp">Сравнить</button>
+    <span class="sep"></span>
+    <button class="chip" id="keyonly">Только ключевые <small id="n-key"></small></button>
+    <button class="chip" id="rnd" title="Случайный стул">⚄ Случайный</button>
+    <button class="chip" id="fbtn">Фильтры</button>
+    <span class="ml"></span>
+    <input id="q" placeholder="Поиск: стул, дизайнер, материал" autocomplete="off">
+    <span class="sep"></span>
+    <span class="nl">Зум</span>
+    <button class="chip" id="zout">−</button><button class="chip" id="zin">+</button>
+  </div>
+  <div class="row" id="filters"></div>
+</nav>
+
+<main>
+  <div class="view on" id="tl"><div id="canvas"><div class="ruler" id="ruler"></div><svg id="lines"></svg><div id="items"></div></div></div>
+  <div class="view" id="wall">
+    <div class="row" style="margin-bottom:16px"><span class="nl">Сортировка</span>
+      <button class="chip on" data-s="year">по году</button><button class="chip" data-s="mat">по материалу</button><button class="chip" data-s="st">по статусу</button><button class="chip" data-s="country">по стране</button><button class="chip" data-s="era">по эпохе</button>
+      <span class="hint ml">Один ракурс, одна сетка. Наведи — цвет.</span></div>
+    <div class="wgrid" id="wgrid"></div>
+  </div>
+  <div class="view" id="units">
+    <p class="ulead">Только цифры, подтверждённые источником: сколько экземпляров продано или выпущено. Шкала логарифмическая: каждый шаг — в 10 раз больше.</p>
+    <div id="ulist"></div>
+  </div>
+  <div class="view" id="cmp">
+    <div class="csel"><span class="nl">A</span><select id="selA"></select><span class="nl">B</span><select id="selB"></select><span class="hint" style="align-self:center">В карточке стула есть кнопка «Сравнить»</span></div>
+    <div class="cgrid" id="cgrid"></div>
+  </div>
+</main>
+
+<aside id="card">
+  <div class="c-top"><span id="c-pos"></span>
+    <div class="btns"><button id="b-post" title="Скопировать текст для поста">Пост в канал</button><button id="b-cmp">Сравнить</button><button class="pri" id="b-close">✕</button></div></div>
+  <div id="c-img" class="c-img"></div>
+  <div class="c-credit" id="c-credit"></div>
+  <div class="c-body" id="c-body"></div>
+</aside>
+<div id="toast"></div>
+
+<script src="data.js"></script>
+<script>
+const DB = window.CHAIRS; const byId = Object.fromEntries(DB.map(r => [r.id, r]));
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const yr = r => r.year < 0 ? `${-r.year} до н. э.` : r.year;
+const ERAS = ['Древность','Средние века и Ренессанс','XVIII–XIX век','Модернизм','1950–2000','XXI век'];
+const STS = ['трон','элита','масса','эксперимент'];
+const STN = {трон:'Трон и статус',элита:'Элита',масса:'Для всех',эксперимент:'Эксперимент'};
+const MATS = [...new Set(DB.flatMap(r => r.mats))].sort((a,b)=>DB.filter(r=>r.mats.includes(b)).length-DB.filter(r=>r.mats.includes(a)).length);
+
+// ---------- состояние
+const S = { view:'tl', key:false, st:new Set(), mat:new Set(), era:new Set(), q:'', zoom:1.25, sel:null, sort:'year', A:null, B:null };
+const visible = () => DB.filter(r => (!S.key || r.key) && (!S.st.size || S.st.has(r.st)) && (!S.mat.size || r.mats.some(m => S.mat.has(m))) && (!S.era.size || S.era.has(r.era_name))
+  && (!S.q || [r.name_ru, r.name_en, r.designer, r.designer_ru, r.maker, r.material, r.country].join(' ').toLowerCase().includes(S.q)));
+
+// ---------- шапка
+$('#n-all').textContent = DB.length; $('#n-key').textContent = DB.filter(r => r.key).length;
+$('#s-span').textContent = (DB[DB.length-1].year - DB[0].year).toLocaleString('ru');
+$('#s-img').textContent = DB.filter(r => r.img).length; $('#s-lin').textContent = DB.reduce((a, r) => a + r.lineage.length, 0);
+
+// ---------- фильтры
+function renderFilters(){
+  const cnt = (f) => DB.filter(f).length;
+  const g = (label, items, set, key) => `<span class="nl">${label}</span>` + items.map(v => `<button class="chip ${set.has(v)?'on':''}" data-f="${key}" data-v="${esc(v)}">${esc(key==='st'?STN[v]:v)} <small>${cnt(r => key==='mat' ? r.mats.includes(v) : r[key==='era'?'era_name':key]===v)}</small></button>`).join('');
+  $('#filters').innerHTML = g('Статус', STS, S.st, 'st') + '<span class="sep"></span>' + g('Материал', MATS, S.mat, 'mat') + '<span class="sep"></span>' + g('Эпоха', ERAS, S.era, 'era') +
+    ((S.st.size||S.mat.size||S.era.size||S.q||S.key) ? '<button class="chip ml" id="reset">Сбросить</button>' : '');
+  $$('#filters [data-f]').forEach(b => b.onclick = () => { const set = S[b.dataset.f]; set.has(b.dataset.v) ? set.delete(b.dataset.v) : set.add(b.dataset.v); redraw(); });
+  const rs = $('#reset'); if (rs) rs.onclick = () => { S.st.clear(); S.mat.clear(); S.era.clear(); S.q=''; S.key=false; $('#q').value=''; redraw(); };
+  $('#keyonly').classList.toggle('on', S.key);
+}
+$('#keyonly').onclick = () => { S.key = !S.key; redraw(); };
+$('#fbtn').onclick = () => { const o = document.querySelector('nav').classList.toggle('open'); $('#fbtn').classList.toggle('on', o); if (S.view==='tl') drawTL(); };
+$('#q').oninput = e => { S.q = e.target.value.trim().toLowerCase(); redraw(); };
+$('#rnd').onclick = () => { const v = visible(); if (v.length) open(v[Math.floor(Math.random()*v.length)].id, true); };
+$$('.chip.vw').forEach(b => b.onclick = () => { S.view = b.dataset.v; $$('.chip.vw').forEach(x => x.classList.toggle('on', x===b)); $$('.view').forEach(v => v.classList.toggle('on', v.id===S.view)); redraw(); });
+$('#zin').onclick = () => { S.zoom = Math.min(3, S.zoom*1.3); drawTL(); }; $('#zout').onclick = () => { S.zoom = Math.max(.55, S.zoom/1.3); drawTL(); };
+
+// ---------- лента: нелинейная шкала
+const ANCH = [[-2700,0],[-1000,110],[0,250],[1000,350],[1500,450],[1700,560],[1800,690],[1850,840],[1900,1120],[1950,1950],[2000,2750],[2030,3200]];
+const X = y => { for (let i=1;i<ANCH.length;i++){ const [y0,x0]=ANCH[i-1],[y1,x1]=ANCH[i]; if (y<=y1) return (x0 + (y-y0)/(y1-y0)*(x1-x0))*S.zoom + 40; } return ANCH.at(-1)[1]*S.zoom + 40; };
+const TICKS = [[-2500,'2500 до н. э.'],[-1000,'1000 до н. э.'],[0,'0'],[500,'500'],[1000,'1000'],[1500,'1500'],[1600,'1600'],[1700,'1700'],[1800,'1800'],[1850,'1850']];
+for (let y=1900;y<=2020;y+=10) TICKS.push([y, String(y)]);
+const ERA_START = {'Древность':-2700,'Средние века и Ренессанс':500,'XVIII–XIX век':1700,'Модернизм':1900,'1950–2000':1950,'XXI век':2000};
+const ROW_H = 122, TOP = 48;
+function drawTL(){
+  const v = visible(); const W = X(2030) + 120;
+  $('#canvas').style.width = W + 'px';
+  $('#ruler').innerHTML = TICKS.map(([y,l]) => `<div class="tick" style="left:${X(y)}px">${l}</div>`).join('') + (S.zoom>1.4 ? [...Array(25)].map((_,i)=>1900+i*5).filter(y=>y%10).map(y=>`<div class="tick minor" style="left:${X(y)}px">.</div>`).join('') : '');
+  // упаковка в строки
+  const rows = []; const pos = {};
+  v.forEach(r => { const x = X(r.year) - 36; let i = rows.findIndex(right => x > right + 8); if (i<0) { i = rows.length; rows.push(-1e9); } rows[i] = x + 72; pos[r.id] = {x, y: TOP + i*ROW_H}; });
+  const H = Math.max(TOP + rows.length*ROW_H + 60, $('#tl').clientHeight - 2);
+  $('#canvas').style.height = H + 'px';
+  $('#items').innerHTML = TICKS.map(([y]) => `<div class="grid" style="left:${X(y)}px;height:${H-34}px"></div>`).join('')
+    + Object.entries(ERA_START).map(([n,y]) => `<div class="eran" style="left:${X(y)+8}px">${n}</div>`).join('')
+    + v.map(r => `<div class="it ${r.key?'key':''} ${S.sel===r.id?'on':''}" data-id="${r.id}" style="left:${pos[r.id].x}px;top:${pos[r.id].y}px">${thumb(r)}<div class="y">${yr(r)}</div><div class="t">${esc(r.name_ru)}</div></div>`).join('');
+  $$('#items .it').forEach(el => { el.onclick = () => open(el.dataset.id); el.onmouseenter = () => hl(el.dataset.id); el.onmouseleave = () => hl(S.sel); });
+  // линии влияний
+  const svg = $('#lines'); svg.setAttribute('width', W); svg.setAttribute('height', H); svg.style.width = W+'px'; svg.style.height = H+'px';
+  svg.innerHTML = v.flatMap(r => r.lineage.filter(p => pos[p]).map(p => { const a = pos[p], b = pos[r.id]; const ax=a.x+72, ay=a.y+36, bx=b.x, by=b.y+36; const dx = Math.max(30,(bx-ax)/2);
+    return `<path data-a="${p}" data-b="${r.id}" d="M${ax},${ay} C${ax+dx},${ay} ${bx-dx},${by} ${bx},${by}"/>`; })).join('');
+  hl(S.sel);
+  if (S.sel && pos[S.sel] && !drawTL.scrolled) { $('#tl').scrollLeft = pos[S.sel].x - $('#tl').clientWidth/2 + 36; drawTL.scrolled = true; }
+}
+function thumb(r){ return r.img ? `<div class="th"><img src="${r.img}" alt="" loading="lazy"></div>` : `<div class="th none"><span>${esc(r.name_ru)}</span></div>`; }
+function chain(id, dir){ const out = new Set(); const walk = i => (byId[i]?.[dir]||[]).forEach(j => { if(!out.has(j)){ out.add(j); walk(j); } }); walk(id); return out; }
+function hl(id){
+  const anc = id ? chain(id,'lineage') : new Set(), des = id ? new Set(byId[id]?.influenced || []) : new Set();  // предки — вся цепочка, наследники — только прямые
+  $$('#lines path').forEach(p => { p.classList.toggle('anc', id && (anc.has(p.dataset.a)||p.dataset.a===id) && (anc.has(p.dataset.b)||p.dataset.b===id)); p.classList.toggle('des', id && (des.has(p.dataset.b)||p.dataset.b===id) && (des.has(p.dataset.a)||p.dataset.a===id)); });
+  $$('#items .it').forEach(el => el.classList.toggle('dim', !!id && el.dataset.id!==id && !anc.has(el.dataset.id) && !des.has(el.dataset.id) && (anc.size+des.size)>0));
+}
+// перетаскивание ленты
+(() => { const tl = $('#tl'); let sx, sl, down=false, moved=false;
+  tl.addEventListener('pointerdown', e => { if (e.button) return; down=true; moved=false; sx=e.clientX; sl=tl.scrollLeft; });
+  tl.addEventListener('pointermove', e => { if(!down) return; const d = e.clientX-sx; if (Math.abs(d)>4){ moved=true; tl.classList.add('drag'); tl.scrollLeft = sl-d; } });
+  const up = () => { down=false; tl.classList.remove('drag'); }; tl.addEventListener('pointerup', up); tl.addEventListener('pointerleave', up);
+  tl.addEventListener('click', e => { if (moved) { e.stopPropagation(); moved=false; } }, true);
+  tl.addEventListener('wheel', e => { if (!e.ctrlKey && Math.abs(e.deltaY) > Math.abs(e.deltaX) && !e.shiftKey) { tl.scrollLeft += e.deltaY; e.preventDefault(); } }, {passive:false});
+})();
+
+// ---------- стена
+const GROUP = { year: r => r.era_name, mat: r => r.mat, st: r => STN[r.st], country: r => r.countries[0], era: r => r.era_name };
+const ORDER = { year: ERAS, st: STS.map(s=>STN[s]), era: ERAS };
+$$('#wall [data-s]').forEach(b => b.onclick = () => { S.sort = b.dataset.s; $$('#wall [data-s]').forEach(x => x.classList.toggle('on', x===b)); drawWall(); });
+function drawWall(){
+  const v = visible(); const g = GROUP[S.sort]; const groups = {};
+  v.forEach(r => (groups[g(r)] ||= []).push(r));
+  const keys = Object.keys(groups).sort((a,b) => { const o = ORDER[S.sort]; if (o) return o.indexOf(a)-o.indexOf(b); return groups[b].length-groups[a].length || a.localeCompare(b,'ru'); });
+  $('#wgrid').innerHTML = keys.map((k,i) => `<div class="ghead" data-n="${String(i+1).padStart(2,'0')}">${esc(k)} <small style="font:400 11px var(--mono);color:var(--ink2)">${groups[k].length}</small></div>` +
+    groups[k].map(r => `<div class="wit ${S.sel===r.id?'on':''}" data-id="${r.id}">${thumb(r)}<div class="y"><span>${yr(r)}</span><em>${esc(S.sort==='year'||S.sort==='era' ? r.mat : S.sort==='mat' ? r.era_name : S.sort==='st' ? r.countries[0] : STN[r.st])}</em></div><div class="t">${esc(r.name_ru)}</div></div>`).join('')).join('');
+  $$('#wgrid .wit').forEach(el => el.onclick = () => open(el.dataset.id));
+}
+
+// ---------- тиражи
+function drawUnits(){
+  const u = DB.filter(r => r.units).sort((a,b) => b.units.n - a.units.n);
+  const w = n => 8 + 92 * (Math.log10(n) - 2.5) / (9.2 - 2.5);
+  $('#ulist').innerHTML = u.map(r => `<div class="ubar" data-id="${r.id}">${thumb(r)}<div><div class="bar" style="width:${w(r.units.n)}%">${r.units.label}</div><div class="cap"><b>${esc(r.name_ru)}</b> · ${yr(r)}<em>${esc(r.units.note)}</em></div></div></div>`).join('');
+  $$('#ulist .ubar').forEach(el => el.onclick = () => open(el.dataset.id));
+}
+
+// ---------- сравнение
+function drawCmp(){
+  const opts = `<option value="">— выбрать —</option>` + DB.map(r => `<option value="${r.id}">${yr(r)} · ${esc(r.name_ru)}</option>`).join('');
+  ['A','B'].forEach(k => { const s = $('#sel'+k); if (s.innerHTML.length < 50) { s.innerHTML = opts; s.onchange = () => { S[k] = s.value || null; drawCmp(); }; } s.value = S[k] || ''; });
+  const a = byId[S.A], b = byId[S.B];
+  const cell = (r, f) => r ? f(r) : '<span style="color:var(--ink2)">—</span>';
+  const rows = [['', r => `<div class="cimg">${r.img ? `<img src="${r.img}" alt="">` : '<span class="hint">нет фото</span>'}</div>`],
+    ['Стул', r => `<div class="cname"><small>${yr(r)}</small>${esc(r.name_ru)}</div>`], ['Дизайнер', r => esc(r.designer_ru || r.designer || 'аноним')], ['Производитель', r => esc(r.maker || '—')],
+    ['Страна', r => esc(r.country)], ['Статус', r => STN[r.st]], ['Материал', r => esc(r.material)], ['Технология', r => esc(r.tech)],
+    ['Почему такой', r => esc(r.why)], ['Прорыв', r => esc(r.breakthrough)], ['Факт', r => esc(r.insight)]];
+  $('#cgrid').innerHTML = rows.map(([k,f]) => `<div class="k">${k}</div><div>${cell(a,f)}</div><div>${cell(b,f)}</div>`).join('');
+}
+
+// ---------- карточка
+function open(id, noScroll){
+  S.sel = id; const r = byId[id]; if (!r) return; location.hash = id;
+  const v = visible(); const i = v.findIndex(x => x.id===id); const prev = v[i-1], next = v[i+1];
+  $('#c-pos').textContent = `${i>=0 ? i+1 : '·'} / ${v.length} · ${r.era_name}`;
+  $('#c-img').className = 'c-img' + (r.img ? '' : ' none');
+  $('#c-img').innerHTML = r.img ? `<img src="${r.img}" alt="${esc(r.name_ru)}">` : `<div>Фото с лицензией не нашлось.<br><button id="b-prompt">Скопировать промпт для генерации</button></div>`;
+  $('#c-credit').innerHTML = r.img ? `Фото: ${esc(r.img_credit || '')}${r.img_page ? ` · <a href="${r.img_page}" target="_blank" rel="noopener">источник</a>` : ''}` : '';
+  const chips = (ids, cls) => ids.map(p => byId[p]).filter(Boolean).map(p => `<button class="chip ${cls}" data-go="${p.id}">${yr(p)} ${esc(p.name_ru)}</button>`).join('');
+  $('#c-body').innerHTML = `
+    <div class="c-kind">${STN[r.st]}<i>${esc(r.mat)}${r.key ? ' · ключевой' : ''}</i></div>
+    <div class="c-title">${esc(r.name_ru)}</div>${r.name_en ? `<div class="c-en">${esc(r.name_en)}</div>` : ''}
+    <div class="c-years">${yr(r)}${r.year_note ? `<small>${esc(r.year_note)}</small>` : ''}</div>
+    <dl><dt>Дизайнер</dt><dd>${esc(r.designer_ru || r.designer || 'аноним')}</dd>${r.maker ? `<dt>Производитель</dt><dd>${esc(r.maker)}</dd>` : ''}<dt>Страна</dt><dd>${esc(r.country)}</dd><dt>Материал</dt><dd>${esc(r.material)}</dd><dt>Технология</dt><dd>${esc(r.tech)}</dd></dl>
+    <div class="blk"><h4>Почему такой</h4><p>${esc(r.why)}</p></div>
+    <div class="blk"><h4>Прорыв</h4><p>${esc(r.breakthrough)}</p></div>
+    <div class="blk fact"><h4>Факт</h4><p>${esc(r.insight)}</p></div>
+    ${r.legend ? `<div class="blk leg"><h4>Спор и легенда</h4><p>${esc(r.legend)}</p></div>` : ''}
+    ${r.lineage.length ? `<div class="lin"><h4>Откуда растёт</h4>${chips(r.lineage,'a')}</div>` : ''}
+    ${r.influenced.length ? `<div class="lin"><h4>Что выросло</h4>${chips(r.influenced,'d')}</div>` : ''}
+    <div class="refs">${r.wiki_ru ? `<a href="${r.wiki_ru}" target="_blank" rel="noopener">Википедия (рус)</a>` : ''}${r.wiki_en ? `<a href="${r.wiki_en}" target="_blank" rel="noopener">Wikipedia (en)</a>` : ''}${(r.src||[]).slice(0,4).map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(u.replace(/^https?:\/\/(www\.)?/,'').slice(0,42))}</a>`).join('')}</div>
+    <div class="navk">${prev ? `<button data-go="${prev.id}">← ${yr(prev)} ${esc(prev.name_ru)}</button>` : '<span></span>'}${next ? `<button data-go="${next.id}">${yr(next)} ${esc(next.name_ru)} →</button>` : ''}</div>`;
+  $$('#card [data-go]').forEach(b => b.onclick = () => open(b.dataset.go, true));
+  const bp = $('#b-prompt'); if (bp) bp.onclick = () => copy(r.img_prompt, 'Промпт скопирован');
+  $('#card').classList.add('on'); $('#card').scrollTop = 0;
+  $$('.it,.wit').forEach(el => el.classList.toggle('on', el.dataset.id===id)); hl(id);
+  if (!noScroll && S.view==='tl') { const el = $(`#items .it[data-id="${id}"]`); if (el) $('#tl').scrollTo({left: el.offsetLeft - $('#tl').clientWidth/2 + 36, behavior:'smooth'}); }
+}
+function close(){ S.sel = null; $('#card').classList.remove('on'); $$('.it,.wit').forEach(el => el.classList.remove('on')); hl(null); history.replaceState(null,'',' '); }
+$('#b-close').onclick = close;
+$('#b-cmp').onclick = () => { if (!S.sel) return; if (!S.A || S.A===S.sel) S.A = S.sel; else S.B = S.sel; $$('.chip.vw').find(b=>b.dataset.v==='cmp').click(); toast(S.B ? 'Сравнение: A и B' : 'Стул A выбран, открой второй и нажми «Сравнить»'); };
+$('#b-post').onclick = () => { const r = byId[S.sel]; if (!r) return;
+  copy(`🪑 ${r.name_ru} · ${yr(r)}\n${r.designer_ru || r.designer || 'аноним'}${r.maker ? ' — ' + r.maker : ''}${r.country ? ', ' + r.country : ''}\n\nПочему такой: ${r.why}\n\nПрорыв: ${r.breakthrough}\n\nФакт: ${r.insight}${r.legend ? '\n\nСпор и легенда: ' + r.legend : ''}\n\n#стулья #историядизайна`, 'Текст поста скопирован'); };
+function copy(t, msg){ navigator.clipboard?.writeText(t).then(() => toast(msg), () => toast('Не удалось скопировать')); }
+function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 1800); }
+document.addEventListener('keydown', e => { if (e.target.tagName==='INPUT') return; if (e.key==='Escape') close(); if (S.sel && (e.key==='ArrowLeft'||e.key==='ArrowRight')) { const v = visible(), i = v.findIndex(x=>x.id===S.sel), n = v[i + (e.key==='ArrowRight'?1:-1)]; if (n) open(n.id); } });
+
+function redraw(){ renderFilters(); ({tl: drawTL, wall: drawWall, units: drawUnits, cmp: drawCmp})[S.view](); if (S.sel) open(S.sel, true); }
+redraw(); drawUnits();
+if (location.hash.length > 1 && byId[location.hash.slice(1)]) open(location.hash.slice(1));
+window.addEventListener('resize', () => { if (S.view==='tl') drawTL(); });
+</script>
+</body>
+</html>
