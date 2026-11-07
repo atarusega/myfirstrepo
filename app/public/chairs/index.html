@@ -60,6 +60,7 @@ main{flex:1;position:relative;min-height:0}
 .th img{width:100%;height:100%;object-fit:cover;filter:url(#duo);display:block;transition:filter .2s}
 .it:hover .th,.it.on .th{transform:translateY(-2px);box-shadow:3px 3px 0 var(--orange);border-color:var(--ink)}
 .it:hover .th img,.it.on .th img{filter:none}
+.th .ai{position:absolute;right:0;bottom:0;font:600 8px/1 var(--head);font-style:normal;background:var(--ink);color:var(--paper);padding:2px 3px}
 .th.none{display:flex;align-items:flex-end;padding:5px;background:repeating-linear-gradient(45deg,var(--paper2) 0 6px,var(--paper) 6px 12px)}
 .th.none span{font:600 8.5px/1.2 var(--head);color:var(--ink2);overflow:hidden;max-height:100%}
 .it .y{font:600 11px/1 var(--head);margin-top:6px}
@@ -269,7 +270,7 @@ function drawTL(){
   hl(S.sel);
   if (S.sel && pos[S.sel] && !drawTL.scrolled) { $('#tl').scrollLeft = pos[S.sel].x - $('#tl').clientWidth/2 + 36; drawTL.scrolled = true; }
 }
-function thumb(r){ return r.img ? `<div class="th"><img src="${r.img}" alt="" loading="lazy"></div>` : `<div class="th none"><span>${esc(r.name_ru)}</span></div>`; }
+function thumb(r){ return r.img ? `<div class="th"><img src="${r.img}" alt="" loading="lazy">${r.gen ? '<i class="ai" title="иллюстрация ИИ, не фото">ИИ</i>' : ''}</div>` : `<div class="th none"><span>${esc(r.name_ru)}</span></div>`; }
 function chain(id, dir){ const out = new Set(); const walk = i => (byId[i]?.[dir]||[]).forEach(j => { if(!out.has(j)){ out.add(j); walk(j); } }); walk(id); return out; }
 function hl(id){
   const anc = id ? chain(id,'lineage') : new Set(), des = id ? new Set(byId[id]?.influenced || []) : new Set();  // предки — вся цепочка, наследники — только прямые
@@ -326,7 +327,7 @@ function open(id, noScroll){
   $('#c-pos').textContent = `${i>=0 ? i+1 : '·'} / ${v.length} · ${r.era_name}`;
   $('#c-img').className = 'c-img' + (r.img ? '' : ' none');
   $('#c-img').innerHTML = r.img ? `<img src="${r.img}" alt="${esc(r.name_ru)}">` : `<div>Фото с лицензией не нашлось.<br><button id="b-prompt">Скопировать промпт для генерации</button></div>`;
-  $('#c-credit').innerHTML = r.img ? `Фото: ${esc(r.img_credit || '')}${r.img_page ? ` · <a href="${r.img_page}" target="_blank" rel="noopener">источник</a>` : ''}` : '';
+  $('#c-credit').innerHTML = r.img ? `${r.gen ? 'Картинка' : 'Фото'}: ${esc(r.img_credit || '')}${r.img_page ? ` · <a href="${r.img_page}" target="_blank" rel="noopener">источник</a>` : ''}` : '';
   const chips = (ids, cls) => ids.map(p => byId[p]).filter(Boolean).map(p => `<button class="chip ${cls}" data-go="${p.id}">${yr(p)} ${esc(p.name_ru)}</button>`).join('');
   $('#c-body').innerHTML = `
     <div class="c-kind">${STN[r.st]}<i>${esc(r.mat)}${r.key ? ' · ключевой' : ''}</i></div>
