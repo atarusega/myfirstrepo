@@ -60,7 +60,6 @@ main{flex:1;position:relative;min-height:0}
 .th img{width:100%;height:100%;object-fit:cover;filter:url(#duo);display:block;transition:filter .2s}
 .it:hover .th,.it.on .th{transform:translateY(-2px);box-shadow:3px 3px 0 var(--orange);border-color:var(--ink)}
 .it:hover .th img,.it.on .th img{filter:none}
-.th .ai{position:absolute;right:0;bottom:0;font:600 8px/1 var(--head);font-style:normal;background:var(--ink);color:var(--paper);padding:2px 3px}
 .th.none{display:flex;align-items:flex-end;padding:5px;background:repeating-linear-gradient(45deg,var(--paper2) 0 6px,var(--paper) 6px 12px)}
 .th.none span{font:600 8.5px/1.2 var(--head);color:var(--ink2);overflow:hidden;max-height:100%}
 .it .y{font:600 11px/1 var(--head);margin-top:6px}
@@ -145,14 +144,14 @@ dd{margin:0}
 </style>
 </head>
 <body>
-<svg style="position:absolute;width:0;height:0" aria-hidden="true"><filter id="duo" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncR type="table" tableValues="0.11 0.957"/><feFuncG type="table" tableValues="0.11 0.945"/><feFuncB type="table" tableValues="0.11 0.918"/></feComponentTransfer></filter></svg>
+<svg style="position:absolute;width:0;height:0" aria-hidden="true"><filter id="duo" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncR type="table" tableValues="0.227 0.957"/><feFuncG type="table" tableValues="0.243 0.945"/><feFuncB type="table" tableValues="0.847 0.918"/></feComponentTransfer></filter></svg>
 
 <header>
   <h1>Стулья</h1>
   <span class="sub">История в <span id="n-all"></span> предметах · почему такой и в чём прорыв</span>
   <div class="stats">
     <span class="stat"><b id="s-span"></b>лет</span>
-    <span class="stat"><b id="s-img"></b>с фото</span>
+    <span class="stat"><b id="s-img"></b>иллюстраций ИИ</span>
     <span class="stat"><b id="s-lin"></b>связей</span>
     <a class="hist" href="../history/">← История дизайна</a>
   </div>
@@ -198,7 +197,7 @@ dd{margin:0}
 
 <aside id="card">
   <div class="c-top"><span id="c-pos"></span>
-    <div class="btns"><button id="b-post" title="Скопировать текст для поста">Пост в канал</button><button id="b-cmp">Сравнить</button><button class="pri" id="b-close">✕</button></div></div>
+    <div class="btns"><button id="b-cmp">Сравнить</button><button class="pri" id="b-close">✕</button></div></div>
   <div id="c-img" class="c-img"></div>
   <div class="c-credit" id="c-credit"></div>
   <div class="c-body" id="c-body"></div>
@@ -270,7 +269,7 @@ function drawTL(){
   hl(S.sel);
   if (S.sel && pos[S.sel] && !drawTL.scrolled) { $('#tl').scrollLeft = pos[S.sel].x - $('#tl').clientWidth/2 + 36; drawTL.scrolled = true; }
 }
-function thumb(r){ return r.img ? `<div class="th"><img src="${r.img}" alt="" loading="lazy">${r.gen ? '<i class="ai" title="иллюстрация ИИ, не фото">ИИ</i>' : ''}</div>` : `<div class="th none"><span>${esc(r.name_ru)}</span></div>`; }
+function thumb(r){ return r.img ? `<div class="th"><img src="${r.th || r.img}" alt="" loading="lazy" decoding="async"></div>` : `<div class="th none"><span>${esc(r.name_ru)}</span></div>`; }
 function chain(id, dir){ const out = new Set(); const walk = i => (byId[i]?.[dir]||[]).forEach(j => { if(!out.has(j)){ out.add(j); walk(j); } }); walk(id); return out; }
 function hl(id){
   const anc = id ? chain(id,'lineage') : new Set(), des = id ? new Set(byId[id]?.influenced || []) : new Set();  // предки — вся цепочка, наследники — только прямые
@@ -351,8 +350,6 @@ function open(id, noScroll){
 function close(){ S.sel = null; $('#card').classList.remove('on'); $$('.it,.wit').forEach(el => el.classList.remove('on')); hl(null); history.replaceState(null,'',' '); }
 $('#b-close').onclick = close;
 $('#b-cmp').onclick = () => { if (!S.sel) return; if (!S.A || S.A===S.sel) S.A = S.sel; else S.B = S.sel; $$('.chip.vw').find(b=>b.dataset.v==='cmp').click(); toast(S.B ? 'Сравнение: A и B' : 'Стул A выбран, открой второй и нажми «Сравнить»'); };
-$('#b-post').onclick = () => { const r = byId[S.sel]; if (!r) return;
-  copy(`🪑 ${r.name_ru} · ${yr(r)}\n${r.designer_ru || r.designer || 'аноним'}${r.maker ? ' — ' + r.maker : ''}${r.country ? ', ' + r.country : ''}\n\nПочему такой: ${r.why}\n\nПрорыв: ${r.breakthrough}\n\nФакт: ${r.insight}${r.legend ? '\n\nСпор и легенда: ' + r.legend : ''}\n\n#стулья #историядизайна`, 'Текст поста скопирован'); };
 function copy(t, msg){ navigator.clipboard?.writeText(t).then(() => toast(msg), () => toast('Не удалось скопировать')); }
 function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 1800); }
 document.addEventListener('keydown', e => { if (e.target.tagName==='INPUT') return; if (e.key==='Escape') close(); if (S.sel && (e.key==='ArrowLeft'||e.key==='ArrowRight')) { const v = visible(), i = v.findIndex(x=>x.id===S.sel), n = v[i + (e.key==='ArrowRight'?1:-1)]; if (n) open(n.id); } });
