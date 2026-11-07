@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ru" class="b">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>404 — STRUKTORUM</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32">
+<script>
+  // Два дизайна 404, на каждый заход — случайный. Проверить конкретный: ?v=a или ?v=b
+  (function () {
+    var m = location.search.match(/[?&]v=([ab])/);
+    document.documentElement.className = m ? m[1] : (Math.random() < 0.5 ? "a" : "b");
+  })();
+</script>
+<style>
+  /* Шрифт локально (GitHub Pages отдаёт этот файл на любой глубине адреса — пути от корня) */
+  @font-face { font-family: "Unbounded"; font-weight: 500; font-display: swap; src: url(/fonts/unbounded-cyrillic-500-normal.woff2) format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+  @font-face { font-family: "Unbounded"; font-weight: 700; font-display: swap; src: url(/fonts/unbounded-cyrillic-700-normal.woff2) format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+  @font-face { font-family: "Unbounded"; font-weight: 500; font-display: swap; src: url(/fonts/unbounded-latin-500-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2190-2199, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: "Unbounded"; font-weight: 700; font-display: swap; src: url(/fonts/unbounded-latin-700-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2190-2199, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+  :root {
+    --brand: #3A3ED8; --soft: #C9CBF5; --graphite: #1C1C1C; --line: rgba(255,255,255,.09);
+    --text: #ECECE6; --muted: rgba(236,236,230,.55);
+    --c1: #F2642A; --c2: #9FE3D4; --c3: #D9BDF2; --c4: #F2B31A;
+    --cell: clamp(150px, 27vh, 250px);
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { font-family: "Unbounded", system-ui, sans-serif; display: flex; flex-direction: column; }
+  html.a .vb, html.b .va { display: none !important; }
+
+  .pill { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; font: 500 12px/1 "Unbounded", sans-serif; letter-spacing: .06em; text-transform: uppercase; text-decoration: none; white-space: nowrap; transition: background .2s, box-shadow .2s; }
+  .pill-white { background: #fff; color: var(--brand); }
+  .pill-white:hover { background: var(--soft); }
+  .pill-ghost { color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.4); }
+  .pill-ghost:hover { box-shadow: inset 0 0 0 1.5px #fff; }
+
+  /* ---------- A «Пустая ячейка»: сетка как на главной, в центре ячейка без проекта ---------- */
+  html.a body { background: var(--graphite); color: var(--text); overflow: hidden; }
+  .va.head { height: 64px; flex-shrink: 0; background: var(--brand); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: relative; z-index: 3; }
+  @media (min-width: 768px) { .va.head { height: 72px; padding: 0 40px; } }
+  .va .logo { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: 20px; }
+  .va .logo svg { width: 34px; height: 34px; }
+  @media (max-width: 399px) { .va .logo span { display: none; } }
+  .va .pill { padding: 10px 18px; }
+  .va.stage { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+  .va .grid { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: repeat(7, var(--cell)); grid-template-rows: repeat(5, var(--cell)); }
+  .va .grid::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 30%, var(--graphite) 78%); pointer-events: none; }
+  .va .cell { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); display: flex; flex-direction: column; justify-content: center; padding: 0 18%; gap: 6%; }
+  .va .cell i { display: block; height: 7%; width: 70%; border-radius: 3px; background: rgba(255,255,255,.08); }
+  .va .cell b { display: block; aspect-ratio: 1; width: 100%; border-radius: 8px; opacity: .14; }
+  .va .cell:nth-child(4n+1) b { background: var(--c1); }
+  .va .cell:nth-child(4n+2) b { background: var(--c2); }
+  .va .cell:nth-child(4n+3) b { background: var(--c3); }
+  .va .cell:nth-child(4n)   b { background: var(--c4); }
+  .va .empty .cap { font-weight: 700; font-size: calc(var(--cell) * .072); letter-spacing: .04em; text-transform: uppercase; line-height: 1.15; }
+  .va .empty .slot { aspect-ratio: 1; width: 100%; border-radius: 8px; border: 2px dashed rgba(255,255,255,.35); display: grid; place-items: center; color: var(--muted); font-weight: 700; font-size: calc(var(--cell) * .17); background: rgba(58,62,216,.12); animation: pulse 2.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { border-color: rgba(255,255,255,.6); background: rgba(58,62,216,.22); } }
+  .va .msg { position: absolute; left: 50%; top: calc(50% + var(--cell) / 2 + 20px); transform: translateX(-50%); width: min(92vw, 520px); text-align: center; z-index: 2; }
+  .va .msg h1 { font-weight: 700; font-size: clamp(18px, 2.4vw, 24px); letter-spacing: .02em; line-height: 1.25; }
+  .va .msg p { margin-top: 10px; font-weight: 500; font-size: 13px; line-height: 1.5; color: var(--muted); }
+  .va .actions { margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  /* ---------- B «Демонтаж»: синий экран, ноль — знак, круги разъезжаются и собираются ---------- */
+  html.b body { background: var(--brand); color: #fff; }
+  .vb.bar { display: flex; align-items: center; justify-content: space-between; padding: 20px 16px; font: 500 11px/1 "Unbounded", sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+  @media (min-width: 768px) { .vb.bar { padding: 28px 40px; font-size: 12px; } }
+  .vb.bar a { color: inherit; text-decoration: none; transition: opacity .2s; }
+  .vb.bar a:hover { opacity: .7; }
+  .vb .word { font-weight: 700; font-size: 16px; letter-spacing: .08em; }
+  .vb.bottom { color: rgba(255,255,255,.6); }
+  @media (max-width: 600px) { .vb.bottom { justify-content: center; } .vb.bottom span:first-child { display: none; } }
+  .vb.stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 16px 24px; }
+  .vb .code { display: flex; align-items: center; justify-content: center; gap: .04em; font-weight: 700; font-size: clamp(110px, 26vw, 320px); line-height: .8; letter-spacing: -.02em; }
+  .vb .code svg { width: .86em; height: .86em; overflow: visible; }
+  .vb .code circle { animation: apart 5.5s ease-in-out infinite; }
+  .vb .code circle:nth-child(2) { --dx: -9px;  --dy: -6px;  animation-delay: .05s; }
+  .vb .code circle:nth-child(3) { --dx: 14px;  --dy: -12px; animation-delay: .1s; }
+  .vb .code circle:nth-child(4) { --dx: -16px; --dy: 18px;  animation-delay: .15s; }
+  .vb .code circle:nth-child(5) { --dx: 22px;  --dy: 16px;  animation-delay: .2s; }
+  @keyframes apart { 0%, 35%, 100% { transform: translate(0,0); } 55%, 75% { transform: translate(var(--dx,0), var(--dy,0)); } }
+  .vb h1 { margin-top: clamp(28px, 5vh, 48px); font-weight: 700; font-size: clamp(20px, 3.2vw, 34px); letter-spacing: .04em; line-height: 1.2; text-transform: uppercase; max-width: 16em; }
+  .vb p { margin-top: 14px; font-weight: 500; font-size: clamp(13px, 1.2vw, 15px); line-height: 1.5; color: rgba(255,255,255,.75); max-width: 30em; }
+  .vb .actions { margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .vb .pill { padding: 14px 22px; }
+
+  @media (prefers-reduced-motion: reduce) { .va .empty .slot, .vb .code circle { animation: none; } }
+</style>
+</head>
+<body>
+
+<!-- ===== A ===== -->
+<header class="va head">
+  <a class="logo" href="/" aria-label="STRUKTORUM — на главную">
+    <svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="100" fill="#F2642A"/><circle cx="108" cy="106" r="84" fill="#9FE3D4"/><circle cx="116" cy="113" r="67" fill="#3A3ED8"/><circle cx="128" cy="122" r="42" fill="#D9BDF2"/><circle cx="134" cy="127" r="24" fill="#F2B31A"/></svg>
+    <span>Struktorum</span>
+  </a>
+  <a class="pill pill-white" href="https://t.me/nkt_klmv" target="_blank" rel="noopener">Обсудить проект</a>
+</header>
+<main class="va stage">
+  <div class="grid" aria-hidden="true">
+    <div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div>
+    <div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div>
+    <div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div>
+    <div class="cell empty"><div class="cap">Проект<br>не найден</div><div class="slot">404</div></div>
+    <div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div>
+    <div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div>
+    <div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div><div class="cell"><i></i><b></b></div>
+  </div>
+  <div class="msg">
+    <h1>В сетке нет такой ячейки</h1>
+    <p>Адрес устарел или в нём опечатка. Все проекты — на главной.</p>
+    <div class="actions">
+      <a class="pill pill-white" href="/">Смотреть проекты</a>
+      <a class="pill pill-ghost" href="https://t.me/struktorum" target="_blank" rel="noopener">Канал ↗</a>
+    </div>
+  </div>
+</main>
+
+<!-- ===== B ===== -->
+<div class="vb bar">
+  <a class="word" href="/">Struktorum</a>
+  <a href="https://t.me/struktorum" target="_blank" rel="noopener">Канал ↗</a>
+</div>
+<main class="vb stage">
+  <div class="code" role="img" aria-label="404">
+    <span aria-hidden="true">4</span>
+    <svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="100" fill="#F2642A"/><circle cx="108" cy="106" r="84" fill="#9FE3D4"/><circle cx="116" cy="113" r="67" fill="#1C1C1C"/><circle cx="128" cy="122" r="42" fill="#D9BDF2"/><circle cx="134" cy="127" r="24" fill="#F2B31A"/></svg>
+    <span aria-hidden="true">4</span>
+  </div>
+  <h1>Эту бренд-зону уже демонтировали</h1>
+  <p>Страницы нет или в адресе опечатка. Проекты стоят на месте — на главной.</p>
+  <div class="actions">
+    <a class="pill pill-white" href="/">Смотреть проекты</a>
+    <a class="pill pill-ghost" href="https://t.me/nkt_klmv" target="_blank" rel="noopener">Обсудить проект</a>
+  </div>
+</main>
+<div class="vb bar bottom">
+  <span>Никита Климов</span>
+  <span>3D-визуализация бренд-зон и фестов</span>
+</div>
+
+</body>
+</html>
